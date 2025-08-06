@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "main.css",
-	"sourceRoot": "/Users/wangjuboxi/files/code/blog/Source/WangJV",
+	"sourceRoot": "/Users/wangjuboxi/files/code/blog/WangJV",
 	"sources": [
 		"ananke/css/main.css"
 	],
