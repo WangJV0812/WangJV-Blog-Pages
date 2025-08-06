@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>ScoreMatching | My New Hugo Site</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="
+1. 为什么要用 Score Matching
+2. Score Function
+
+2.1. Langevin Dynamics
+
+
+3. Score Matching
+4. 讨论
+
+4.1. 哈钦森迹估计 (Hutchinson&rsquo;s Trace Estimation)
+
+
+reference
+
+1. 为什么要用 Score Matching
+很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：
+$$
+\begin{array}{c}
+p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\
+\text{where: } Z(\theta) = \int q(x\mid \theta) dx
+\end{array}
+$$
+但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）
+要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。">
+    <meta name="generator" content="Hugo 0.148.2">
+    
+    
+    
+      <meta name="robots" content="index, follow">
+    
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.8d048772ae72ab11245a0e296d1f2a36d3e3dd376c6c867394d6cc659c68fc37.css" >
+
+
+
+
+    
+
+
+    
+      
+
+    
+
+    
+
+    
+      <link rel="canonical" href="https://example.org/posts/scorematching/">
+    
+
+    <meta property="og:url" content="https://example.org/posts/scorematching/">
+  <meta property="og:site_name" content="My New Hugo Site">
+  <meta property="og:title" content="ScoreMatching">
+  <meta property="og:description" content="1. 为什么要用 Score Matching 2. Score Function 2.1. Langevin Dynamics 3. Score Matching 4. 讨论 4.1. 哈钦森迹估计 (Hutchinson’s Trace Estimation) reference 1. 为什么要用 Score Matching 很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：
+$$ \begin{array}{c} p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\ \text{where: } Z(\theta) = \int q(x\mid \theta) dx \end{array} $$
+但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）
+要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-08-06T16:29:40+08:00">
+    <meta property="article:modified_time" content="2025-08-06T16:29:40+08:00">
+
+  <meta itemprop="name" content="ScoreMatching">
+  <meta itemprop="description" content="1. 为什么要用 Score Matching 2. Score Function 2.1. Langevin Dynamics 3. Score Matching 4. 讨论 4.1. 哈钦森迹估计 (Hutchinson’s Trace Estimation) reference 1. 为什么要用 Score Matching 很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：
+$$ \begin{array}{c} p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\ \text{where: } Z(\theta) = \int q(x\mid \theta) dx \end{array} $$
+但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）
+要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。">
+  <meta itemprop="datePublished" content="2025-08-06T16:29:40+08:00">
+  <meta itemprop="dateModified" content="2025-08-06T16:29:40+08:00">
+  <meta itemprop="wordCount" content="857">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="ScoreMatching">
+  <meta name="twitter:description" content="1. 为什么要用 Score Matching 2. Score Function 2.1. Langevin Dynamics 3. Score Matching 4. 讨论 4.1. 哈钦森迹估计 (Hutchinson’s Trace Estimation) reference 1. 为什么要用 Score Matching 很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：
+$$ \begin{array}{c} p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\ \text{where: } Z(\theta) = \int q(x\mid \theta) dx \end{array} $$
+但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）
+要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。">
+
+      
+    
+	
+  </head><body class="ma0 avenir bg-near-white production">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l center items-center justify-between">
+    <a href="/" class="f3 fw2 hover-white white-90 dib no-underline">
+      
+        My New Hugo Site
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      <div class="ananke-socials"></div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  
+  <article class="flex-l mw8 center ph3 flex-wrap justify-between">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked ttu">
+          
+        Posts
+      </aside><div id="sharing" class="mt3 ananke-socials"></div>
+<h1 class="f1 athelas mt3 mb1">ScoreMatching</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2025-08-06T16:29:40+08:00">August 6, 2025</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links mid-gray pr4-l w-two-thirds-l"><ul>
+<li><a href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8-score-matching">1. 为什么要用 Score Matching</a></li>
+<li><a href="#2-score-function">2. Score Function</a>
+<ul>
+<li><a href="#21-langevin-dynamics">2.1. Langevin Dynamics</a></li>
+</ul>
+</li>
+<li><a href="#3-score-matching">3. Score Matching</a></li>
+<li><a href="#4-%E8%AE%A8%E8%AE%BA">4. 讨论</a>
+<ul>
+<li><a href="#41-%E5%93%88%E9%92%A6%E6%A3%AE%E8%BF%B9%E4%BC%B0%E8%AE%A1-hutchinsons-trace-estimation">4.1. 哈钦森迹估计 (Hutchinson&rsquo;s Trace Estimation)</a></li>
+</ul>
+</li>
+<li><a href="#reference">reference</a></li>
+</ul>
+<h2 id="1-为什么要用-score-matching">1. 为什么要用 Score Matching</h2>
+<p>很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：</p>
+<p>$$
+\begin{array}{c}
+p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\
+\text{where: } Z(\theta) = \int q(x\mid \theta) dx
+\end{array}
+$$</p>
+<p>但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）</p>
+<p>要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。</p>
+<h2 id="2-score-function">2. Score Function</h2>
+<p>对于一个受到参数 $\boldsymbol{\theta}$ 控制的，关于随机向量 $\boldsymbol{\xi}$ 的随机分布 $p(\boldsymbol{\xi}, \boldsymbol{\theta})$。我们定义其对数梯度为其 Score Function。形式化的，可以写作：</p>
+<p>$$
+\psi (\boldsymbol{\xi}, \boldsymbol{\theta}) =
+\begin{pmatrix}
+\frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_1}\
+\frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_2}\
+\vdots\
+\frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}<em>n}
+\end{pmatrix} =
+\begin{pmatrix}
+\psi_1(\boldsymbol{\xi}, \boldsymbol{\theta})\
+\psi_2(\boldsymbol{\xi}, \boldsymbol{\theta})\
+\vdots\
+\psi_n(\boldsymbol{\xi}, \boldsymbol{\theta})
+\end{pmatrix} =
+\nabla</em>{\boldsymbol{\xi}} \log p(\boldsymbol{\xi}, \boldsymbol{\theta})
+$$</p>
+<p>我们不难发现：</p>
+<p>$$
+\begin{aligned}
+\psi (\boldsymbol{\xi}, \boldsymbol{\theta})
+&amp;= \nabla_{\boldsymbol{\xi}} \log \left( \frac{q(\boldsymbol{\xi}, \boldsymbol{\theta})}{Z(\boldsymbol{\theta})} \right)\
+&amp;= \nabla_{\boldsymbol{\xi}} \log q(\boldsymbol{\xi}, \boldsymbol{\theta}) - \nabla_{\boldsymbol{\xi}} \log Z(\boldsymbol{\theta})\
+&amp;= \nabla_{\boldsymbol{\xi}} \log q(\boldsymbol{\xi}, \boldsymbol{\theta})
+\end{aligned}
+$$</p>
+<p>不难发现，在使用 Score Function 表达一个概率分布时，归一化系数被梯度吸收了。换句话说，使用 Score Function 描述分布时，我们不需要关心归一化系数 $Z(\boldsymbol{\theta})$ 了，我们用了一个巧妙的数学结构解决了困难的归一化问题。</p>
+<p>你可能会问：“是的，这是一个很巧妙的数学结构，但是如何估计这个分布，如何采样呢？”我们先解决采样的问题，答案是 Langevin Dynamics。</p>
+<p>预告一下，第二个问题的答案就是我们这篇文章的主题，Score Matching。</p>
+<h3 id="21-langevin-dynamics">2.1. Langevin Dynamics</h3>
+<p>在学习了得分函数 $s_\theta(\boldsymbol{x}) \approx \nabla_{\boldsymbol{x}} \log p(\boldsymbol{x})$ 后，我们还需要将其转换回原本的概率分布，这实际上是要解决一个随机微分方程。这同样并不容易，但是我们可以直接跳过求原本的分布这一步，直接从 Score Function 采样，这个方法被称为郎之万动力学 (Langevin Dynamics)。郎之万动力学提供了一种马尔可夫的方法；具体而言，从任意先验分布 $x_0 \sim \pi(x)$ 初始化，然后进行如下迭代：</p>
+<p>$$
+\begin{array}{ll}
+x_{i+1} = x_i + \epsilon \nabla_{\boldsymbol{x}} \log p(\boldsymbol{x}) + \sqrt{2\epsilon} \boldsymbol{z}_i
+&amp; i = 0, 1, \cdots K
+\end{array}
+$$</p>
+<p>其中 $\boldsymbol{z_i} \sim \mathcal N(0, I)$，$\epsilon \to 0$, $K\to \infty$。实际上这个行为类似与数值微分方程的求解，后面的高斯分布项可以有效的避免陷入局部最优。事实上只要这个过程足够，误差几乎可以忽略。</p>
+<p><img src="Images/langevin_dynamics.gif" alt="Langevin Dynamics"></p>
+<h2 id="3-score-matching">3. Score Matching</h2>
+<p>一个很直觉的想法是，对于一个原始分布的 Score Function $\psi_X(\xi)$，我们希望用一个收参数 $\theta$ 控制的模型分布 $\psi(\xi, \theta)$ 来近似。一个很直接的方法是用一个均方期望来衡量二者之间的距离：</p>
+<p>$$
+J(\theta) = \frac 1 2 \int_{\xi\in R^n} p_X(\xi)\left|
+\psi(\xi, \theta) - \psi_X(\xi)
+\right| ^2 d\xi
+$$</p>
+<p>这里需要注意到一个细节，此处我们是对一个按照原始分布 $p_X(\xi)$ 的期望，这对我们的编写程序是有很大帮助的。对于一个有 $m$ 个数据的原始分布（数据集），我们均匀随机的选择出其中 $k$ 个数据点 $\xi_1, \xi_2, \cdots, \xi_k$，那么我们可以将上面的依赖于原始分布的期望可以似为：</p>
+<p>$$
+J(\theta) \approx \frac{1}{2k} \sum_{i=1}^k \left|
+\psi(\xi_i, \theta) - \psi_X(\xi_i)
+\right| ^2
+$$</p>
+<p>那么，对模型分布 $\psi(\xi_i, \theta)$ 的参数 $\theta$ 的一个最优估计可以通过最小化上面的形式来获得。事实上在这个最优估计就是 Score Matching：</p>
+<p>$$
+\hat \theta = \arg\min_\theta J(\theta)
+$$</p>
+<p>上面这个形式的估计确实解决了需要计算归一化参数的积分的问题，但是想直接使用这个形式依旧困难。因为我们在事实上无法计算原始分布的 Score Function $\psi_X(\xi)$。Score Function 的精妙之处就在于通过一个数学变换避免了直接对原始分布的对数梯度的依赖。</p>
+<p>我们不妨假设模型分布的 Score Function $\psi(\xi_i, \theta)$ 是可导。展开均方形式，有：</p>
+<p>$$
+\begin{aligned}
+J(\theta)
+&amp;= \frac 1 2 \int_{\xi\in R^n} p_X(\xi)\left|
+\psi(\xi, \theta) - \psi_X(\xi)
+\right| ^2 d\xi\
+&amp;= \frac 1 2 \int_{\xi\in R^n} p_X(\xi) \left(
+\psi^2(\xi, \theta) - 2 \psi(\xi, \theta) \psi_X(\xi) + \psi_X^2(\xi)
+\right) d\xi\
+&amp;= \frac 1 2\int_{\xi\in R^n} p_X(\xi)\psi^2(\xi, \theta) d\xi - \int_{\xi\in R^n} p_X(\xi)\psi(\xi, \theta) \psi_X(\xi) d\xi + \frac 1 2 \int_{\xi\in R^n} p_X(\xi)\psi_X^2(\xi) d\xi\
+\end{aligned}
+$$</p>
+<p>显然，其中 $\int_{\xi\in R^n} p_X(\xi)\psi_X^2(\xi) d\xi$ 不包含待优化参数 $\theta$，可以忽略，上式简化为：</p>
+<p>$$
+J(\theta) = \frac 1 2\int_{\xi\in R^n} p_X(\xi)\psi^2(\xi, \theta) d\xi - \int_{\xi\in R^n} p_X(\xi)\psi(\xi, \theta) \psi_X(\xi) d\xi
+$$</p>
+<p>其中 $\frac 1 2\int_{\xi\in R^n} p_X(\xi)\psi^2(\xi, \theta) d\xi$ 可以直接计算，我们并不关心。需要处理的是 $\int_{\xi\in R^n} p_X(\xi)\psi(\xi, \theta)^T \psi_X(\xi) d\xi$。对于这个形式，我们可以做如下变换：</p>
+<p>$$
+\begin{aligned}
+\int_{\xi\in R^n} p_X(\xi)\psi(\xi, \theta) \psi_X(\xi) d\xi
+&amp;= \int_{\xi\in R^n} p_X(\xi) \frac{\partial \log p_X(\xi)}{\partial \xi_i} \psi(\xi, \theta) d\xi\
+&amp;= \int_{\xi\in R^n} \frac{p_X(\xi)}{p_X(\xi)} \frac{\partial p_X(\xi)}{\partial \xi_i} \psi(\xi, \theta) d\xi\
+&amp;= \int_{\xi\in R^n} \frac{\partial p_X(\xi)}{\partial \xi_i} \psi(\xi, \theta) d\xi
+\end{aligned}
+$$</p>
+<p>$\frac{\partial p_X(\xi)}{\partial \xi_i}$ 依然不好计算，但是可以用分部积分来处理：</p>
+<p>$$
+\begin{aligned}
+\int d \left(\frac{\partial \log p(\xi, \theta)}{\partial \xi_i} p_X(\xi)\right)
+&amp;= \int \frac{\partial \log p(\xi, \theta)}{\partial \xi_i} \frac{\partial p_X(\xi)}{\partial \xi_i} d \xi + \int \frac{\partial^2 \log p(\xi, \theta)}{\partial \xi_i^2} p_X(\xi) d \xi
+\end{aligned}
+$$</p>
+<p>那么，原始分布可以变形为：</p>
+<p>$$
+\begin{aligned}
+\int_{\xi\in R^n} p_X(\xi)\psi(\xi, \theta) \psi_X(\xi) d\xi
+&amp;= \frac{\partial \log p(\xi, \theta)}{\partial \xi_i} p_X(\xi) \bigg|^\infty_{-\infty} - \int \frac{\partial^2 \log p(\xi, \theta)}{\partial \xi_i^2} p_X(\xi) d \xi
+\end{aligned}
+$$</p>
+<p>我们不妨做一个比较一般的假设（确实是一个很弱的假设），假设 $p(\xi, \theta)$ 和 $p_X(\xi)$ 是短尾的，乘积 $\frac{\partial \log p(\xi, \theta)}{\partial \xi_i} p_X(\xi)$ 在 $\infty, -\infty$ 处收敛为 $0$。这个假设弱到几乎找不到一个反例（事实上有反例，例如帕累托分布）。我们几乎总是可以认为这个假设是成立的。</p>
+<p>$$
+\int_{\xi\in R^n} p_X(\xi)\psi(\xi, \theta) \psi_X(\xi) d\xi
+= - \int \frac{\partial^2 \log p(\xi, \theta)}{\partial \xi_i^2} p_X(\xi) d \xi
+$$</p>
+<p>原始的均方期望可以被变换为：</p>
+<p>$$
+\begin{aligned}
+J(\theta)
+&amp;= \frac 1 2\int_{\xi\in R^n} p_X(\xi)\psi^2(\xi, \theta) d\xi + \sum_{i=1}^n\int_{\xi\in R^n} \frac{\partial^2 \log p(\xi, \theta)}{\partial \xi_i^2} p_X(\xi) d \xi \
+&amp;= \int_{\xi\in R^n} p_X(\xi) \sum_{i=1}^{n} \left[
+\frac 1 2 \psi_i(\xi, \theta)^2 + \frac{\partial \psi(\xi, \theta)}{\partial \xi_i}
+\right] d \xi
+\end{aligned}
+$$</p>
+<p>问题已经解决了，但是结论还不够好看。不妨注意力集中一点，不难注意到：</p>
+<p>$$
+\sum_{i=1}^{n} \frac{\partial^2 \log p(\xi, \theta)}{\partial \xi_i^2} = \text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right)
+$$</p>
+<p>结论可以写成一个更简洁优雅的形式：</p>
+<p>$$
+\begin{aligned}<br>
+J(\theta)
+&amp;= \text{E}<em>{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla^2</em>\xi \log p(\xi, \theta)\right)</p>
+<ul>
+<li>\frac 1 2\left| \nabla_\xi  \log p(\xi, \theta)\right|^2
+\right] \
+&amp;= \text{E}<em>{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla</em>\xi \psi(\xi, \theta)\right)</li>
+<li>\frac 1 2\left| \psi(\xi, \theta)\right |^2
+\right] \
+\end{aligned}
+$$</li>
+</ul>
+<h2 id="4-讨论">4. 讨论</h2>
+<p>我们在这里只希望讨论一下在编程实践中可能遇到的问题。对于一个有 $m$ 个数据的原始分布，我嘛可以认为是对原始分布所在的流形上采样出了 $m$ 个数据点。为了描述方便，不妨将这些采样记作 $X_1, X_2, \cdots, X_{m}$。那么 Score Matching 的目标函数可以写作：</p>
+<p>$$
+\check{J}(\theta) = \frac{1}{m} \sum_{j=1}^{m} \sum_{i=1}^{n} \left[
+\frac 1 2 \psi_i(\xi, \theta)^2 + \frac{\partial \psi(\xi, \theta)}{\partial \xi_i}
+\right]
+$$</p>
+<p>虽然 Score Matching 避免了计算复杂的归一化系数，但是却引入了另一个计算上的麻烦，我们需要计算海森矩阵的迹。对于一个维度为 $d$ 的随机分布的估计 $\psi(\xi, \theta)$，其对于 $\xi$ 的梯度是一个 $d \times d$ 维度的矩阵，在事实上我们进行了 $$d(d+1)/2$$ 次的计算。事实上我们不需要计算这么多元素，只需要计算对角线上的元素就可以了。全部计算是十分不经济的。一般而言，会用哈钦森迹估计（Hutchinson&rsquo;s Trace Estimation）来近似。</p>
+<h3 id="41-哈钦森迹估计-hutchinsons-trace-estimation">4.1. 哈钦森迹估计 (Hutchinson&rsquo;s Trace Estimation)</h3>
+<p>对于任意一个方阵 $H\in R^{d\times d}$ 和一个满足均值为 $0$，方差为 $I$的随机分布（一般可以取 <strong>Rademacher 分布</strong> 或者 <strong>标准高斯分布</strong>） $v\in R^d$，有：</p>
+<p>$$
+\begin{aligned}
+\mathbb{E}\left[\text{tr}(v^\top H v)\right]
+&amp;= \mathbb{E} \left[\sum_{i=1}^d \sum_{j=1} v_i H_{ij} v_j\right]\
+&amp;= \sum_{i=1}^d \sum_{j=1} H_{ij}\mathbb{E}\left[v_i v_j^T\right]
+\end{aligned}
+$$</p>
+<p>因为 $v$ 满足标准高斯分布，因此方差 $\mathbb{E}\left[v_i v_j^T\right] = I$。所以：</p>
+<p>$$
+\mathbb{E}\left[\text{tr}(v^\top H v)\right] = \sum_{i=1}^d H_{ii} = \text{tr}(H)
+$$</p>
+<p>此时，我们只需要从标准高斯分布中采样出一定 $k$ 个随机变量 $v_1, v_2, \cdots, v_k$（一般 $k$ 是远小于随机变量维度 $d$ 的），然后计算 $v^\top Hv$。因为 $Hv$ 是一个标准的 海森向量积 (Hessian-Vector Product, HVP)。</p>
+<p>HVP 在计算上是经济的，是因为：</p>
+<p>$$
+\nabla_\xi^2 p(\xi; \theta) v = \nabla_\xi \left(\nabla_\xi p(\xi; \theta) v\right)
+$$</p>
+<p>不难发现:</p>
+<p>$$
+\begin{array}{lc}
+\text{Hessian-Vector Product} &amp; \text{Shape}\
+\nabla_\xi^2 p(\xi; \theta) &amp; d \times d\
+\nabla_\xi p(\xi; \theta)   &amp; d \times 1\
+\nabla_\xi p(\xi; \theta) \cdot v &amp; 1 \times 1\
+\nabla_\xi[\nabla_\xi p(\xi; \theta)v] &amp; d \times 1\
+\end{array}
+$$</p>
+<p>这个计算过程中避免了直接存储和计算高维的 Hessian Matrix。因此具有高效性。</p>
+<h2 id="reference">reference</h2>
+<p>@article{JMLR:v6:hyvarinen05a,
+author  = {Aapo Hyv{{&quot;a}}rinen},
+title   = {Estimation of Non-Normalized Statistical Models by Score Matching},
+journal = {Journal of Machine Learning Research},
+year    = {2005},
+volume  = {6},
+number  = {24},
+pages   = {695&ndash;709},
+url     = {http://jmlr.org/papers/v6/hyvarinen05a.html}
+}</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white white-70 dn dib-ns pv2 ph3 no-underline" href="https://example.org/" >
+    &copy;  My New Hugo Site 2025 
+  </a>
+    <div><div class="ananke-socials"></div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>
