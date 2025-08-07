@@ -14,7 +14,7 @@ X_{i, j}
 \end{aligned}
 $$<p>其中， $X$ 是在相机坐标系中表示的。接下来，我们将在相机 $m$ 的坐标系中表示的、来自相机 $\pi$ 的点图 $X^{n}$ 记为 $X^{n, m}$，表示第 $n$ 帧在 第 $m$ 帧的坐标系下的点图为 ：</p>$$
 X^{n, m}=P_{m} P_{n}^{-1} h\left(X^{n}\right)
-$$<p>其中 $P_{m}$、$P_{n} \in \mathbb{R}^{3 ×4}$分别是图像$n$和图像$m$从世界坐标系到相机坐标系的位姿矩阵，$h:(x, y, z) \to (x, y, z, 1)$ 是从笛卡尔坐标到齐次坐标的映射。</p><h4 id=123-网络结构>1.2.3. 网络结构</h4><p><img src=./images/DUSt3R%20pipline.png alt="DUSt3R pipline"></p><p>DUSt3R 训练了一个用于预测三维场景点的回归网络 $\bm F$。该神经网络的输入为两张 RGB 图像 $I_1, I_2 \in \mathbb{R}^{W×H×3}$，输出为两张图片对应的点图（point map）$X_{1,1}, X_{2,1} \in \mathbb{R}^{W×H×3}$。 这两张点图的坐标原点固定在 $I_1$ 的坐标原点上，与 $I_1$ 的相机坐标系重合。此外还会预测出对每个像素点的三维坐标预测的置信度 $C_{1,1}, C_{2,1} \in \mathbb{R}^{W×H}$。</p><p>如上所示，它由两个相同的分支组成（每个图像对应一个分支），每个分支都包含一个图像编码器、一个解码器和一个回归头。首先，两张输入图像由同一个权重共享的Vision Transformer（ViT）编码器以孪生网络的方式进行编码，得到两个标记表示 $F^{1}$ 和 $F^{2}$：</p>$$
+$$<p>其中 $P_{m}$、$P_{n} \in \mathbb{R}^{3 ×4}$分别是图像$n$和图像$m$从世界坐标系到相机坐标系的位姿矩阵，$h:(x, y, z) \to (x, y, z, 1)$ 是从笛卡尔坐标到齐次坐标的映射。</p><h4 id=123-网络结构>1.2.3. 网络结构</h4><p><img src=./Images/DUSt3R%20pipline.png alt="DUSt3R pipline"></p><p>DUSt3R 训练了一个用于预测三维场景点的回归网络 $\bm F$。该神经网络的输入为两张 RGB 图像 $I_1, I_2 \in \mathbb{R}^{W×H×3}$，输出为两张图片对应的点图（point map）$X_{1,1}, X_{2,1} \in \mathbb{R}^{W×H×3}$。 这两张点图的坐标原点固定在 $I_1$ 的坐标原点上，与 $I_1$ 的相机坐标系重合。此外还会预测出对每个像素点的三维坐标预测的置信度 $C_{1,1}, C_{2,1} \in \mathbb{R}^{W×H}$。</p><p>如上所示，它由两个相同的分支组成（每个图像对应一个分支），每个分支都包含一个图像编码器、一个解码器和一个回归头。首先，两张输入图像由同一个权重共享的Vision Transformer（ViT）编码器以孪生网络的方式进行编码，得到两个标记表示 $F^{1}$ 和 $F^{2}$：</p>$$
 \begin{aligned}
 F^{1}=\text{Encoder}(I^{1})\\
 F^{2}=\text{Encoder}(I^{2})
@@ -43,7 +43,7 @@ $$<p>这个归一化系数实质上是分别对<strong>预测的点图</strong>�
 \right\|
 $$<p>计算的置信度加权回归损失：</p>$$
 L_{conf} = \sum_{v \in \{1,2\}} \sum_{i \in D_v} C_{v,1}^i \ell_{regr}(v, i) - \alpha \log C_{v,1}^i
-$$<p>其中 $C_{v,1}^i$ 是像素 $i$ 的置信度分数， $\alpha$ 是一个控制正则化项的超参数。</p><p>为了确保置信度严格为正，我们通常定义 $C_{v,1}^i = \frac{1}{1 + \exp(-g_{C_{v,1}^i})} > 0$ （。这会迫使网络在更难处理的区域进行推断，例如那些仅由单个视图覆盖的区域。使用这个目标来训练网络 $F$ 可以在没有明确监督的情况下估计置信度分数。</p><p><img src=./images/DUSt3RPointmapAndConfidence.png alt="from left to right is RGB, depth map, confidence map"></p><p><img src=images/Examplesof3DReconstructionsFromNearlyOppositeViewpoints.png alt="Examples of 3DReconstructions From Nearly Opposite Viewpoints"></p><h3 id=14-应用>1.4. 应用</h3><h4 id=141-三维点匹配>1.4.1. 三维点匹配</h4><p>在三维点图空间中，通过最近邻搜索可以很容易地在两张图像的像素之间建立对应关系。为了将误差降至最低，我们通常会保留图像 $I^{1}$ 和 $I^{2}$ 之间的相互（双向）对应关系 $M_{1,2}$，也就是说，我们有：</p>$$
+$$<p>其中 $C_{v,1}^i$ 是像素 $i$ 的置信度分数， $\alpha$ 是一个控制正则化项的超参数。</p><p>为了确保置信度严格为正，我们通常定义 $C_{v,1}^i = \frac{1}{1 + \exp(-g_{C_{v,1}^i})} > 0$ （。这会迫使网络在更难处理的区域进行推断，例如那些仅由单个视图覆盖的区域。使用这个目标来训练网络 $F$ 可以在没有明确监督的情况下估计置信度分数。</p><p><img src=./Images/DUSt3RPointmapAndConfidence.png alt="from left to right is RGB, depth map, confidence map"></p><p><img src=Images/Examplesof3DReconstructionsFromNearlyOppositeViewpoints.png alt="Examples of 3DReconstructions From Nearly Opposite Viewpoints"></p><h3 id=14-应用>1.4. 应用</h3><h4 id=141-三维点匹配>1.4.1. 三维点匹配</h4><p>在三维点图空间中，通过最近邻搜索可以很容易地在两张图像的像素之间建立对应关系。为了将误差降至最低，我们通常会保留图像 $I^{1}$ 和 $I^{2}$ 之间的相互（双向）对应关系 $M_{1,2}$，也就是说，我们有：</p>$$
 \begin{array}{c}
 \mathcal{M}_{1,2}=\left\{(i, j) | i=NN_{1}^{1,2}(j)\right. and \left.j=NN_{1}^{2,1}(i)\right\}\\
 \text{where: } NN_{k}^{n, m}(i)=\underset{j \in\{0, ..., W H\}}{arg min }\left\| X_{j}^{n, k}-X_{i}^{m, k}\right\|
@@ -58,7 +58,7 @@ X_{i, j, 2}^{1,1}
 \end{array}\right] ^\top
 $$<p>且有 $i' = i - \frac{W}{2}$ 且 $j' = j - \frac{H}{2}$。</p><h4 id=143-相对位置姿估计>1.4.3. 相对位置姿估计</h4><p>相对位姿估计可以通过多种方式实现。一种方法是如上述进行二维匹配并恢复内参，然后估计基础矩阵并恢复相对位姿。或者可以直接比较点图 $X^{1,1} \leftrightarrow X^{1,2}$ 以得到相对位姿 $P^{*}=[R^{*} | t^{*}]$ ：</p>$$
 R^{*}, t^{*}=\underset{\sigma, R, t}{\arg\min} \sum_{i} C_{i}^{1,1} C_{i}^{1,2}\left\| \sigma\left(R X_{i}^{1,1}+t\right)-X_{i}^{1,2}\right\| ^{2},
-$$<p>这可以通过解析解得到。但是解析解对对噪声和外点十分敏感。可以考虑使用 RANSAC 求解。</p><h2 id=2-mast3r>2. MASt3R</h2><p><img src=images/MASt3RPipline.png alt="MASt3R pipline"></p><p>MASt3R 和 DUSt3R 其实没有特别大的区别，事实上，MASt3R 和 DUSt3R 甚至没有太多新的代码。和 DUSt3R 相比，其主要增强了输入照片之间的特征匹配能力。具体而言，MASt3R 的 Encoder 和 Decoder 与 DUSt3R 是完全相同的，主要区别在于增加了一个预测头，用于预测出稠密的，逐像素的特征描述子 $F \in R^{W \times H \times d}$，其中 $d$ 是特征描述子的维度。</p><p>应为网络结构和三维结构预测头和 DUSt3R 是完全相同的，我们暂且不论，主要关注于 Local Feather Predicting Head 的训结构和训练。MASt3R 论文中提到，直接通过 DUSt3R 到的对应关系相当不精确，导致精度不够理想。其原因如下：</p><ol><li>回归本质上会受到噪声的影响</li><li>因为 DUSt3R 从未经过专门针对匹配的显式训练。</li></ol><h3 id=21-匹配头>2.1. 匹配头</h3><p>匹配头。出于这些原因，我们提议添加第二个头，它输出两个维度为 $d$的密集特征图 $D^{1}$和 $D^{2}$， $D^{1},D^{2}\in \mathbb{R}^{H ×W ×d}$：</p>$$
+$$<p>这可以通过解析解得到。但是解析解对对噪声和外点十分敏感。可以考虑使用 RANSAC 求解。</p><h2 id=2-mast3r>2. MASt3R</h2><p><img src=Images/MASt3RPipline.png alt="MASt3R pipline"></p><p>MASt3R 和 DUSt3R 其实没有特别大的区别，事实上，MASt3R 和 DUSt3R 甚至没有太多新的代码。和 DUSt3R 相比，其主要增强了输入照片之间的特征匹配能力。具体而言，MASt3R 的 Encoder 和 Decoder 与 DUSt3R 是完全相同的，主要区别在于增加了一个预测头，用于预测出稠密的，逐像素的特征描述子 $F \in R^{W \times H \times d}$，其中 $d$ 是特征描述子的维度。</p><p>应为网络结构和三维结构预测头和 DUSt3R 是完全相同的，我们暂且不论，主要关注于 Local Feather Predicting Head 的训结构和训练。MASt3R 论文中提到，直接通过 DUSt3R 到的对应关系相当不精确，导致精度不够理想。其原因如下：</p><ol><li>回归本质上会受到噪声的影响</li><li>因为 DUSt3R 从未经过专门针对匹配的显式训练。</li></ol><h3 id=21-匹配头>2.1. 匹配头</h3><p>匹配头。出于这些原因，我们提议添加第二个头，它输出两个维度为 $d$的密集特征图 $D^{1}$和 $D^{2}$， $D^{1},D^{2}\in \mathbb{R}^{H ×W ×d}$：</p>$$
 \begin{aligned}
 D^{1} &= Head_{desc }^{1}\left(\left[H^{1}, H^{\prime 1}\right]\right)\\
 D^{2} &= Head_{desc }^{2}\left(\left[H^{2}, H^{\prime 2}\right]\right)
@@ -80,12 +80,12 @@ $$<p>但是问题在于，我们目前面对的是一个稠密匹配问题。如
 U^{t} \stackrel{}{\longrightarrow}\left[NN_{2}\left(D_{u}^{1}\right)\right]_{u \in U^{t}} = V^{t}\\
 V^{t} \stackrel{}{\longrightarrow}\left[NN_{1}\left(D_{v}^{2}\right)\right]_{v \in V^{t}} = U^{t + 1}
 \end{array}
-$$<ol start=4><li>对比 $U^{0}=\{U_{n}^{0}\}_{n = 1}^{k}$ 和 $U^{1}=\{U_{n}^{1}\}_{n = 1}^{k}$。我们认为满足 $M_{k}^{t}=\{(U_{n}^{t}, V_{n}^{t}) | U_{n}^{t}=U_{n}^{t + 1}\}$ 的点已经完成匹配，会将这些点过滤掉。再进行下一轮循环。</li></ol><p><img src=images/FastMatching.png alt="alt text"></p><p><img src=images/MASt3R%20Matching.png alt="alt text"></p><p>如上图所示，实质上，对于初试选择的 $k$ 个点，很快的会辗转的匹配，直到完全匹配。</p><h3 id=24-从粗到细的匹配>2.4. 从粗到细的匹配</h3><p>事实上，自从 Transformer 提出的那一天开始，就因其长序列输入时的时间复杂度而被诟病。例如对于一个分辨率为 $(H, W)$ 的图像输入而言，如果将其划分为 $m$ 个 ViT 的图片序列，其时间复杂度为 $m^2$。因此 MASt3R 目前仅能处理最大为 512 像素的图像。事实上，高分辨率的图片往往首先需要降采样到 MASt3R 所能接受的最大水平，并将推理的结果上采样到原始分辨率。但是往往会导致性能损失和重建质量大幅下降。MASt3R 使用了从粗到细的匹配方法来解决这个问题。具体思路如下：</p><ol><li>对两张照片的降采样版本进行匹配。我们将子采样 $k$ 得到的粗匹配的对应关系记作 $M_{k}^{0}$</li><li>接下来在每幅全分辨率图像上独立生成一组有重叠的裁剪窗口 $W \in \mathbb{R}^{w×4}$。每个窗口都有 $512$ 像素，且重叠率为 $50\%$</li><li>枚举所有可能的窗口对 $(w_1, w_2) \in (W \times W)$。之后选择一个覆盖粗匹配 $M_{k}^{0}$ 的子匹配</li><li>具体来说，我们以贪心的方式逐个添加窗口对，直到覆盖90%的对应关系。最后，我们对每个窗口对独立进行匹配：</li></ol>$$
+$$<ol start=4><li>对比 $U^{0}=\{U_{n}^{0}\}_{n = 1}^{k}$ 和 $U^{1}=\{U_{n}^{1}\}_{n = 1}^{k}$。我们认为满足 $M_{k}^{t}=\{(U_{n}^{t}, V_{n}^{t}) | U_{n}^{t}=U_{n}^{t + 1}\}$ 的点已经完成匹配，会将这些点过滤掉。再进行下一轮循环。</li></ol><p><img src=Images/FastMatching.png alt="alt text"></p><p><img src=Images/MASt3R%20Matching.png alt="alt text"></p><p>如上图所示，实质上，对于初试选择的 $k$ 个点，很快的会辗转的匹配，直到完全匹配。</p><h3 id=24-从粗到细的匹配>2.4. 从粗到细的匹配</h3><p>事实上，自从 Transformer 提出的那一天开始，就因其长序列输入时的时间复杂度而被诟病。例如对于一个分辨率为 $(H, W)$ 的图像输入而言，如果将其划分为 $m$ 个 ViT 的图片序列，其时间复杂度为 $m^2$。因此 MASt3R 目前仅能处理最大为 512 像素的图像。事实上，高分辨率的图片往往首先需要降采样到 MASt3R 所能接受的最大水平，并将推理的结果上采样到原始分辨率。但是往往会导致性能损失和重建质量大幅下降。MASt3R 使用了从粗到细的匹配方法来解决这个问题。具体思路如下：</p><ol><li>对两张照片的降采样版本进行匹配。我们将子采样 $k$ 得到的粗匹配的对应关系记作 $M_{k}^{0}$</li><li>接下来在每幅全分辨率图像上独立生成一组有重叠的裁剪窗口 $W \in \mathbb{R}^{w×4}$。每个窗口都有 $512$ 像素，且重叠率为 $50\%$</li><li>枚举所有可能的窗口对 $(w_1, w_2) \in (W \times W)$。之后选择一个覆盖粗匹配 $M_{k}^{0}$ 的子匹配</li><li>具体来说，我们以贪心的方式逐个添加窗口对，直到覆盖90%的对应关系。最后，我们对每个窗口对独立进行匹配：</li></ol>$$
 \begin{aligned}
 D^{\omega_{1}}, D^{\omega_{2}} &= \text{MASt3R}\left(I_{w_{1}}^{1}, I_{w_{2}}^{2}\right)\\
 \mathcal{M}_{k}^{w_{1}, w_{2}} &= \text{Fast\_Reciprocal\_Match} \left(D^{w_{1}}, D^{w_{2}}\right)
 \end{aligned}
-$$<p><img src=images/MASt3R%20result.png alt="alt text"></p><p><img src=images/MASt3R%20result2.png alt="alt text"></p><h2 id=reference>Reference</h2><p>@inproceedings{dust3r_cvpr24,
+$$<p><img src=Images/MASt3R%20result.png alt="alt text"></p><p><img src=Images/MASt3R%20result2.png alt="alt text"></p><h2 id=reference>Reference</h2><p>@inproceedings{dust3r_cvpr24,
 title={DUSt3R: Geometric 3D Vision Made Easy},
 author={Shuzhe Wang and Vincent Leroy and Yohann Cabon and Boris Chidlovskii and Jerome Revaud},
 booktitle = {CVPR},
