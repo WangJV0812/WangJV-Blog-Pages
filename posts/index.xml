@@ -189,7 +189,72 @@ $$
  \text{过程噪声} &amp; x_k \sim \mathcal G (x \mid 0, Q_k) \\
  \text{观测噪声} &amp; \omega_k \sim \mathcal G (x \mid 0, R_k)
 \end{array}
-$$&lt;p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p></description></item><item><title>Mathematics_In_3DGS_1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/06/mathematics_in_3dgs_1/</link><pubDate>Sat, 01 Jun 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/06/mathematics_in_3dgs_1/</guid><description>&lt;ul>
+$$&lt;p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p></description></item><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;ul>
+&lt;li>&lt;a href="#1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#2-%E6%A6%82%E8%BF%B0%E5%92%8C%E8%83%8C%E6%99%AF">2. 概述和背景&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#21-%E8%83%8C%E6%99%AF">2.1. 背景&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#3-3dgaussian-%E7%9A%84%E7%BB%93%E6%9E%84%E5%8C%96-hierarchy-%E7%9A%84%E7%BB%86%E8%8A%82%E5%B1%82%E6%AC%A1-lod">3. 3DGaussian 的结构化 (hierarchy) 的细节层次 (LOD)&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#31-%E7%94%9F%E6%88%90%E4%B8%8D%E5%90%8C%E5%88%86%E8%BE%A8%E7%8E%87%E7%9A%84%E9%AB%98%E6%96%AF%E7%90%83">3.1. 生成不同分辨率的高斯球&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#32-%E5%B1%82%E6%AC%A1%E5%88%87%E5%89%B2%E9%80%89%E6%8B%A9%E5%92%8C%E6%B0%B4%E5%B9%B3%E5%88%87%E6%8D%A2">3.2. 层次切割选择和水平切换&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#4-%E4%BC%98%E5%8C%96%E5%92%8C%E7%BB%93%E6%9E%84%E5%B1%82%E6%AC%A1%E5%8E%8B%E7%BC%A9">4. 优化和结构层次压缩&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#41-%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84%E7%9A%84%E4%BC%98%E5%8C%96">4.1. 层次结构的优化&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#42-%E7%BB%93%E6%9E%84%E5%B1%82%E6%AC%A1%E5%8E%8B%E7%BC%A9">4.2. 结构层次压缩&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#5-%E5%A4%A7%E5%9C%BA%E6%99%AF%E8%AE%AD%E7%BB%83">5. 大场景训练&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#51-%E7%B2%97%E5%88%9D%E5%A7%8B%E5%8C%96%E5%92%8C%E5%9D%97%E7%BB%86%E5%88%86">5.1. 粗初始化和块细分&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#52-%E5%9D%97%E5%B0%BA%E5%BA%A6%E7%9A%84%E8%AE%AD%E7%BB%83">5.2. 块尺度的训练&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#53-%E5%9D%97%E6%95%B4%E5%90%88%E5%92%8C%E6%B8%B2%E6%9F%93">5.3. 块整合和渲染&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#6-%E9%99%84%E5%BD%95">6. 附录&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#61-%E5%A6%82%E4%BD%95%E9%99%8D%E4%BD%8E%E9%AB%98%E6%96%AF%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%A4%8D%E6%9D%82%E5%BA%A6">6.1. 如何降低高斯混合模型的复杂度&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#%E5%8F%82%E8%80%83">参考&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/h2>
+&lt;p>3D Gaussian Splatting 面临着一个几乎看起来无法规避的问题，就是我们需要给每个高斯函数分配一定的存储空间，并在训练时对其优化；并且在训练和渲染时需要同时将所有的高斯函数加载到设备的现存中，这导致训练和渲染在计算上是十分昂贵的。这导致我们总是要在渲染、重建质量和速度之间作出权衡，甚至很多时候是没办法训练的。这制约了 Splatting 在大场景的工作（例如城市级）上的应用。&lt;/p>
+&lt;p>那么一个很显然的想法，就是在较远时提供一个较低的分辨率，实现一个分层级的渲染和训练，并且只加载视角可见的部分。那么需要的方法有两点：&lt;/p>
+&lt;ol>
+&lt;li>引入结构层次（Hierarchy），使用一种高效细节级别解决方案（Level of Detial）。&lt;/li>
+&lt;li>引入分置策略（divide-and-conquer），让我们可以在独立的训练和渲染每一个小块。&lt;/li>
+&lt;/ol>
+&lt;p>同时，通过不同层级的结构（Guassian Function）可以用来优化中间层的高斯函数。这篇文章所提出的策略可以实时的渲染非常大的场景，覆盖长达几公里的轨迹，持续长达一小时。&lt;/p>
+&lt;p>
+ &lt;img src="./images/db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434.png" alt="db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434">
+
+&lt;/p>
+&lt;h2 id="2-概述和背景">2. 概述和背景&lt;/h2>
+&lt;h3 id="21-背景">2.1. 背景&lt;/h3>
+&lt;p>3DGS 提供了一种基于体积基元的空间场景表达方法，每个体积基元含有如下特征：&lt;/p>
+&lt;ol>
+&lt;li>位置（或者说均值$\mu$）&lt;/li>
+&lt;li>协方差矩阵$\Sigma$&lt;/li>
+&lt;li>透明度（$o$）&lt;/li>
+&lt;li>球谐系数（$SH$）用于表达与视角相关的颜色，或者直接使用颜色&lt;/li>
+&lt;/ol>
+&lt;p>三维基元可以投影到二维屏幕空间上，并且通过 $\alpha\text{-blander}$ 来实现光栅化。 $\alpha\text{-blander}$ 的权重为：
+&lt;/p>
+$$
+\begin{aligned}
+\alpha &amp;= \text{oG}\\
+G(x,y) &amp;= \exp 
+\left\{
+-\frac 12 ([x,y]^T-\mu')^T\Sigma'^{-1}([x,y]^T-\mu')
+\right\}
+\end{aligned}
+$$&lt;p>
+其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p></description></item><item><title>Mathematics_In_3DGS_1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/06/mathematics_in_3dgs_1/</link><pubDate>Sat, 01 Jun 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/06/mathematics_in_3dgs_1/</guid><description>&lt;ul>
 &lt;li>&lt;a href="#1-%E4%BD%93%E6%B8%B2%E6%9F%93">1. 体渲染&lt;/a>
 &lt;ul>
 &lt;li>&lt;a href="#11-%E6%B8%B2%E6%9F%93%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90">1.1. 渲染行为分析&lt;/a>
