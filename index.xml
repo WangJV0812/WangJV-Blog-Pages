@@ -21,7 +21,43 @@ p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
 \text{where: } Z(\theta) = \int q(x\mid \theta) dx
 \end{array}
 $$&lt;p>但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）&lt;/p>
-&lt;p>要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。&lt;/p></description></item><item><title>Kalman_filter</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</link><pubDate>Mon, 04 Nov 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</guid><description>&lt;ul>
+&lt;p>要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。&lt;/p></description></item><item><title>DreamFusion</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</link><pubDate>Wed, 18 Dec 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</guid><description>&lt;ul>
+&lt;li>&lt;a href="#1-%E4%BD%BF%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E8%B7%AF%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90">1. 使用神经网路进行数据生成&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#11-%E5%BD%92%E4%B8%80%E5%8C%96%E5%B8%B8%E6%95%B0%E8%BF%91%E4%BC%BC">1.1. 归一化常数近似&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#12-autoregress-module-%E8%87%AA%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B">1.2. Autoregress Module (自回归模型)&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#13-normalizing-flows-%E5%BD%92%E4%B8%80%E5%8C%96%E6%B5%81%E6%A8%A1%E5%9E%8B">1.3. Normalizing Flows (归一化流模型)&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#14-variational-autoencoder%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81">1.4. Variational Autoencoder（变分自编码）&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#15-score-function-based-data-generating">1.5. Score Function Based Data Generating&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#16-langevin-dynamics">1.6. Langevin Dynamics&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#2-diffusion">2. Diffusion&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#21-forward-diffusion-process">2.1. Forward diffusion process&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#22-reverse-diffusion-process">2.2. Reverse diffusion process&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#23-training">2.3. Training&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#3-dreamfusion">3. DreamFusion&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#31-%E5%9F%BA%E6%9C%AC%E5%AE%9E%E7%8E%B0">3.1. 基本实现&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#32-sds-loss%E4%BB%8E-diffusion-module-%E4%B8%AD%E6%8F%90%E5%8F%96%E7%9F%A5%E8%AF%86">3.2. SDS Loss：从 diffusion module 中提取知识&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#4-reference">4. Reference&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#5-append">5. Append&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#51-boltzmann-distribution">5.1. Boltzmann Distribution&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#52-ddpm-%E5%92%8C-score-module-%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB">5.2. DDPM 和 Score Module 之间的关系&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-使用神经网路进行数据生成">1. 使用神经网路进行数据生成&lt;/h2>
+&lt;p>使用神经网络生成一个高维度数据是机器学习中非常重要的一个工作。我们假设数据集 $\left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\}$ 为一个大小为$n$的数据集，该数据集统一的服从一个概率分布 $p_{data}(\boldsymbol{x})$ 。我们假设对数据集的抽样都是独立同分布的，即：&lt;/p>
+$$
+\left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\} \sim p_{data}(\boldsymbol{x})
+$$&lt;p>那么丛现有数据生成新的数据的核心就是使用神经网络学习这个概率分布。不妨假设学习的概率分布为 $\hat p_\theta(\boldsymbol x)$。我们会希望 $\hat p_\theta(\boldsymbol x)$ 尽可能的接近 $p_{data}(\boldsymbol(x))$ 。为了衡量真是分布和我们学习的分布之间的差距，我们需要定义一个距离函数 $D(\cdot \mid \cdot)$ 我们可以定义优化目标：&lt;/p></description></item><item><title>Kalman_filter</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</link><pubDate>Mon, 04 Nov 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</guid><description>&lt;ul>
 &lt;li>&lt;a href="#1-%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E4%BC%B0%E8%AE%A1">1. 最大后验估计&lt;/a>
 &lt;ul>
 &lt;li>&lt;a href="#11-%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0">1.1. 状态估计问题描述&lt;/a>&lt;/li>
