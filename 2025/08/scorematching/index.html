@@ -10,7 +10,7 @@ $$ \begin{array}{c} p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\ \text
 要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。">
   <meta itemprop="datePublished" content="2025-08-06T16:29:40+08:00">
   <meta itemprop="dateModified" content="2025-08-06T16:29:40+08:00">
-  <meta itemprop="wordCount" content="837"><meta property="og:url" content="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">
+  <meta itemprop="wordCount" content="836"><meta property="og:url" content="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">
   <meta property="og:site_name" content="WangJV Blog">
   <meta property="og:title" content="ScoreMatching">
   <meta property="og:description" content="1. 为什么要用 Score Matching 2. Score Function 2.1. Langevin Dynamics 3. Score Matching 4. 讨论 4.1. 哈钦森迹估计 (Hutchinson’s Trace Estimation) reference 1. 为什么要用 Score Matching 很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：
@@ -148,7 +148,7 @@ x_{i+1} = x_i + \epsilon \nabla_{\boldsymbol{x}} \log p(\boldsymbol{x}) + \sqrt{
 \end{array}
 $$<p>其中 $\boldsymbol{z_i} \sim \mathcal N(0, I)$，$\epsilon \to 0$, $K\to \infty$。实际上这个行为类似与数值微分方程的求解，后面的高斯分布项可以有效的避免陷入局部最优。事实上只要这个过程足够，误差几乎可以忽略。</p>
 <p>
-  <img src="Images/langevin_dynamics.gif" alt="Langevin Dynamics">
+  <img src="https://wangjv0812.github.io/WangJV-Blog-Pages/posts/Images/langevin_dynamics.gif" alt="Langevin Dynamics">
 
 </p>
 <h2 id="3-score-matching">3. Score Matching</h2>
@@ -218,22 +218,15 @@ $$<p>问题已经解决了，但是结论还不够好看。不妨注意力集中
 $$
 \sum_{i=1}^{n} \frac{\partial^2 \log p(\xi, \theta)}{\partial \xi_i^2} = \text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right)
 $$<p>结论可以写成一个更简洁优雅的形式：</p>
-<p>$$
-\begin{aligned}<br>
+$$
+\begin{aligned}  
 J(\theta)
-&amp;= \text{E}<em>{\xi \sim p_X(\xi)}\left[
-\text{tr} \left(\nabla^2</em>\xi \log p(\xi, \theta)\right)</p>
-<ul>
-<li>\frac 1 2\left| \nabla_\xi  \log p(\xi, \theta)\right|^2
-\right] \
-&amp;= \text{E}<em>{\xi \sim p_X(\xi)}\left[
-\text{tr} \left(\nabla</em>\xi \psi(\xi, \theta)\right)</li>
-<li>\frac 1 2\left| \psi(\xi, \theta)\right |^2
-\right] \
+&= \text{E}_{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right) + \frac 1 2\left\| \nabla_\xi  \log p(\xi, \theta)\right\|^2\right] \\
+&= \text{E}_{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right) + \frac 1 2\left\| \psi(\xi, \theta)\right \|^2\right] \\
 \end{aligned}
-$$</li>
-</ul>
-<h2 id="4-讨论">4. 讨论</h2>
+$$<h2 id="4-讨论">4. 讨论</h2>
 <p>我们在这里只希望讨论一下在编程实践中可能遇到的问题。对于一个有 $m$ 个数据的原始分布，我嘛可以认为是对原始分布所在的流形上采样出了 $m$ 个数据点。为了描述方便，不妨将这些采样记作 $X_1, X_2, \cdots, X_{m}$。那么 Score Matching 的目标函数可以写作：</p>
 $$
 \check{J}(\theta) = \frac{1}{m} \sum_{j=1}^{m} \sum_{i=1}^{n} \left[
