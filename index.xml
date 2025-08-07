@@ -1,4 +1,41 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link><description>Recent content on WangJV Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Wed, 06 Aug 2025 17:13:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/index.xml" rel="self" type="application/rss+xml"/><item><title>Mathematics_In_3DGS_1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/mathematics_in_3dgs_1/</link><pubDate>Wed, 06 Aug 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/mathematics_in_3dgs_1/</guid><description>&lt;ul>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link><description>Recent content on WangJV Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Thu, 07 Aug 2025 16:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/index.xml" rel="self" type="application/rss+xml"/><item><title>Kalman_filter</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/kalman_filter/</link><pubDate>Thu, 07 Aug 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/kalman_filter/</guid><description>&lt;ul>
+&lt;li>&lt;a href="#1-%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E4%BC%B0%E8%AE%A1">1. 最大后验估计&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#11-%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0">1.1. 状态估计问题描述&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#12-%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E4%BC%B0%E8%AE%A1">1.2. 最大后验估计&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#2-%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2">2. 卡尔曼滤波&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#21-%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E6%96%AD%E6%8E%A8%E5%AF%BC-kalman-filter">2.1. 贝叶斯推断推导 kalman filter&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#22-%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E8%81%94%E5%90%88%E9%AB%98%E6%96%AF%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E7%9A%84%E5%88%86%E8%A7%A3%E6%8E%A8%E6%96%AD">2.2. 数学基础：联合高斯概率分布的分解（推断）&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#3-extended-kalman-filterekf">3. Extended Kalman Filter（EKF）&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#31-%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83%E7%9A%84%E9%9D%9E%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2%E7%BA%BF%E6%80%A7%E5%8C%96%E6%96%B9%E6%B3%95">3.1. 高斯分布的非线性变换（线性化方法）&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#32-extended-kalman-filter">3.2. Extended Kalman Filter&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#4-error-state-kalman-filtereskf">4. Error State Kalman Filter（ESKF）&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。&lt;/p>
+&lt;h2 id="1-最大后验估计">1. 最大后验估计&lt;/h2>
+&lt;h3 id="11-状态估计问题描述">1.1. 状态估计问题描述&lt;/h3>
+&lt;p>我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：&lt;/p>
+$$
+\begin{array}{l}
+ x_k = A_{k-1}x_{k-1} + v_k + \omega_k\\
+ y_k = Cx_k + n_k
+\end{array}
+$$&lt;p>其中，有：&lt;/p>
+$$
+\begin{array}{ll}
+ \text{初始噪声} &amp; x_0 \sim \mathcal G (x \mid 0, P_0) \\
+ \text{过程噪声} &amp; x_k \sim \mathcal G (x \mid 0, Q_k) \\
+ \text{观测噪声} &amp; \omega_k \sim \mathcal G (x \mid 0, R_k)
+\end{array}
+$$&lt;p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p></description></item><item><title>Mathematics_In_3DGS_1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/mathematics_in_3dgs_1/</link><pubDate>Wed, 06 Aug 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/mathematics_in_3dgs_1/</guid><description>&lt;ul>
 &lt;li>&lt;a href="#1-%E4%BD%93%E6%B8%B2%E6%9F%93">1. 体渲染&lt;/a>
 &lt;ul>
 &lt;li>&lt;a href="#11-%E6%B8%B2%E6%9F%93%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90">1.1. 渲染行为分析&lt;/a>

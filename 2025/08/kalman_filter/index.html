@@ -1,0 +1,344 @@
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Kalman_filter - WangJV Blog</title><meta name=viewport content="width=device-width,initial-scale=1"><meta itemprop=name content="Kalman_filter"><meta itemprop=description content="1. 最大后验估计 1.1. 状态估计问题描述 1.2. 最大后验估计 2. 卡尔曼滤波 2.1. 贝叶斯推断推导 kalman filter 2.2. 数学基础：联合高斯概率分布的分解（推断） 3. Extended Kalman Filter（EKF） 3.1. 高斯分布的非线性变换（线性化方法） 3.2. Extended Kalman Filter 4. Error State Kalman Filter（ESKF） ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。
+1. 最大后验估计 1.1. 状态估计问题描述 我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：
+$$ \begin{array}{l} x_k = A_{k-1}x_{k-1} + v_k + \omega_k\\ y_k = Cx_k + n_k \end{array} $$其中，有：
+$$ \begin{array}{ll} \text{初始噪声} & x_0 \sim \mathcal G (x \mid 0, P_0) \\ \text{过程噪声} & x_k \sim \mathcal G (x \mid 0, Q_k) \\ \text{观测噪声} & \omega_k \sim \mathcal G (x \mid 0, R_k) \end{array} $$我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。"><meta itemprop=datePublished content="2025-08-07T16:40:25+08:00"><meta itemprop=dateModified content="2025-08-07T16:40:25+08:00"><meta itemprop=wordCount content="1753"><meta property="og:url" content="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/kalman_filter/"><meta property="og:site_name" content="WangJV Blog"><meta property="og:title" content="Kalman_filter"><meta property="og:description" content="1. 最大后验估计 1.1. 状态估计问题描述 1.2. 最大后验估计 2. 卡尔曼滤波 2.1. 贝叶斯推断推导 kalman filter 2.2. 数学基础：联合高斯概率分布的分解（推断） 3. Extended Kalman Filter（EKF） 3.1. 高斯分布的非线性变换（线性化方法） 3.2. Extended Kalman Filter 4. Error State Kalman Filter（ESKF） ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。
+1. 最大后验估计 1.1. 状态估计问题描述 我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：
+$$ \begin{array}{l} x_k = A_{k-1}x_{k-1} + v_k + \omega_k\\ y_k = Cx_k + n_k \end{array} $$其中，有：
+$$ \begin{array}{ll} \text{初始噪声} & x_0 \sim \mathcal G (x \mid 0, P_0) \\ \text{过程噪声} & x_k \sim \mathcal G (x \mid 0, Q_k) \\ \text{观测噪声} & \omega_k \sim \mathcal G (x \mid 0, R_k) \end{array} $$我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。"><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-08-07T16:40:25+08:00"><meta property="article:modified_time" content="2025-08-07T16:40:25+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Kalman_filter"><meta name=twitter:description content="1. 最大后验估计 1.1. 状态估计问题描述 1.2. 最大后验估计 2. 卡尔曼滤波 2.1. 贝叶斯推断推导 kalman filter 2.2. 数学基础：联合高斯概率分布的分解（推断） 3. Extended Kalman Filter（EKF） 3.1. 高斯分布的非线性变换（线性化方法） 3.2. Extended Kalman Filter 4. Error State Kalman Filter（ESKF） ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。
+1. 最大后验估计 1.1. 状态估计问题描述 我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：
+$$ \begin{array}{l} x_k = A_{k-1}x_{k-1} + v_k + \omega_k\\ y_k = Cx_k + n_k \end{array} $$其中，有：
+$$ \begin{array}{ll} \text{初始噪声} & x_0 \sim \mathcal G (x \mid 0, P_0) \\ \text{过程噪声} & x_k \sim \mathcal G (x \mid 0, Q_k) \\ \text{观测噪声} & \omega_k \sim \mathcal G (x \mid 0, R_k) \end{array} $$我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。"><link rel=stylesheet type=text/css media=screen href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/main.css><link id=dark-scheme rel=stylesheet type=text/css href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/dark.css><script src=https://wangjv0812.github.io/WangJV-Blog-Pages/js/main.js></script></head><body><div class="container wrapper"><div class=header><h1 class=site-title><a href=https://wangjv0812.github.io/WangJV-Blog-Pages/>WangJV Blog</a></h1><div class=site-description><nav class="nav social"><ul class=flat></ul></nav></div><nav class=nav><ul class=flat></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>07</span>
+<span class=rest>Aug 2025</span></div></div><div class=matter><h1 class=title>Kalman_filter</h1></div></div><ul><li><a href=#1-%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E4%BC%B0%E8%AE%A1>1. 最大后验估计</a><ul><li><a href=#11-%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0>1.1. 状态估计问题描述</a></li><li><a href=#12-%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E4%BC%B0%E8%AE%A1>1.2. 最大后验估计</a></li></ul></li><li><a href=#2-%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2>2. 卡尔曼滤波</a><ul><li><a href=#21-%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E6%96%AD%E6%8E%A8%E5%AF%BC-kalman-filter>2.1. 贝叶斯推断推导 kalman filter</a></li><li><a href=#22-%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E8%81%94%E5%90%88%E9%AB%98%E6%96%AF%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E7%9A%84%E5%88%86%E8%A7%A3%E6%8E%A8%E6%96%AD>2.2. 数学基础：联合高斯概率分布的分解（推断）</a></li></ul></li><li><a href=#3-extended-kalman-filterekf>3. Extended Kalman Filter（EKF）</a><ul><li><a href=#31-%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83%E7%9A%84%E9%9D%9E%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2%E7%BA%BF%E6%80%A7%E5%8C%96%E6%96%B9%E6%B3%95>3.1. 高斯分布的非线性变换（线性化方法）</a></li><li><a href=#32-extended-kalman-filter>3.2. Extended Kalman Filter</a></li></ul></li><li><a href=#4-error-state-kalman-filtereskf>4. Error State Kalman Filter（ESKF）</a></li></ul><p>ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。</p><h2 id=1-最大后验估计>1. 最大后验估计</h2><h3 id=11-状态估计问题描述>1.1. 状态估计问题描述</h3><p>我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：</p>$$
+\begin{array}{l}
+x_k = A_{k-1}x_{k-1} + v_k + \omega_k\\
+y_k = Cx_k + n_k
+\end{array}
+$$<p>其中，有：</p>$$
+\begin{array}{ll}
+\text{初始噪声} & x_0 \sim \mathcal G (x \mid 0, P_0) \\
+\text{过程噪声} & x_k \sim \mathcal G (x \mid 0, Q_k) \\
+\text{观测噪声} & \omega_k \sim \mathcal G (x \mid 0, R_k)
+\end{array}
+$$<p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。</p><h3 id=12-最大后验估计>1.2. 最大后验估计</h3><p>最大后验估计需要完成如下一个优化问题：</p>$$
+\hat x = \arg \max_{x} p(x \mid y, v)
+$$<p>对于上面这个问题，通过贝叶斯定理，可以变形得：</p>$$
+\begin{aligned}
+p(x\mid y, v)
+&= \frac{p(x, y, v) p(x, v) p(v)}{p(y, v) p(x,v) p(v)}\\
+&= \frac{p(y\mid x, v) p(x \mid v)}{p(y \mid v)}
+\end{aligned}
+$$<p>显然，$y$ 与 $v$ 无关，那么有：$p(y\mid x, v) = p(y\mid x)$；$p(y \mid v)$ 与优化目标无关，可以忽略。那么优化目标可以整理出：</p>$$
+\hat x = p(y \mid x)p(x \mid v)
+$$<p>我们有假设，每次观测之间相互独立，那么应该有：</p>$$
+p(y \mid x) = \prod_{k=0}^{K} p(y_k \mid x_k)
+$$<p>此外，通过贝叶斯定理，我们有，我们可以分解 $p(x \mid v)$ 为：</p>$$
+p(x \mid v) = p(x_0 \mid \check x_0)\prod_{k=1}^{K} p(x_k \mid x_{k-1}, v_k)
+$$<p>我们展开上面的高斯分布的形式：</p>$$
+\begin{array}{c}
+p(x_0 \mid \check x_0) = \frac{1}{\sqrt{(2\pi)^2 \det P_0}} \exp \left( -\frac{1}{2} (x_0 - \check x_0)^T P_0^{-1} (x_0 - \check x_0) \right)\\
+p(x_k \mid x_{k-1}, v_k) = \frac{1}{\sqrt{(2\pi)^2 \det Q_k}} \exp \left( -\frac{1}{2} (x_k - A_{k-1}x_{k-1} - v_k)^T Q_k^{-1} (x_k - A_{k-1}x_{k-1} - v_k) \right)\\
+p(y_k \mid x_k) = \frac{1}{\sqrt{(2\pi)^2 \det R_k}} \exp \left( -\frac{1}{2} (y_k - C_k x_k)^T R_k^{-1} (y_k - C_k x_k) \right)
+\end{array}
+$$<p>我们这里停一下，思考 $p(x_k \mid x_{k-1}, v_k)$ 的具体形式，不妨做如下变形：</p>$$
+\begin{aligned}
+p(x_k \mid x_{k-1}, v_k) &= \frac{1}{\sqrt{(2\pi)^2 \det Q_k}} \exp \left( -\frac{1}{2} (x_k - A_{k-1}x_{k-1} - v_k)^T Q_k^{-1} (x_k - A_{k-1}x_{k-1} - v_k) \right)\\
+&= \frac{1}{\sqrt{(2\pi)^2 \det Q_k}} \exp \left( -\frac{1}{2} (v_k - (x_k - A_{k-1}x_{k-1}))^T Q_k^{-1} (v_k - (x_k - A_{k-1}x_{k-1})) \right)\\
+&= \mathcal G(v_k \mid x_k - A_{k-1}x_{k-1}, Q_k)
+\end{aligned}
+$$<p>可以看到，过程协方差矩阵 $Q_k$ 可以理解为通过状态评估系统输入的协方差矩阵，这个形式有助于理解后面协方差提升形式有很大意义。我们对上面的优化目标取 $\ln$，并忽略常数项有：</p>$$
+\begin{aligned}
+J(x)
+=& \frac{1}{2} \sum_{k=0}^{K} (y_k - C_k x_k)^T R_k^{-1} (y_k - C_k x_k)\\
+&+ \frac{1}{2} \sum_{k=1}^{K} (v_k - (x_k - A_{k-1}x_{k-1}))^T Q_k^{-1} (v_k - (x_k - A_{k-1}x_{k-1}))\\
+&+ \frac{1}{2} (x_0 - \check x_0)^T P_0^{-1} (x_0 - \check x_0)
+\end{aligned}
+$$<p>此时的优化目标转化为求上式的最大值。但是直接计算上面的加法优化形式并不清晰，我们不妨将待估计的状态 $x_{1:k}$ 和 已知的变量 $y_{0:k}$ 和 $v_{1:k}$ 分开堆叠起来，那么有：</p>$$
+\begin{array}{c}
+x = \begin{bmatrix} x_1 & x_2 & \cdots & x_K \end{bmatrix}^T\\
+z = \begin{bmatrix} x_0 \mid & v_1& v_2& \cdots & v_k \mid & y_0& y_1& \cdots & y_k \end{bmatrix}^T
+\end{array}
+$$<p>类似的，我们还需要将状态转移矩阵 $A$ 和 观测矩阵 $C$ 堆叠起来。需要注意，这里的堆叠主要是系统将状态 $x$ 映射到系统输出 $y$ 和系统输入 $v$。</p>$$
+H = \begin{bmatrix}
+I& & & \\
+-A_0& I& & \\
+& \ddots & \ddots & \\
+& & -A_{K-1} & I\\ \hline
+C_0& & & \\
+& C_1& & \\
+& & \ddots & \\
+& & & C_K\\
+\end{bmatrix}^T\\
+$$<p>显然 $Hx$ 将 $x$ 映射到 $\check z$ 上，但是此时的 $\check z$ 是通过 $x$ 计算得到的，与真实的 $z$ 会存在残差从而可以驱动优化。此外我们还需要堆叠协方差：</p>$$
+W = \begin{bmatrix}
+P_0& & & \\
+& Q_1& & \\
+& & \ddots & \\
+& & & Q_K\\ \hline
+& & & & R_0& & &\\
+& & & & & R_1& & \\
+& & & & & & \ddots & \\
+& & & & & & & R_K\\
+\end{bmatrix}
+$$<p>此时前面对对 $p(x\mid v)$ 的变形起了作用。事实上矩阵 $H$ 描述了你通过状态估计已知参数 $z$ 的置信度。那么有：</p>$$
+p(z \mid x) = \mathcal G(z \mid Hx, W)
+$$<p>我们对上式求导，有：</p>$$
+\begin{array}{c}
+\frac{\partial p(z \mid x)}{\partial x} = -H^TW^{-1}(z - Hx) = 0\\
+(H^TW^{-1}H)\hat x = H^TW^{-1}z
+\end{array}
+$$<p>解决上面这个问题，可以通过直接求 $(H^TW^{-1}H)$ 的彭罗斯逆。但是事实上矩阵 $H^TW^{-1}H$ 是稀疏的，会有更简单的解法叫<strong>Cholesky 平滑算法</strong>，但是这与这篇文章的主题无关。</p><p>读者看到上面这个形式时可能会说，这在数学上很严谨，但是它一点都不概率！这里有一个更&rsquo;物理&rsquo;的解释：</p><ol><li>$W$ 描述了已知信息的置信程度</li><li>$(H^TW^{-1}H)^T$ 描述了将已知信息的置信变换到了状态 $x$ 上的置信。</li><li>那么 $(H^TW^{-1}H)\hat x$ 描述了通过通过协方差的信息矩阵对状态 $x$ 的进行的加权。</li><li>$W^{-1}z$ 描述了直接通过协方差的信息矩阵对已知信息的加权。</li><li>$H^TW^{-1}z$ 描述了加权的信息已知信息变换到状态上的结果。</li></ol><p>这个理解是很直观的，事实上方程两边就是同一件事！这也解释了最大后验估计相较于直接求最小二乘解的优势所在：我们通过协方差对已知信息进行了加权，从而使得估计的结果更接近真实值，降低分布过于离谱的观测的影响。</p><h2 id=2-卡尔曼滤波>2. 卡尔曼滤波</h2><p>可以说 MAP 是线性高斯系统下最优的估计方法，但是它有如下几个明显的问题：</p><ul><li>它利用了所有时刻的数据，是离线估计的，无法再现更新</li></ul><p>我们的系统具有马尔可夫性，不妨假设我们已经获得了关于前一时刻的估计 $\hat x_{k-1}$ 和其协方差 $P_{k-1}$。可以直接将 MAP 问题变化为一个从 $k-1$ 时刻开始，到 $k$ 时刻结束的优化问题。此时如果继续使用MAP的方法推导 Kalman Filter 会很复杂，这里将介绍一个更简单的方法：贝叶斯推断。</p><p>如果将 MAP 理解为求解后验概率 $p(x_k \mid y_{1:k}, v_{1:k})$ 概率最大点的状态 $x_k$， 贝叶斯推断则是求解后验概率 $p(x_k \mid y_{1:k}, v_{1:k})$ 的期望。对于线性高斯系统而言，后验概率和贝叶斯估计是等价的。但是对于非线性系统而言就不一定来。</p><p><img src=images/nonlinear_gaussian.png alt=nonlinear_gaussian></p><p>但至少对我们现在所面临的问题而言，它足够好用。</p><h3 id=21-贝叶斯推断推导-kalman-filter>2.1. 贝叶斯推断推导 kalman filter</h3><p>在 k-1 时刻，状态的先验有：</p>$$
+p(x_{k-1} \mid x_0, y_{1:k-1}, v_{1:k-1}) = \mathcal G(x\mid \hat x_{k-1}, P_{k-1})
+$$<p>对于预测，可以写出：</p>$$
+\begin{array}{c}
+p(\check x_{k} \mid x_{k-1}, v_k) = \mathcal G(x\mid \hat x_k, \check P_k)\\
+\end{array}
+$$<p>对于上式中的均值，我们可以按照定义写出：</p>$$
+\begin{aligned}
+\check x_k
+&= E[A_kx_{k-1} + v_k]\\
+&= A_{k-1}E[x_{k-1}] + E[v_k] \\
+&= A_{k-1}\hat x_{k-1} + v_k
+\end{aligned}
+$$<p>对于预测的协方差，有：</p>$$
+\begin{aligned}
+\check P_k
+&= E[(A_{k-1}x_{k-1} + v_k - A_{k-1}\hat x_{k-1} - v_k)(A_{k-1}x_{k-1} + v_k - A_{k-1}\hat x_{k-1} - v_k)^T]\\
+&= E[(A_{k-1}(x_{k-1} - \hat x_{k-1}))(A_{k-1}(x_{k-1} - \hat x_{k-1}))^T] + E[\omega_k\omega_k^T]\\
+&= A_{k-1}E[((x_{k-1} - \hat x_{k-1}))((x_{k-1} - \hat x_{k-1}))^T]A_{k-1}^T + E[\omega_k\omega_k^T]\\
+&= A_{k-1}\hat P_{k-1} A_{k-1}^T + Q_k
+\end{aligned}
+$$<p>ps: 上面的推导中省略了一步，即 $\check x_k$ 与 $\omega_k$ 独立，因此$\check x_k$ 与 $\omega_k$的互相关即交叉项 $E[\check x_k\omega_k^T] = 0$。</p><p>总结上面的推导，有：</p>$$
+\begin{array}{c}
+\check x_k = A_{k-1}\hat x_{k-1} + v_k\\
+\check P_k = A_{k-1}P_{k-1}A_{k-1}^T + Q_k
+\end{array}
+$$<p>我们可以很容易的写出 $x_k, y_k$ 的联合概率分布：</p>$$
+p(x_k, y_k \mid \check x_{k-1}, v_k, y_{1:k-1}) = \mathcal G \left(
+\begin{bmatrix}
+x\\
+y
+\end{bmatrix} \mid \begin{bmatrix}
+\check x_k\\
+C_k\check x_k
+\end{bmatrix}, \begin{bmatrix}
+\check P_k & \check P_kC_k^T\\
+C_k\check P_k& C_k\check P_kC_k^T + R_k
+\end{bmatrix}
+\right)
+$$<h3 id=22-数学基础联合高斯概率分布的分解推断>2.2. 数学基础：联合高斯概率分布的分解（推断）</h3><p>对于一个形如下式的联合高斯概率分布：</p>$$
+p(x, y) = \mathcal G \left(
+\begin{bmatrix}
+x\\
+y
+\end{bmatrix} \mid \begin{bmatrix}
+\mu_x\\
+\mu_y
+\end{bmatrix}, \begin{bmatrix}
+\Sigma_{xx} & \Sigma_{xy}\\
+\Sigma_{yx} & \Sigma_{yy}
+\end{bmatrix}
+\right)
+$$<p>我们有舒尔补（Schur complement）：</p>$$
+\begin{bmatrix}
+\Sigma_{xx} & \Sigma_{xy}\\
+\Sigma_{yx} & \Sigma_{yy}
+\end{bmatrix} = \begin{bmatrix}
+I& \Sigma_{xy}\Sigma_{yy}^{-1}\\
+0 & I
+\end{bmatrix} \begin{bmatrix}
+\Sigma_{xx} -\Sigma_{xy}\Sigma_{yy}^{-1}\Sigma_{yx} & 0\\
+0 & \Sigma_{yy}
+\end{bmatrix} \begin{bmatrix}
+I& 0\\
+\Sigma_{yy}^{-1}\Sigma_{yx} & I
+\end{bmatrix}
+$$<p>对 Schur Complement 求逆，有：</p>$$
+\begin{bmatrix}
+\Sigma_{xx} & \Sigma_{xy}\\
+\Sigma_{yx} & \Sigma_{yy}
+\end{bmatrix}^{-1} =
+\begin{bmatrix}
+I& 0\\
+-\Sigma_{yy}^{-1}\Sigma_{yx} & I
+\end{bmatrix}\begin{bmatrix}
+\Sigma_{xx} -\Sigma_{xy}\Sigma_{yy}^{-1}\Sigma_{yx}^{-1} & 0\\
+0 & \Sigma_{yy}^{-1}
+\end{bmatrix} \begin{bmatrix}
+I& -\Sigma_{xy}\Sigma_{yy}^{-1}\\
+0 & I
+\end{bmatrix}
+$$<p><em>思考：本质上是方阵不好求逆，所以很难解析的把高斯分布的形式分离开，所以用了 Schur Complement。事实上这个方法有时也会带来麻烦。因为分解有 LDU 和 UDL 两种，有时 LUD 分解的结论会更简洁，有时 UDL 会更简洁。这时需要 Sherman-Morrison-Woodbury 等式来帮忙。但是 SMW 等式的形式本身就很复杂。</em></p><p>将逆的形式带入高斯分布的二次型形式中，有：</p>$$
+\begin{aligned}
+&\begin{bmatrix}
+x - \mu_x\\
+y - \mu_y
+\end{bmatrix}^T \begin{bmatrix}
+\Sigma_{xx} & \Sigma_{xy}\\
+\Sigma_{yx} & \Sigma_{yy}
+\end{bmatrix}^{-1} \begin{bmatrix}
+x - \mu_x\\
+y - \mu_y
+\end{bmatrix}\\
+=&\begin{bmatrix}
+x - \mu_x\\
+y - \mu_y
+\end{bmatrix}^T \begin{bmatrix}
+I& 0\\
+-\Sigma_{yy}^{-1}\Sigma_{yx} & I
+\end{bmatrix}\begin{bmatrix}
+\Sigma_{xx} -\Sigma_{xy}\Sigma_{yy}^{-1}\Sigma_{yx}^{-1} & 0\\
+0 & \Sigma_{yy}^{-1}
+\end{bmatrix} \begin{bmatrix}
+I& -\Sigma_{xy}\Sigma_{yy}^{-1}\\
+0 & I
+\end{bmatrix}
+\begin{bmatrix}
+x - \mu_x\\
+y - \mu_y
+\end{bmatrix}\\
+=& (x-\mu_x -\Sigma_{xy}\Sigma_{yy}^{-1}(y-\mu_y))^T(\Sigma_{xx} -\Sigma_{xy}\Sigma_{yy}^{-1}\Sigma_{yx})^{-1}(x-\mu_x -\Sigma_{xy}\Sigma_{yy}^{-1}(y-\mu_y))\\
+&+ (y-\mu_y)^T\Sigma_{yy}^{-1}(y-\mu_y)
+\end{aligned}
+$$<p>我们将这个形式带回高斯函数中，则有：</p>$$
+\begin{aligned}
+p(x, y) &= p(x \mid y)p(y)\\
+p(x \mid y) &= \mathcal G(x \mid \mu_x + \Sigma_{xy}\Sigma_{yy}^{-1}(y-\mu_y), \Sigma_{xx} -\Sigma_{xy}\Sigma_{yy}^{-1}\Sigma_{yx})\\
+p(y) &= \mathcal G(y \mid \mu_y, \Sigma_{yy})
+\end{aligned}
+$$<p>不难发现，观测 $y$ 对 $\mu_x$ 进行了修正，同时协方差缩小了一些。那么问题就解决了，观测的后验概率可以写为：</p>$$
+\begin{aligned}
+p(x_k \mid y_{1:k}, v_{1:k}) = \mathcal G\left(\begin{array}{l}x_k \mid
+\check P_kC_k^T(C_k\check P_kC_k^T + R_k)^{-1}(y_k - C_k\check x_k) + \check x_k,\\
+\check P_k - \check P_kC_k^T(C_k\check P_kC_k^T + R_k)^{-1}C_k\check P_k
+\end{array}
+\right)
+\end{aligned}
+$$<p>我们令：</p>$$
+K_k = P_kC_k^T(C_k\check P_kC_k^T + R_k)^{-1}
+$$<p>即为著名的卡尔曼增益，可以总结出经典的 kalman filter 的步骤：</p>$$
+\begin{array}{ll}
+\text{预测：} & \check x_k = A_{k-1}\hat x_{k-1} + v_k\\
+\text{预测协方差：} & \check P_k = A_{k-1}P_{k-1}A_{k-1}^T + Q_k\\
+\text{卡尔曼增益：} & K_k = P_kC_k^T(C_k\check P_kC_k^T + R_k)^{-1}\\
+\text{更新协方差：} & P_k = (1-K_kC_k)\check P_k\\
+\text{更新：} & \hat x_k = \check x_k + K_k(y_k - C_k\check x_k)\\
+\end{array}
+$$<h2 id=3-extended-kalman-filterekf>3. Extended Kalman Filter（EKF）</h2><h3 id=31-高斯分布的非线性变换线性化方法>3.1. 高斯分布的非线性变换（线性化方法）</h3><p>我们希望对一个分布做一个非线性变换，事实上就是解决这样一个问题：</p>$$
+\begin{array}{c}
+p(y) = \int p(y \mid x)p(x)dx\\
+p(y \mid x) = \mathcal G(y \mid f(x), R)\\
+p(y) = \mathcal G(x \mid \mu_x, \Sigma_{xx})
+\end{array}
+$$<p>其中 $y=g(x)$ 是一个非线性函数，受到协方差为 $R$ 的高斯分布的影响。对于一个非线性变换 $y=g(x)$，可以做泰勒展开：</p>$$
+\begin{array}{c}
+g(x) = g(\mu_x) + G(x-\mu_x) \\
+G = \left.\frac{\partial\boldsymbol{g}(\boldsymbol{x})}{\partial\boldsymbol{x}}\right|_{\boldsymbol{x}=\boldsymbol{\mu}_x}
+\end{array}
+$$<p>回到上式子，有：</p>$$
+\begin{aligned}
+p(y)
+=& \eta\int \mathcal G(y \mid g(\mu_x) + G(x-\mu_x), R) \mathcal G(x \mid \mu_x, \Sigma_{xx})dx\\
+=& \eta \int \exp\left(-\frac{1}{2}(y-g(\mu_x) - G(x-\mu_x))^T R^{-1}(y-g(\mu_x) - G(x-\mu_x)) -\frac{1}{2}(x-\mu_x)^T \Sigma_{xx}^{-1}(x-\mu_x)\right)dx\\
+=& \eta \exp\left( -\frac{1}{2}(y-\mu_y)^T R^{-1}(y-\mu_y)\right)\\
+&\int \exp\left(
+-\frac{1}{2}(x-\mu_x)^T G^T R^{-1}G(x-\mu_x) + (y-\mu_y) R^{-1}G(x-\mu_x) -\frac{1}{2}(x-\mu_x)^T \Sigma_{xx}^{-1}(x-\mu_x)
+\right)dx\\
+=& \eta \exp\left( -\frac{1}{2}(y-\mu_y)^T R^{-1}(y-\mu_y)\right)\\
+& \int \exp\left(
+-\frac{1}{2}(x-\mu_x)^T \left(G^T R^{-1}G + \Sigma_{xx}^{-1}\right)(x-\mu_x) + (y-\mu_y)^T R^{-1}G(x-\mu_x)
+\right)dx\\
+\end{aligned}
+$$<p>其中 $\eta$ 是归一化常数，需要将指数项中的两个二次型化简为两个二次型相乘的形式。在此之前需要先推导一个简单的配方方法：</p>$$
+\begin{aligned}
+&(x-y)^TA(x-y) = x^TAx - 2x^TAy + y^TAy\\
+\Rightarrow& x^T A x - 2y^TAx = (x-y)^TA(x-y) - 2y^TAy\\
+\end{aligned}
+$$<p>不妨假设存在一个矩阵 $F$，有：</p>$$
+R^{-1}G = F^T\left(G^T R^{-1}G + \Sigma_{xx}^{-1}\right)
+$$<p>那么有：</p>$$
+\begin{aligned}
+&-\frac{1}{2}(x-\mu_x)^T \left(G^T R^{-1}G + \Sigma_{xx}^{-1}\right)(x-\mu_x) + (y-\mu_y) R^{-1}G(x-\mu_x)\\
+=& -\frac{1}{2}(x-\mu_x)^T \left(G^T R^{-1}G + \Sigma_{xx}^{-1}\right)(x-\mu_x) + (F(y-\mu_y))^T \left(G^T R^{-1}G + \Sigma_{xx}^{-1}\right)(x-\mu_x)\\
+=& -\frac{1}{2} (x-\mu_x - F(y-\mu_y))^T\left(G^T R^{-1}G + \Sigma_{xx}^{-1}\right)(x-\mu_x - F(y-\mu_y))\\
+& + \frac{1}{2}(y-\mu_y)^TF^T\left(G^T R^{-1}G + \Sigma_{xx}^{-1}\right)F(y-\mu_y)
+\end{aligned}
+$$<p>回到高斯函数中，第二项与积分无关，可以移到积分外。第一项可以看作一个与形如</p>$$
+\mathcal G(x \mid \mu_x + F(y-\mu_y), G^T R^{-1}G + \Sigma_{xx}^{-1})
+$$<p>的高斯分布。那么根据高斯分布的归一化性质可以知道积分形式一定为一个常数，可以收入归一化系数中。我们再整理积分形式外。我们可以只考虑指数项的协方差部分：</p>$$
+\begin{aligned}
+&R^{-1} + F^T\left(G^T R^{-1}G + \Sigma_{xx}^{-1}\right)\\
+=& R^{-1} + R^{-1}G\left(G^T R^{-1}G + \Sigma_{xx}^{-1}\right)^{-1}G^TR^{-1}\\
+=& (R + G\Sigma_{xx}G^T)^{-1}
+\end{aligned}
+$$<p>上面的推导的最后一步使用了 SMW 等式。具体形式为：</p>$$
+(A + BCD)^{-1} = A^{-1} - A^{-1}B(C^{-1} + DA^{-1}B)^{-1}DA^{-1}
+$$<p>那么新的高斯分布为：</p>$$
+p(y) = \mathcal G(y \mid g(\mu_x), R + G\Sigma_{xx}G^T)
+$$<h3 id=32-extended-kalman-filter>3.2. Extended Kalman Filter</h3><p>对于一个非线性系统，有：</p>$$
+\begin{array}{c}
+\text{预测：} & \check x_k = f(x_{k-1}, v_k, \omega_k)\\
+\text{观测：} & y_k = h(x_k, n_k)
+\end{array}
+$$<p>我们分别对上面的形式做泰勒展开：</p><ol><li>对于预测模型：</li></ol>$$
+\begin{array}{c}
+f(x_{k-1}, v_k, \omega_k) = \check x_k + F_{k-1}(x_{k-1} - \hat x_{k-1}) + \omega_k'\\
+\check x_k = f(\hat x_{k-1}, v_k, 0)\\
+F_{k-1} = \frac{\partial f(x_{k-1}, v_k, \omega_k)}{\partial x}|_{\hat x_{k-1}, v_k, 0}\\
+\omega_k' = \frac{\partial f(x_{k-1}, v_k, \omega_k)}{\partial \omega}|_{\hat x_{k-1}, v_k, 0}\omega_k
+\end{array}
+$$<ol start=2><li>对于观测模型：</li></ol>$$
+\begin{array}{c}
+h(x_k, n_k) = \check y_k + H_k(x_k - \check x_k) + n_k'\\
+\check y_k = h(\check x_k, 0)\\
+H_k = \frac{\partial h(x_k, n_k)}{\partial x}|_{\check x_k, 0}\\
+n_k' = \frac{\partial h(x_k, n_k)}{\partial n}|_{\check x_k, 0}n_k
+\end{array}
+$$<p>给定过去状态和观测，有状态的统计学特征：</p>$$
+\begin{array}{c}
+p(x_k \mid x_{k-1}, v_k) = \mathcal G(\check x_k + F_{k-1}(x_{k-1} - \hat x_{k-1}), Q_k')\\
+Q_k' = \left(\frac{\partial f(x_{k-1}, v_k, \omega_k)}{\partial \omega}|_{\hat x_{k-1}, v_k, 0}\right)Q_k\left(\frac{\partial f(x_{k-1}, v_k, \omega_k)}{\partial \omega}|_{\hat x_{k-1}, v_k, 0}\right)^T
+\end{array}
+$$<p>类似的：</p>$$
+\begin{array}{c}
+p(y_k \mid x_k) = \mathcal G(\check y_k + H_k(x_k - \check x_k), H_kP_kH_k^T + R_k')\\
+R_k' = \left(\frac{\partial h(x_k, n_k)}{\partial n}|_{\check x_k, 0}\right)R_k\left(\frac{\partial h(x_k, n_k)}{\partial n}|_{\check x_k, 0}\right)^T
+\end{array}
+$$<p>此时我们可以直接按照线性 kalman filter 的方法来更新状态的统计学特征：</p>$$
+\begin{array}{ll}
+\text{预测：} & \check x_k = f(\hat x_{k-1}, v_k, 0)\\
+\text{预测协方差：} & \check P_k = F_{k-1}\hat P_{k-1}F_{k-1}^T + Q_k'\\
+\text{卡尔曼增益：} & K_k = \check P_kG_k^T(G_k\check P_kG_k^T + R_k')^{-1}\\
+\text{更新协方差：} & \hat P_k = (1-K_kG_k)\check P_k\\
+\text{更新：} & \hat x_k = \check x_k + K_k(y_k - g(\check x_k, 0))\\
+\end{array}
+$$<h2 id=4-error-state-kalman-filtereskf>4. Error State Kalman Filter（ESKF）</h2><p>不妨假设有一个无噪声的状态转移模型：</p>$$
+x_{k+1} = f(x_k, v_k)
+$$<p>另有我们所使用的估计模型：</p>$$
+\check x_{k+1} = f(\check x_k, v_k) + \omega
+$$<p>可以定义一个误差形式：</p>$$
+\delta x_{k+1} = f(\check x_k, v_k) + \omega - f(x_k, v_k)
+$$<p>不妨对 $f(x_k, v_k)$ 在 $\check x_{k}$ 处展开，有：</p>$$
+\begin{array}{c}
+f(x_k, v_k) = f(\check x_k, v_k) + F_k(x_k - \check x_k)\\
+\text{where: }F_k = \frac{\partial f(x, v)}{\partial x}|_{\check x_k, v_k}
+\end{array}
+$$<p>那么有：</p>$$
+\delta x_{k+1} = F_k\delta x_k + \omega
+$$<p>类似的，对于观测模型可以写出：</p>$$
+\begin{array}{c}
+\delta y_k = H_k\delta x_k + n_k\\
+\text{where: }H_k = \frac{\partial h(x, n)}{\partial x}|_{\check x_k, 0}
+\end{array}
+$$<p>应为我们认为初始状态 $x_0$ 已知。那么显然的，初始状态误差 $\delta x_0 = 0$。</p>$$
+\begin{array}{ll}
+\text{预测：}& \delta \check x_{k+1\mid k} = F_k\delta \hat x_{k\mid k}\\
+& P_{k+1| k} = F_kP_{k\mid k}F_k^T + Q_k\\ \\
+\text{更新:}& K_k = P_{k+1| k}H_k^T(H_kP_{k+1| k}H_k^T + R_k)^{-1}\\
+& \delta x_{k+1\mid k+1} = \delta \check x_{k+1\mid k} + K_k(y_k - h(\check x_{k+1\mid k}, 0))\\
+& P_{k+1| k+1} = (I - K_kH_k)P_{k+1| k}
+\end{array}
+$$<p>回到一开始状态误差形式的定义，我们可以通过状态转移模型得到：</p>$$
+\check x_{k+1} = f(\check x_k, v_k) + \omega
+$$<p>那么：</p>$$
+\hat x_{k+1\mid k+1} = \check x_{k+1\mid k} + \delta x_{k+1\mid k+1}
+$$<hr class=footer-separator><div class=tags></div><div class=back><a href=https://wangjv0812.github.io/WangJV-Blog-Pages/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div></div><div class="footer wrapper"><nav class=nav><div>2025</div></nav></div></body></html>
