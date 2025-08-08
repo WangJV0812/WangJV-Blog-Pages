@@ -2,7 +2,7 @@
 $$ \begin{array}{c} p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\ \text{where: } Z(\theta) = \int q(x\mid \theta) dx \end{array} $$但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）
 要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。
 2. Score Function 对于一个受到参数 $\boldsymbol{\theta}$ 控制的，关于随机向量 $\boldsymbol{\xi}$ 的随机分布 $p(\boldsymbol{\xi}, \boldsymbol{\theta})$。我们定义其对数梯度为其 Score Function。形式化的，可以写作：
-$$ \psi (\boldsymbol{\xi}, \boldsymbol{\theta}) = \begin{pmatrix} \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_1}\\ \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_2}\\ \vdots\\ \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_n} \end{pmatrix} = \begin{pmatrix} \psi_1(\boldsymbol{\xi}, \boldsymbol{\theta})\\ \psi_2(\boldsymbol{\xi}, \boldsymbol{\theta})\\ \vdots\\ \psi_n(\boldsymbol{\xi}, \boldsymbol{\theta}) \end{pmatrix} = \nabla_{\boldsymbol{\xi}} \log p(\boldsymbol{\xi}, \boldsymbol{\theta}) $$我们不难发现："><meta itemprop=datePublished content="2025-08-06T16:29:40+08:00"><meta itemprop=dateModified content="2025-08-06T16:29:40+08:00"><meta itemprop=wordCount content="912"><meta property="og:url" content="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/"><meta property="og:site_name" content="WangJV Blog"><meta property="og:title" content="ScoreMatching"><meta property="og:description" content="1. 为什么要用 Score Matching 很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：
+$$ \psi (\boldsymbol{\xi}, \boldsymbol{\theta}) = \begin{pmatrix} \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_1}\\ \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_2}\\ \vdots\\ \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_n} \end{pmatrix} = \begin{pmatrix} \psi_1(\boldsymbol{\xi}, \boldsymbol{\theta})\\ \psi_2(\boldsymbol{\xi}, \boldsymbol{\theta})\\ \vdots\\ \psi_n(\boldsymbol{\xi}, \boldsymbol{\theta}) \end{pmatrix} = \nabla_{\boldsymbol{\xi}} \log p(\boldsymbol{\xi}, \boldsymbol{\theta}) $$我们不难发现："><meta itemprop=datePublished content="2025-08-06T16:29:40+08:00"><meta itemprop=dateModified content="2025-08-06T16:29:40+08:00"><meta itemprop=wordCount content="910"><meta property="og:url" content="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/"><meta property="og:site_name" content="WangJV Blog"><meta property="og:title" content="ScoreMatching"><meta property="og:description" content="1. 为什么要用 Score Matching 很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：
 $$ \begin{array}{c} p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\ \text{where: } Z(\theta) = \int q(x\mid \theta) dx \end{array} $$但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）
 要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。
 2. Score Function 对于一个受到参数 $\boldsymbol{\theta}$ 控制的，关于随机向量 $\boldsymbol{\xi}$ 的随机分布 $p(\boldsymbol{\xi}, \boldsymbol{\theta})$。我们定义其对数梯度为其 Score Function。形式化的，可以写作：
@@ -126,19 +126,19 @@ $$<p>不难发现:</p>$$
 \nabla_\xi p(\xi; \theta) \cdot v & 1 \times 1\\
 \nabla_\xi[\nabla_\xi p(\xi; \theta)v] & d \times 1\\
 \end{array}
-$$<p>这个计算过程中避免了直接存储和计算高维的 Hessian Matrix。因此具有高效性。</p><h3 id=42-隐分布估计-score-estimation-for-implicit-distributions>4.2. 隐分布估计 (Score Estimation for Implicit Distributions)</h3><p>一些情况下，我们会面对一些隐式分布，这些分布常常容易采样，但是难移直接计算概率密度。例如对抗生成网络 (GAN) 的生成器。GAN 的生成器可以看作一个专门用来做采样的函数，但是如果我们希望得知某一个采样结果在分布中的概率，这就很难了。在这些情况下，Score Function $\psi_q(x) = \nabla_x \log q_\theta(x)$ 就很有用了。</p><p>例如，我们学习的过程包括一个用于优化的 <strong>熵</strong> 的形式：</p>$$
+$$<p>这个计算过程中避免了直接存储和计算高维的 Hessian Matrix。因此具有高效性。</p><h3 id=42-隐分布估计-score-estimation-for-implicit-distributions>4.2. 隐分布估计 (Score Estimation for Implicit Distributions)</h3><p>一些情况下，我们会面对一些隐式分布，这些分布常常容易采样，但是难移直接计算概率密度。例如对抗生成网络 (GAN) 的生成器。GAN 的生成器可以看作一个专门用来做采样的函数，但是如果我们希望得知某一个采样结果在分布中的概率，这就很难了。在这些情况下，Score Function $\psi_q(x) = \nabla_x \log q_\theta(x)$ 就很有用了。</p><p>下面不妨用一个例子，来具体讲讲 Score Matching 在隐分布估计中的应用。在 Variational Free Energy 中，常常使用 <strong>熵正则化</strong> （Entropy Regularization）来帮助优化。一般而言，对于一个隐分布 $q(x)$，其熵可以写作：</p>$$
 H\left(q_\theta(x)\right)
-= \mathbb{E}_{q_\theta(x)}\big[
-\log q_\theta(x)
-\big]
-$$<p>这个形式在变分自由能 (Variational Free Energy) 中是很常见的。往往，随机比例那个 $x$ 服从于一个收到参数 $\theta$ 的分布 $q_\theta = g_\theta(\epsilon)$。其中 $\epsilon$ 是一个简单的随机分布，一般是一个标准正态分布，而 $g_\theta$ 是一个确定的（一般是学习出的）变换。这部分内容可以参考 <a href=https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/>Dream Fusion</a> 这篇文章的前半部分。</p><p>那么 Entropy 的梯度可以写作：</p>$$
+= \mathbb{E}_{q_\theta(x)}\big[\log q_\theta(x)\big]
+$$<p>熵一般用来衡量一个分布的不确定程度，我们可以认为熵正则化是一种 “模型推动力”，它会促使模型去探索更广大的分布空间，提高模型的多样性。但是对于一个 GAN 生成器，我们只能很方便的实现采样，熵正杂化并不容易。</p><p>例如对于一个生成器，我们可以认为存在一个训练的、确定性的变换 $g_\theta(\epsilon)$，这个变换将一个简单的分布 $\epsilon$（一般是正态分布） 变换到一个复杂分布上（就是我们的目标分布），因此在采样中，只需要在正态分布 $\epsilon$ 上采样，并通过变换 $g_\theta(\epsilon)$ 获得一个采样 $x = g_\theta(\epsilon)$。但是关于采样 $x$ 的概率密度，我们并不清楚，这导致我们无法直接计算熵正则化。但是熵正则化关于可学习参数的梯度可以写作：</p>$$
 \begin{aligned}
-\nabla_\theta H(q_\theta )
-&=-\nabla_\theta E_{q_\theta (x)}\big[\log q_\theta (x)\big]\\
-&=-\nabla_\theta E_{p(\epsilon)}\big[\log q_\theta (g_\theta (\epsilon))\big]\\
-&=-E_{p(\epsilon)}\big[\nabla_x \log q_\theta (x)|_{x = g_\theta (\epsilon)}\nabla_\theta g_\theta (\epsilon)\big]\\
+\nabla_\theta H\left(q_\theta(x)\right)
+&= \nabla_\theta \mathbb{E}_{q_\theta(x)}\big[\log q_\theta(x)\big]\\
+&= \nabla_\theta \mathbb{E}_{p(\epsilon)}\big[
+\log q_\theta(g_\theta(\epsilon)) \big]\\
+&= \mathbb{E}_{p(\epsilon)}\big[
+\nabla_x \log q_\theta(x)\bigg|_{x=g_\theta(\epsilon)} \nabla_\theta g_\theta(\epsilon)\big]\\
 \end{aligned}
-$$<p>其中 $\nabla_\theta g_\theta (\epsilon)$ 是很好计算的（$g_\theta(\epsilon)$ 是我们的模型，$\nabla_\theta g_\theta (\epsilon)$ 直接反向传播就完事了）。而 $\nabla_x \log q_\theta (x)|_{x = g_\theta (\epsilon)}$ 就是 Score Function，可以直接 Score Matching 来计算。</p><h2 id=reference>reference</h2><p>@article{JMLR:v6:hyvarinen05a,
+$$<p>其中 $\nabla_\theta g_\theta(\epsilon)$，直接反向传播即可，比较容易计算。而 $\nabla_x \log q_\theta(x)\bigg|_{x=g_\theta(\epsilon)}$ 则是一个 Score Function。但是这项依然没法直接算，可以通过 Score Matching 来估计。</p><p>此时，如果我们希望通过熵正则化来优化我们的模型，则需要先通过一个 Score Matching 来估计 Score Function $\nabla_x \log q_\theta(x)$，然后再通过上面的形式来计算梯度。</p><h2 id=reference>reference</h2><p>@article{JMLR:v6:hyvarinen05a,
 author = {Aapo Hyv{{"a}}rinen},
 title = {Estimation of Non-Normalized Statistical Models by Score Matching},
 journal = {Journal of Machine Learning Research},
