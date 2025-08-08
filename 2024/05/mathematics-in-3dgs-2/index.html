@@ -1,0 +1,314 @@
+<!doctype html><html><!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Mathematics In 3DGS 2 - WangJV Blog</title><meta name=viewport content="width=device-width,initial-scale=1"><meta itemprop=name content="Mathematics In 3DGS 2"><meta itemprop=description content="1. 矩阵求导的常用方法 1.1. 矩阵求导的一般方法 1.1.1. 矩阵对标量求导 1.1.2. 矩阵对矩阵求导 1.2. 矩阵求导的全微分方法 1.2.1. 正向传播的计算 1.2.2. 反向传播的计算 1.2.3. Frobenius内积 1.3. 常见矩阵运算的求导 1.3.1. 加法 1.3.2. 乘法 1.3.3. 求逆 1.3.4. 二次型 1.3.5. 行列式 2. 3DGS 中光栅化的正向和反向过程 2.1. 深度合成过程 2.1.1. 正向过程 2.1.2. 反向过程 2.2. 投影过程 2.2.1. 正向过程 2.2.2. 反向过程 1. 矩阵求导的常用方法 1.1. 矩阵求导的一般方法 在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：
+向量对标量求导 向量对向量求导 向量对矩阵求导 矩阵对标量求导 矩阵对向量求导 矩阵对矩阵求导 事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。
+1.1.1. 矩阵对标量求导 假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：
+$$\mathbf A= \left[\begin{matrix}a_{11}& a_{12}& \cdots& \ a_{1n} \\a_{21}& a_{22}& \cdots& \ a_{2n} \\\vdots& \vdots& \ddots& \vdots \\a_{n1}& a_{n2}& \cdots& \ a_{nn} \\\end{matrix}\right]$$那么，$\frac{d \mathbf A}{d k}$被定义为："><meta itemprop=datePublished content="2024-05-17T17:13:56+08:00"><meta itemprop=dateModified content="2024-05-17T17:13:56+08:00"><meta itemprop=wordCount content="1001"><meta property="og:url" content="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/"><meta property="og:site_name" content="WangJV Blog"><meta property="og:title" content="Mathematics In 3DGS 2"><meta property="og:description" content="1. 矩阵求导的常用方法 1.1. 矩阵求导的一般方法 1.1.1. 矩阵对标量求导 1.1.2. 矩阵对矩阵求导 1.2. 矩阵求导的全微分方法 1.2.1. 正向传播的计算 1.2.2. 反向传播的计算 1.2.3. Frobenius内积 1.3. 常见矩阵运算的求导 1.3.1. 加法 1.3.2. 乘法 1.3.3. 求逆 1.3.4. 二次型 1.3.5. 行列式 2. 3DGS 中光栅化的正向和反向过程 2.1. 深度合成过程 2.1.1. 正向过程 2.1.2. 反向过程 2.2. 投影过程 2.2.1. 正向过程 2.2.2. 反向过程 1. 矩阵求导的常用方法 1.1. 矩阵求导的一般方法 在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：
+向量对标量求导 向量对向量求导 向量对矩阵求导 矩阵对标量求导 矩阵对向量求导 矩阵对矩阵求导 事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。
+1.1.1. 矩阵对标量求导 假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：
+$$\mathbf A= \left[\begin{matrix}a_{11}& a_{12}& \cdots& \ a_{1n} \\a_{21}& a_{22}& \cdots& \ a_{2n} \\\vdots& \vdots& \ddots& \vdots \\a_{n1}& a_{n2}& \cdots& \ a_{nn} \\\end{matrix}\right]$$那么，$\frac{d \mathbf A}{d k}$被定义为："><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2024-05-17T17:13:56+08:00"><meta property="article:modified_time" content="2024-05-17T17:13:56+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Mathematics In 3DGS 2"><meta name=twitter:description content="1. 矩阵求导的常用方法 1.1. 矩阵求导的一般方法 1.1.1. 矩阵对标量求导 1.1.2. 矩阵对矩阵求导 1.2. 矩阵求导的全微分方法 1.2.1. 正向传播的计算 1.2.2. 反向传播的计算 1.2.3. Frobenius内积 1.3. 常见矩阵运算的求导 1.3.1. 加法 1.3.2. 乘法 1.3.3. 求逆 1.3.4. 二次型 1.3.5. 行列式 2. 3DGS 中光栅化的正向和反向过程 2.1. 深度合成过程 2.1.1. 正向过程 2.1.2. 反向过程 2.2. 投影过程 2.2.1. 正向过程 2.2.2. 反向过程 1. 矩阵求导的常用方法 1.1. 矩阵求导的一般方法 在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：
+向量对标量求导 向量对向量求导 向量对矩阵求导 矩阵对标量求导 矩阵对向量求导 矩阵对矩阵求导 事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。
+1.1.1. 矩阵对标量求导 假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：
+$$\mathbf A= \left[\begin{matrix}a_{11}& a_{12}& \cdots& \ a_{1n} \\a_{21}& a_{22}& \cdots& \ a_{2n} \\\vdots& \vdots& \ddots& \vdots \\a_{n1}& a_{n2}& \cdots& \ a_{nn} \\\end{matrix}\right]$$那么，$\frac{d \mathbf A}{d k}$被定义为："><link rel=stylesheet type=text/css media=screen href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/main.css><link id=dark-scheme rel=stylesheet type=text/css href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/dark.css><script src=https://wangjv0812.github.io/WangJV-Blog-Pages/js/main.js></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js></script><script>MathJax={tex:{displayMath:[["\\[","\\]"],["$$","$$"]],inlineMath:[["\\(","\\)"],["$","$"]]},loader:{load:["ui/safe"]}}</script></head><body><div class="container wrapper"><div class=header><h1 class=site-title><a href=https://wangjv0812.github.io/WangJV-Blog-Pages/>WangJV Blog</a></h1><div class=site-description><nav class="nav social"><ul class=flat></ul></nav></div><nav class=nav><ul class=flat></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>17</span>
+<span class=rest>May 2024</span></div></div><div class=matter><h1 class=title>Mathematics In 3DGS 2</h1></div></div><ul><li><a href=#1-%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95>1. 矩阵求导的常用方法</a><ul><li><a href=#11-%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E4%B8%80%E8%88%AC%E6%96%B9%E6%B3%95>1.1. 矩阵求导的一般方法</a><ul><li><a href=#111-%E7%9F%A9%E9%98%B5%E5%AF%B9%E6%A0%87%E9%87%8F%E6%B1%82%E5%AF%BC>1.1.1. 矩阵对标量求导</a></li><li><a href=#112-%E7%9F%A9%E9%98%B5%E5%AF%B9%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC>1.1.2. 矩阵对矩阵求导</a></li></ul></li><li><a href=#12-%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E5%85%A8%E5%BE%AE%E5%88%86%E6%96%B9%E6%B3%95>1.2. 矩阵求导的全微分方法</a><ul><li><a href=#121-%E6%AD%A3%E5%90%91%E4%BC%A0%E6%92%AD%E7%9A%84%E8%AE%A1%E7%AE%97>1.2.1. 正向传播的计算</a></li><li><a href=#122-%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%9A%84%E8%AE%A1%E7%AE%97>1.2.2. 反向传播的计算</a></li><li><a href=#123-frobenius%E5%86%85%E7%A7%AF>1.2.3. Frobenius内积</a></li></ul></li><li><a href=#13-%E5%B8%B8%E8%A7%81%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%E7%9A%84%E6%B1%82%E5%AF%BC>1.3. 常见矩阵运算的求导</a><ul><li><a href=#131-%E5%8A%A0%E6%B3%95>1.3.1. 加法</a></li><li><a href=#132-%E4%B9%98%E6%B3%95>1.3.2. 乘法</a></li><li><a href=#133-%E6%B1%82%E9%80%86>1.3.3. 求逆</a></li><li><a href=#134-%E4%BA%8C%E6%AC%A1%E5%9E%8B>1.3.4. 二次型</a></li><li><a href=#135-%E8%A1%8C%E5%88%97%E5%BC%8F>1.3.5. 行列式</a></li></ul></li></ul></li><li><a href=#2-3dgs-%E4%B8%AD%E5%85%89%E6%A0%85%E5%8C%96%E7%9A%84%E6%AD%A3%E5%90%91%E5%92%8C%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B>2. 3DGS 中光栅化的正向和反向过程</a><ul><li><a href=#21-%E6%B7%B1%E5%BA%A6%E5%90%88%E6%88%90%E8%BF%87%E7%A8%8B>2.1. 深度合成过程</a><ul><li><a href=#211-%E6%AD%A3%E5%90%91%E8%BF%87%E7%A8%8B>2.1.1. 正向过程</a></li><li><a href=#212-%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B>2.1.2. 反向过程</a></li></ul></li><li><a href=#22-%E6%8A%95%E5%BD%B1%E8%BF%87%E7%A8%8B>2.2. 投影过程</a><ul><li><a href=#221-%E6%AD%A3%E5%90%91%E8%BF%87%E7%A8%8B>2.2.1. 正向过程</a></li><li><a href=#222-%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B>2.2.2. 反向过程</a></li></ul></li></ul></li></ul><h2 id=1-矩阵求导的常用方法>1. 矩阵求导的常用方法</h2><h3 id=11-矩阵求导的一般方法>1.1. 矩阵求导的一般方法</h3><p>在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：</p><ol><li>向量对标量求导</li><li>向量对向量求导</li><li>向量对矩阵求导</li><li>矩阵对标量求导</li><li>矩阵对向量求导</li><li>矩阵对矩阵求导</li></ol><p>事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。</p><h4 id=111-矩阵对标量求导>1.1.1. 矩阵对标量求导</h4><p>假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：</p>$$
+\mathbf A=
+\left[
+\begin{matrix}
+a_{11}& a_{12}& \cdots& \ a_{1n} \\
+a_{21}& a_{22}& \cdots& \ a_{2n} \\
+\vdots& \vdots& \ddots& \vdots \\
+a_{n1}& a_{n2}& \cdots& \ a_{nn} \\
+\end{matrix}
+\right]
+$$<p>那么，$\frac{d \mathbf A}{d k}$被定义为：</p>$$
+\frac{d \mathbf A}{d k} =
+\left[
+\begin{matrix}
+\frac{d a_{11}}{d k}& \frac{d a_{12}}{d k}& \cdots& \ \frac{d a_{1n}}{d k}& \\
+\frac{d a_{21}}{d k}& \frac{d a_{22}}{d k}& \cdots& \ \frac{d a_{2n}}{d k}& \\
+\vdots& \vdots& \ddots& \vdots \\
+\frac{d a_{n1}}{d k}& \frac{d a_{n2}}{d k}& \cdots& \ \frac{d a_{nn}}{d k}& \\
+\end{matrix}
+\right]
+$$<p>于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \mathbf A}$，其定义为：</p>$$
+\frac{d k}{d \mathbf A} =
+\left[
+\begin{matrix}
+\frac{d k}{d a_{11}}& \frac{d k}{d a_{12}}& \cdots& \ \frac{d k}{d a_{1n}}& \\
+\frac{d k}{d a_{21}}& \frac{d k}{d a_{22}}& \cdots& \ \frac{d k}{d a_{2n}}& \\
+\vdots& \vdots& \ddots& \vdots \\
+\frac{d k}{d a_{n1}}& \frac{d k}{d a_{n2}}& \cdots& \ \frac{d k}{d a_{nn}}& \\
+\end{matrix}
+\right]
+$$<h4 id=112-矩阵对矩阵求导>1.1.2. 矩阵对矩阵求导</h4><p>矩阵对矩阵求导是更加复杂的矩阵对标量的求导，假设我们有矩阵 $\mathbf A, \mathbf B$，有：</p>$$
+\mathbf A=
+\left[
+\begin{matrix}
+a_{11}& a_{12}& \cdots& \ a_{1n} \\
+a_{21}& a_{22}& \cdots& \ a_{2n} \\
+\vdots& \vdots& \ddots& \vdots \\
+a_{n1}& a_{n2}& \cdots& \ a_{nn} \\
+\end{matrix}
+\right]
+$$<p>那么有：</p>$$
+\frac{d\mathbf A}{d\mathbf B} =
+\left[
+\begin{matrix}
+\frac{d a_{11}}{d \mathbf B}& \frac{d a_{12}}{d \mathbf B}& \cdots& \ \frac{d a_{1n}}{d \mathbf B}& \\
+\frac{d a_{21}}{d \mathbf B}& \frac{d a_{22}}{d \mathbf B}& \cdots& \ \frac{d a_{2n}}{d \mathbf B}& \\
+\vdots& \vdots& \ddots& \vdots \\
+\frac{d a_{n1}}{d \mathbf B}& \frac{d a_{n2}}{d \mathbf B}& \cdots& \ \frac{d a_{nn}}{d \mathbf B}& \\
+\end{matrix}
+\right]
+$$<p>之后套用矩阵与标量之间的微分运算的定义即可计算。但是不难发现，这样需要将整个矩阵展开来求导过于繁琐负责了，也破坏了原本矩阵作为一个整体所蕴含的性质。我们需要一些更加简洁的方法来实现矩阵求导。</p><h3 id=12-矩阵求导的全微分方法>1.2. 矩阵求导的全微分方法</h3><p>在具体的优化问题中，我们面对的往往是一个多多变量的复杂计算过程。这要求我们处理多变量，多步骤的矩阵多项式函数计算微分。假设我们一个计算链的输入是 $s_i$，输出是 $s_o$，计算链中的某一步计算是：</p>$$
+C = f(A, B)
+$$<h4 id=121-正向传播的计算>1.2.1. 正向传播的计算</h4><p>那么显而易见的，其全微分为：</p>$$
+dC = \frac{\partial f}{\partial A} dA + \frac{\partial f}{\partial B} dB
+$$<p>当输入，即 $s_i$ 上一个扰动时（记作 $\dot{S_i}$），在 $C$ 上的扰动为：</p>$$
+\dot{C} = \frac{\partial f}{\partial A} \dot A + \frac{\partial f}{\partial B} \dot B
+$$<h4 id=122-反向传播的计算>1.2.2. 反向传播的计算</h4><p>我们分析从运算链中的某一步骤向输出传到的过程：</p>$$
+s_0 = \sum C_{ij}
+$$<p>那么，有：</p>$$
+ds_o = \sum \frac{\partial s_0}{\partial C_{ij}} dC_{ij} = Tr(\frac{\partial s_0}{\partial C} ^T dC)
+$$<p>带入计算我们之前给出的计算链 $C = f(A, B)$，有：</p>$$
+\begin{aligned}
+d(S_0) &= Tr(C^T dC)\\
+dC &= \frac{\partial f}{\partial A} dA + \frac{\partial f}{\partial B} dB
+\end{aligned}
+$$<p>根据迹的分配律，有：</p>$$
+\begin{aligned}
+d(S_0)
+&= Tr(C^T, dC) \\
+&= Tr(C^T, \frac{\partial f}{\partial A}dA) + Tr(C^T, \frac{\partial f}{\partial B} dB)\\
+&= Tr(\frac{\partial f}{\partial A}^TC, dA) + Tr(\frac{\partial f}{\partial B}^T C, dB)\\
+&= Tr(\frac{\partial s_o}{\partial A}, dA) + Tr(\frac{\partial s_o}{\partial B}, dB)
+\end{aligned}
+$$<p>这样我们可以知道：</p>$$
+\begin{aligned}
+\frac{\partial s_o}{\partial A} = \frac{\partial f}{\partial A}^TC \\
+\frac{\partial s_o}{\partial B} = \frac{\partial f}{\partial B}^T C
+\end{aligned}
+$$<h4 id=123-frobenius内积>1.2.3. Frobenius内积</h4><p>为了更好的表达运算关系，我们定义一个二元运算 $\langle \cdot , \cdot \rangle$。这个二元组定义的本质在于矩阵的微分运算是对其中每个元素进行的，不能简单套用对矩阵全体定义的矩阵乘法运算。</p>$$
+\langle X, Y\rangle = Tr(X^T Y) = Vec(X)^T Vec(Y) \in \mathbb R
+$$<p>其性质有：</p>$$
+\begin{aligned}
+\langle X,Y\rangle & =\langle Y,X\rangle, \\
+\langle X,Y\rangle & =\langle X^\top,Y^\top\rangle, \\
+\langle X,YZ\rangle & =\langle Y^{\top}X,Z\rangle=\langle XZ^{\top},Y\rangle, \\
+\langle X,Y+Z\rangle & =\langle X,Y\rangle+\langle X,Z\rangle.
+\end{aligned}
+$$<p>用这个二元运算重新叙述上面的推导过程，可能会更加清晰。假设我们有一个函数 $f(X), X\in \mathbb R^{m\times n}$，并且 $X = AY, where. A\in \mathbb R^{m\times p}, Y\in \mathbb R^{p\times n}$，</p><p>我们可以把 $f$ 写作任意标量 $x$ 的梯度：</p>$$
+\frac{\partial f}{\partial x} = \langle\frac{\partial f}{\partial X}, \frac{\partial X}{\partial x} \rangle
+$$<p>我们有：</p>$$
+\partial f = \langle \frac{\partial f}{\partial X}, \partial X \rangle
+$$<p>并定义：$G = \frac{\partial f}{\partial X}$，有：</p>$$
+\begin{aligned}
+\frac{\partial f}{\partial x}& =\langle G,\frac{\partial(AY)}{\partial x}\rangle \\
+&=\langle G,\frac{\partial A}{\partial x}Y\rangle+\langle G,A\frac{\partial Y}{\partial x}\rangle \\
+&=\langle GY^{\top},\frac{\partial A}{\partial x}\rangle+\langle A^{\top}G,\frac{\partial Y}{\partial x}\rangle.
+\end{aligned}
+$$<p>对比，可归纳出：</p>$$
+\frac{\partial f}{\partial A}=GY^\top\in\mathbb{R}^{m\times p},\quad\frac{\partial f}{\partial Y}=A^\top G\in\mathbb{R}^{p\times n}.
+$$<h3 id=13-常见矩阵运算的求导>1.3. 常见矩阵运算的求导</h3><h4 id=131-加法>1.3.1. 加法</h4><p>假设有 $C = A+B$，那么有：</p>$$
+dC = dA + dB
+$$<p>且有：</p>$$
+\begin{aligned}
+ds_o
+&= \langle \frac {\partial s_o}{\partial C} , dC\rangle\\
+&= \langle \frac {\partial s_o}{\partial C} , dA\rangle + \langle \frac {\partial s_o}{\partial C} , dB\rangle\\
+&= \langle \frac {\partial s_o}{\partial A} , dA\rangle + \langle \frac {\partial s_o}{\partial B} , dB\rangle\\
+\end{aligned}
+$$<p>那么：</p>$$
+\begin{aligned}
+\frac{\partial s_o}{\partial A} = \frac{\partial s_o}{\partial C}\\
+\frac{\partial s_o}{\partial B} = \frac{\partial s_o}{\partial C}
+\end{aligned}
+$$<h4 id=132-乘法>1.3.2. 乘法</h4><p>我们假设有：$C=AB$，那么：</p>$$
+dC = dA\; B + A\; dB
+$$<p>类似的，有：</p>$$
+\begin{aligned}
+ds_o
+&= \langle \frac{ds_o}{dC}, dC \rangle\\
+&= \langle \frac{ds_o}{dC}, dA\; B \rangle + \langle \frac{ds_o}{dC}, A\; dB\rangle \\
+&= \langle \frac{ds_o}{dC} B^T, dA \rangle + \langle A^T \frac{ds_o}{dC}, dB\rangle \\
+&= \langle \frac{\partial s_o}{\partial A}, dA\rangle + \langle \frac{\partial s_o}{\partial B}, dB\rangle
+\end{aligned}
+$$<p>那么，我们可以归纳出:</p>$$
+\begin{aligned}
+\frac{\partial s_o}{\partial A} &= \frac{ds_o}{dC} B^T \\
+\frac{\partial s_o}{\partial B} &= A^T \frac{ds_o}{dC}
+\end{aligned}
+$$<h4 id=133-求逆>1.3.3. 求逆</h4><p>假设我们有：$C = A^{-1}$，可推得：</p>$$
+\begin{aligned}
+&CA = I \\
+\Longrightarrow & dC\; A + C\; dA = 0\\
+\Longrightarrow & dC = -C dA C \\
+\end{aligned}
+$$<p>那么有正向传播：</p>$$
+\frac{d C}{d s_i} = -C \frac{d A}{d s_i} C
+$$<p>类似的，反向传播有：</p>$$
+\begin{aligned}
+ds_o
+&= \langle \frac{ds_o}{dC}, dC \rangle\\
+&= \langle \frac{ds_o}{dC}, -C dA C \rangle\\
+&= \langle -C^{T} \frac{ds_o}{dC} C^T , dA\rangle\\
+&= \langle \frac{ds_o}{dA} , dA\rangle
+\end{aligned}
+$$<p>那么有：</p>$$
+\frac{ds_o}{dA} = -C^{T} \frac{ds_o}{dC} C^T
+$$<h4 id=134-二次型>1.3.4. 二次型</h4><p>假设：$C= x^T A x$，那么有：</p>$$
+dC = x^TA\, dx + d(x^T A)x
+$$<p>应为二次型结果是标量，那么 $d(x^T A)x$ 也应是标量，则有$(d(x^T A)x)^T = d(x^T A)x$，则有：</p>$$
+\begin{aligned}
+dC
+&=x^{T}Adx+x^{T}d\left(A^{T}x\right) \\
+&=x^{T}Adx+x^{T}A^{T}dx \\
+&=x^{T}\left(A+A^{T}\right)dx
+\end{aligned}
+$$<p>类似的，反向传播结果为：</p>$$
+\begin{aligned}
+ds_o
+&= \langle \frac{ds_o}{dC}, dC \rangle\\
+&= \langle \frac{ds_o}{dC}, x^{T}(A+A^{T})dx \rangle\\
+&= \langle (A+A^{T})x\frac{ds_o}{dC}, dx \rangle\\
+&= \langle \frac{ds_o}{dx}, dx \rangle\\
+\end{aligned}
+$$<p>那么有：</p>$$
+\frac{ds_o}{dx} = (A+A^{T})x\frac{ds_o}{dC}
+$$<h4 id=135-行列式>1.3.5. 行列式</h4><p>有：$C=det\, A$。有 $A$ 的伴随矩阵 $\tilde A$，伴随矩阵的定义为元素 $A_{ij}$ 的代数余子式，具体形式为：</p>$$
+\tilde A_{ij} = (-1)^{i+j}\det(\widehat{A}_{ij})
+$$<p>根据行列式的定义，有：</p>$$
+\det A=\sum_jA_{i,j}\tilde{A}_{i,j}.
+$$<p>我们固定 $i$，很容易可以得到：</p>$$
+\frac{\partial C}{\partial A_{i,j}}=\tilde{A}_{i,j}
+$$<p>可推知：</p>$$
+dC = \sum_{ij} \tilde A_{ij} dA_ij
+$$<p>将矩阵除法的定义 $A^{-1}=(\det A)^{-1}\tilde{A}^T$ 带入上式中，则有：</p>$$
+\begin{aligned}
+dC
+&= \sum_{ij} \tilde A_{ij} dA_{ij}\\
+&= \sum_{ij} A^{-1}_{ij} \det A dA_{ij}\\
+&= \det A\sum_{ij} A^{-1}_{ij} dA_{ij}\\
+&= C\, Tr(A^{-1} dA)\\
+\end{aligned}
+$$<p>反向梯度有：</p>$$
+\begin{aligned}
+ds_o
+&= \langle \frac{ds_o}{dC}, dC \rangle\\
+&= \langle \frac{ds_o}{dC}, C\, Tr(A^{-1} dA) \rangle\\
+&= \langle \frac{ds_o}{dC} C A^{-T}, dA \rangle\\
+&= \langle \frac{ds_o}{dA}, dA \rangle\\
+\end{aligned}
+$$<p>那么有：</p>$$
+\frac{ds_o}{dA} = \frac{ds_o}{dC} C A^{-T}
+$$<h2 id=2-3dgs-中光栅化的正向和反向过程>2. 3DGS 中光栅化的正向和反向过程</h2><h3 id=21-深度合成过程>2.1. 深度合成过程</h3><h4 id=211-正向过程>2.1.1. 正向过程</h4><p>此处的正向过程是指已经投影在二维像素平面上的二维高斯函数合成的过程。我们不加说明的给出合成的形式，具体推导可以参考上一篇文章。</p>$$
+\begin{aligned}
+C_i = \sum_{n\leq N} c_n \cdot \alpha_n \cdot T_n\\
+\text{where. } T_n = \prod_{m<n} (1 - \alpha_m) \end{aligned} $$<p>我们对不透明度和色彩进行这样的处理：</p>$$
+\alpha_n=o_n\cdot\exp(-\sigma_n),
+\quad\sigma_n=\frac{1}{2}\Delta_n^\top\Sigma^{\prime-1}\Delta_n,
+$$<p>其中 $\Delta_n$ 是该位置距像素中心的距离。</p><h4 id=212-反向过程>2.1.2. 反向过程</h4><p>首先我们推导由像素 $i$ 产生的损失梯度对高斯函数 $n$ 产生的影响。我们需要计算出<strong>投影色彩残差</strong>$\frac{\partial \mathcal L}{\partial C_i}$对<strong>色彩梯度</strong> $\frac{\partial \mathcal L}{\partial c_n}$，<strong>不透明度</strong> $\frac{\partial \mathcal L}{\partial o_n}$ 和<strong>2D高斯函数均值和方差</strong>$\frac{\partial \mathcal L}{\partial \mu_n}，\frac{\partial \mathcal L}{\partial \Sigma'_n}$。</p><p>在正向过程中，我们计算出每个高斯函数对该像素色彩的贡献，并通过体渲染的方式叠加在一起。而在反向传播时，则是从投影的色彩残差到高斯函数属性的梯度。</p><ul><li>对于$\frac{\partial \mathcal L}{\partial c_n}$，我们可以很容易写出，其中 $k$ 为色彩的通道数</li></ul>$$
+\frac{\partial C_i(k)}{\partial c_n(k)} = \alpha_n T_n
+$$<p>而 $T_n$ 通过递推来计算：</p>$$
+T_{n-1}=\frac{T_n}{1-\alpha_{n-1}}.
+$$<ul><li>对于 $\frac{\partial \mathcal L}{\partial o_n}$，有：</li></ul>$$
+\frac{\partial C_i(k)}{\partial\alpha_n}=c_n(k)\cdot T_n-\frac{S_n(k)}{1-\alpha_n}\mathrm{where.} \,S_n=\sum_{m>n}c_m\alpha_mT_m.
+$$<p>同样的 $S_n$ 可以通过递归来计算：</p>$$
+\begin{aligned}
+S_{N}(k)& =0 \\
+S_{n-1}(k)& =c_{n}(k)\alpha_{n}T_{n}+S_{n}(k).
+\end{aligned}
+$$<ul><li>对于不透明度 $\frac{\partial \alpha_n}{\partial o_n}$，有：</li></ul>$$
+\frac{\partial\alpha_n}{\partial o_n}=\exp(-\sigma_n),\quad\frac{\partial\alpha_n}{\partial\sigma_n}=-o_n\exp(-\sigma_n).
+$$<ul><li>对于二维均值 $\frac{\partial\sigma_n}{\partial\mu_n'}$</li></ul>$$
+\frac{\partial\sigma_n}{\partial\mu_n'}=\frac{\partial\sigma_n}{\partial\Delta_n}=\Sigma_n'^{-1}\Delta_n\in\mathbb{R}^2.
+$$<ul><li>对于二维协方差，我们令$Y=\Sigma'^{-1}_n$，有$\frac{\partial \sigma_n}{\partial o_n}$</li></ul>$$
+\frac{\partial\sigma_n}{\partial Y}=\frac12\Delta_n\Delta_n^\top\in\mathbb{R}^{2\times2}.
+$$<p>我们运用之前推导的矩阵的逆的求导规则，则有：</p>$$
+\begin{aligned}
+\frac{\partial\sigma_{n}}{\partial x}& =\langle G,-Y\frac{\partial\Sigma_{n}^{\prime}}{\partial x}Y\rangle \\
+&=\langle-Y^{\top}GY^{\top},\frac{\partial\Sigma_{n}^{\prime}}{\partial x}\rangle
+\end{aligned}
+$$<p>带入到前面的推导中，则有：</p>$$
+\frac{\partial\sigma_n}{\partial\Sigma_n^{\prime}}=-\frac{1}{2}\Sigma_n^{\prime-1}\Delta_n\Delta_n^\top\Sigma_n^{\prime-1}.
+$$<h3 id=22-投影过程>2.2. 投影过程</h3><h4 id=221-正向过程>2.2.1. 正向过程</h4><p>我们假设相机的外参$T_{cw}$，投影矩阵为$P$，有：</p>$$
+T_{\text{cw}}=\begin{bmatrix}R_{\text{cw}}&t_{\text{cw}}\\0&1\end{bmatrix}\in SE(3),\quad P=\begin{bmatrix}2f_x/w&0&0&0\\0&2f_y/h&0&0\\0&0&(f+n)/(f-n)&-2fn/(f-n)\\0&0&1&0\end{bmatrix}
+$$<p>这里的投影矩阵有些讲究，通过第三行第四行两个形式将原始的深度限制在来 $[f,n]$之间。我们先通过 $T_{cw}$ 将世界坐标系下的三维高斯函数均值变换到相机坐标系下，后再逐步将其投影到像素坐标系下：</p>$$
+t=T_{\text{cw}}\begin{bmatrix}\mu&1\end{bmatrix}^\top,\quad t'=Pt,\quad\mu'=\begin{bmatrix}(w\cdot t_x'/t_w'+1)/2+c_x\\(h\cdot t_y'/t_w'+1)/2+c_y\end{bmatrix},
+$$<p>对于协方差，还需计算仿射变换 $J$。</p>$$
+J=\begin{bmatrix}f_x/t_z&0&-f_x\cdot t_x/t_z^2\\0&f_y/t_z&-f_y\cdot t_y/t_z^2\end{bmatrix}
+$$<p>投影的 $2D$ 高斯函数协方差为：</p>$$
+\Sigma^{\prime}=JR_\text{cw}{\Sigma}R_\text{cw}^{\top}J^{\top}
+$$<p>此外，我们将 $3D$ 协方差表达为一个表达旋转的四元数 $q\in \mathbb R^4$和缩放 $s$，我们假设 $q=(x,y,z,w)$，那么这个旋转矩阵可以写成：</p>$$
+R=\begin{bmatrix}1-2\cdot(y^2+z^2)&2\cdot(xy-wz)&2\cdot(xz+wy)\\2\cdot(xy+wz)&1-2\cdot(x^2-z^2)&2\cdot(yz-wx)\\2\cdot(xz-wy)&2\cdot(yz+wx)&1-2\cdot(x^2+y^2)\end{bmatrix}
+$$<p>那么三维高斯函数的协方差可以写作：</p>$$
+\Sigma=RSS^\top R^\top
+$$<h4 id=222-反向过程>2.2.2. 反向过程</h4><p>在上一小节中，我们推导了颜色残差与二维高斯函数参数梯度之间的关系，我们可以继续将其反向传播到三维高斯函数上。我们首先计算二维均值 $\mu'$ 对相机坐标 $t$ 的梯度贡献，并将二维协方差 $\Sigma'$ 计算为三维协方差 $\Sigma$ 和相机坐标 $t$​​。</p>$$
+\frac{\partial\mathcal{L}}{\partial t_i}=\frac{\partial\mathcal{L}_{\mu^{\prime}}}{\partial t_i}+\frac{\partial\mathcal{L}_{\Sigma^{\prime}}}{\partial t_i}=\frac{\partial\mathcal{L}}{\partial\mu^{\prime}}\frac{\partial\mu^{\prime}}{\partial t_i}+\langle\frac{\partial\mathcal{L}}{\partial\Sigma^{\prime}},\frac{\partial\Sigma^{\prime}}{\partial t_i}\rangle
+$$<p>其中二维协方差 $\Sigma'$ 对三维协方差 $\Sigma$ 和相机位置 $t$ 有贡献。我们有：</p>$$
+\Sigma^{\prime}=T\Sigma T^\top
+$$<p>求其全微分，有：</p>$$
+\partial \Sigma' = (\partial T)\Sigma T^T + T(\partial \Sigma) T^T + T\Sigma (\partial T^T)
+$$<p>我们令 $G=\frac{\partial\mathcal{L}}{\partial\Sigma^{\prime}}$，并带入上式有：</p>$$
+\begin{aligned}
+\partial\mathcal{L}_{\Sigma^{\prime}}& =\langle G,\partial\Sigma'\rangle \\
+&=\langle G,(\partial T)\Sigma T^\top+T(\partial\Sigma)T^\top+T\Sigma(\partial T^\top)\rangle \\
+&=\langle GT\Sigma^\top,\partial T\rangle+\langle T^\top GT,\partial\Sigma\rangle+\langle G^\top T\Sigma,\partial T\rangle \\
+&=\langle GT\Sigma^\top+G^\top T\Sigma,\partial T\rangle+\langle T^\top GT,\partial\Sigma\rangle.
+\end{aligned}
+$$<p>容易得到：</p>$$
+\begin{aligned}
+\frac{\partial\mathcal{L}}{\partial\Sigma}&=T^\top\frac{\partial\mathcal{L}}{\partial\Sigma^{\prime}}T.\\
+\frac{\partial\mathcal{L}}{\partial T}&=\frac{\partial\mathcal{L}}{\partial\Sigma^{\prime}}T\Sigma^\top+\frac{\partial\mathcal{L}}{\partial\Sigma^{\prime}}^\top T\Sigma
+\end{aligned}
+$$<p>我们通过 $T=JR_{\mathrm{cw}}$ 将梯度传播到 $J$</p>$$
+\begin{aligned}
+\partial\mathcal{L}
+&=\langle\frac{\partial\mathcal{L}}{\partial T},(\partial J)R_{\mathrm{cw}}\rangle=\langle\frac{\partial\mathcal{L}}{\partial T}R_{\mathrm{cw}}^\top,\partial J\rangle\\
+&= \langle (\frac{\partial\mathcal{L}}{\partial\Sigma^{\prime}}T\Sigma^\top+\frac{\partial\mathcal{L}}{\partial\Sigma^{\prime}}^\top T\Sigma)R_{\mathrm{cw}}^\top,\partial J\rangle
+\end{aligned}
+$$<p>下面将梯度从 $J$ 传播到相机坐标 $t$，我们通过计算 $\Sigma'$ 对 $t$ 梯度的贡献：</p>$$
+\begin{aligned}
+\frac{\partial J}{\partial t_x}
+&=\begin{bmatrix}0&0&-f_x/t_z^2\\0&0&0\end{bmatrix}
+\\\quad\frac{\partial J}{\partial t_y}&
+=\begin{bmatrix}0&0&0\\0&0&-f_y/t_z^2\end{bmatrix}
+\\\quad\frac{\partial J}{\partial t_z}
+&=\begin{bmatrix}-f_x/t_z^2&0&2f_xt_x/t_z^3\\0&-f_y/t_z^2&2f_yt_y/t_z^3\end{bmatrix}
+\\\quad\frac{\partial J}{\partial t_w}
+&=\mathbf{0}^{2\times3}
+\end{aligned}
+$$<p>根据式（58）的形式，我们需要将 $\frac{\partial\mathcal{L}_{\mu^{\prime}}}{\partial t_i}$ 和 $\frac{\partial\mathcal{L}_{\Sigma^{\prime}}}{\partial t_i}$ 相加构成 $\frac{\partial L}{\partial t}$，并将这个结果传导到三维高斯函数的均值 $\mu$ 和$T_{cw}$上，其中 $q = [\mu, 1]^T$：</p>$$
+\begin{aligned}
+\partial\mathcal{L}& =\langle G,\partial t\rangle=\langle G,\partial(T_\text{cw}q)\rangle \\
+&=\langle Gq^\top,\partial T_{\mathrm{cw}}\rangle+\langle T_{\mathrm{cw}}^\top G,\partial q\rangle.
+\end{aligned}
+$$<p>易得到：</p>$$
+\begin{aligned}
+\frac{\partial\mathcal{L}}{\partial T_{\mathrm{cw}}}
+&=\frac{\partial\mathcal{L}}{\partial t}q^\top\\
+\quad\frac{\partial\mathcal{L}} {\partial\mu}
+&=R_{\mathrm{cw}}^\top\begin{bmatrix}\frac{\partial\mathcal{L}}{\partial t_x}&\frac{\partial\mathcal{L}}{\partial t_y}&\frac{\partial\mathcal{L}}{\partial t_z}\end{bmatrix}^\top\in\mathbb{R}^3
+\end{aligned}
+$$<p>最后推导三维协方差到旋转 $q$ 和缩放 $s$ 的梯度：</p><p>我们令 $M=RS$，则有：$\Sigma = MM^T$，令$G=\frac{\partial\mathcal{L}}{\partial\Sigma}$，则有：</p>$$
+\begin{aligned}
+\partial\mathcal{L}& =\langle G,\partial\Sigma\rangle \\
+&\begin{aligned}&=\langle G,(\partial M)M^\top+M(\partial M^\top)\rangle\end{aligned} \\
+&=\langle GM+G^\top M,\partial M\rangle
+\end{aligned}
+$$<p>那么有：</p>$$
+\frac{\partial\mathcal{L}}{\partial M}=\frac{\partial\mathcal{L}}{\partial\Sigma}M+\frac{\partial\mathcal{L}}{\partial\Sigma}^\top M.
+$$<p>类似的，应为 $M=RS$，有：</p>$$
+\begin{aligned}
+\partial\mathcal{L}& =\langle G,\partial M\rangle \\
+&=\langle G,(\partial R)S\rangle+\langle G,R(\partial S)\rangle \\
+&\begin{aligned}&=\langle GS^\top,\partial R\rangle+\langle R^\top G,\partial S\rangle\end{aligned}
+\end{aligned}
+$$<p>有：</p>$$
+\frac{\partial\mathcal{L}}{\partial R}=\frac{\partial L}{\partial M}S^\top,\quad\frac{\partial\mathcal{L}}{\partial S}=R^\top\frac{\partial L}{\partial M}
+$$<p>最后，再将旋转矩阵的梯度传导到四元数上：</p>$$
+\begin{aligned}
+\frac{\partial R}{\partial w}=2\begin{bmatrix}0&-z&y\\z&0&-x\\-y&x&0\end{bmatrix},
+\\\quad\frac{\partial R}{\partial x}=2\begin{bmatrix}0&y&z\\y&-2x&-w\\z&w&-2x\end{bmatrix},
+\\\quad\frac{\partial R}{\partial y}=2\begin{bmatrix}-2y&x&w\\x&0&z\\-w&z&-2y\end{bmatrix},
+\\\quad\frac{\partial R}{\partial z}=2\begin{bmatrix}-2z&-w&x\\w&-2z&y\\x&y&0\end{bmatrix}
+\end{aligned}
+$$<hr class=footer-separator><div class=tags></div><div class=back><a href=https://wangjv0812.github.io/WangJV-Blog-Pages/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div></div><div class="footer wrapper"><nav class=nav><div>2024</div></nav></div></body></html>

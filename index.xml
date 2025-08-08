@@ -21,7 +21,35 @@ p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
 \text{where: } Z(\theta) = \int q(x\mid \theta) dx
 \end{array}
 $$&lt;p>但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）&lt;/p>
-&lt;p>要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。&lt;/p></description></item><item><title>From Transformer to VGGT</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</link><pubDate>Fri, 18 Apr 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</guid><description>&lt;ul>
+&lt;p>要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。&lt;/p></description></item><item><title>Lie Group and Lie Algebra</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</guid><description>&lt;p>我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong>群&lt;/strong> 和 &lt;strong>微分流形&lt;/strong> 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p>
+&lt;p>事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：&lt;/p>
+&lt;ol>
+&lt;li>封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$&lt;/li>
+&lt;li>结合律：$\forall c_1, c_2, c_3 \in C, [[c_1, c_2], c_3 ] = [c_1, [c_2, c_3]]$&lt;/li>
+&lt;li>单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$&lt;/li>
+&lt;li>逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$&lt;/li>
+&lt;/ol>
+&lt;p>在研究群的性质时，我们需要清晰的认识到 &lt;strong>集合&lt;/strong> 和 定义在集合上的 &lt;strong>二元运算&lt;/strong> 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “&lt;strong>操作不变形&lt;/strong>”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。&lt;/p></description></item><item><title>3D Kinematics and Dynamics</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</link><pubDate>Fri, 20 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</guid><description>&lt;h2 id="1-旋转矩阵">1. 旋转矩阵&lt;/h2>
+&lt;p>对于空间中的一个向量 $\boldsymbol{r}$，在坐标系 $\mathcal F_1, \mathcal F_2$ 下，用坐标描述有：&lt;/p>
+$$
+\boldsymbol{r} = \mathcal F_1^T \boldsymbol{r}_1 = \mathcal F_2^T \boldsymbol{r}_2
+$$&lt;p>应有：&lt;/p>
+$$
+\boldsymbol{r}_1 = \mathcal F_1 \mathcal F_2^T \boldsymbol{r}_2
+$$&lt;p>我们令：&lt;/p>
+$$
+\boldsymbol R_{12} = \mathcal F_1 \mathcal F_2^T
+$$&lt;p>各种文献中旋转矩阵的定义十分混乱，我们遵从这样一个定义：$\boldsymbol R_{12}$，即将同一个向量丛坐标系 $\mathcal F_2$ 变换到坐标系 $\mathcal F_1$ 下。坐标系变换有：&lt;/p>
+$$
+\boldsymbol R_{12} \mathcal F_2= \mathcal F_1 \mathcal F_2^T \mathcal F_2 = \mathcal F_1
+$$&lt;p>类似的，我们还可以用向量的坐标和基之间的关系来推导坐标变换：&lt;/p>
+$$
+\begin{aligned}
+ \boldsymbol{r}_2 &amp;= \boldsymbol{R}_{21} \boldsymbol{r}_1\\
+ \mathcal F_1^T \boldsymbol{r}_1 &amp;= \mathcal F_2^T \boldsymbol{R}_{21} \boldsymbol{r}_1\\
+ \mathcal F_1^T \boldsymbol{r}_1 &amp;= \left(\boldsymbol{R}_{12} \mathcal F_2\right)^T \boldsymbol{r}_2\\
+\end{aligned}
+$$&lt;p>那么应该有：&lt;/p></description></item><item><title>From Transformer to VGGT</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</link><pubDate>Fri, 18 Apr 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</guid><description>&lt;ul>
 &lt;li>&lt;a href="#1-preliminary-attention-and-vit">1. Preliminary: Attention and ViT&lt;/a>
 &lt;ul>
 &lt;li>&lt;a href="#11-encoder-and-decoder">1.1. Encoder and Decoder&lt;/a>&lt;/li>
@@ -254,7 +282,75 @@ G(x,y) &amp;= \exp
 \right\}
 \end{aligned}
 $$&lt;p>
-其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p></description></item><item><title>Mathematics_In_3DGS_1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/06/mathematics_in_3dgs_1/</link><pubDate>Sat, 01 Jun 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/06/mathematics_in_3dgs_1/</guid><description>&lt;ul>
+其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p></description></item><item><title>Mathematics In 3DGS 2</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</link><pubDate>Fri, 17 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</guid><description>&lt;ul>
+&lt;li>&lt;a href="#1-%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95">1. 矩阵求导的常用方法&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#11-%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E4%B8%80%E8%88%AC%E6%96%B9%E6%B3%95">1.1. 矩阵求导的一般方法&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#111-%E7%9F%A9%E9%98%B5%E5%AF%B9%E6%A0%87%E9%87%8F%E6%B1%82%E5%AF%BC">1.1.1. 矩阵对标量求导&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#112-%E7%9F%A9%E9%98%B5%E5%AF%B9%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC">1.1.2. 矩阵对矩阵求导&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#12-%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E5%85%A8%E5%BE%AE%E5%88%86%E6%96%B9%E6%B3%95">1.2. 矩阵求导的全微分方法&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#121-%E6%AD%A3%E5%90%91%E4%BC%A0%E6%92%AD%E7%9A%84%E8%AE%A1%E7%AE%97">1.2.1. 正向传播的计算&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#122-%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%9A%84%E8%AE%A1%E7%AE%97">1.2.2. 反向传播的计算&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#123-frobenius%E5%86%85%E7%A7%AF">1.2.3. Frobenius内积&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#13-%E5%B8%B8%E8%A7%81%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%E7%9A%84%E6%B1%82%E5%AF%BC">1.3. 常见矩阵运算的求导&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#131-%E5%8A%A0%E6%B3%95">1.3.1. 加法&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#132-%E4%B9%98%E6%B3%95">1.3.2. 乘法&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#133-%E6%B1%82%E9%80%86">1.3.3. 求逆&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#134-%E4%BA%8C%E6%AC%A1%E5%9E%8B">1.3.4. 二次型&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#135-%E8%A1%8C%E5%88%97%E5%BC%8F">1.3.5. 行列式&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#2-3dgs-%E4%B8%AD%E5%85%89%E6%A0%85%E5%8C%96%E7%9A%84%E6%AD%A3%E5%90%91%E5%92%8C%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B">2. 3DGS 中光栅化的正向和反向过程&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#21-%E6%B7%B1%E5%BA%A6%E5%90%88%E6%88%90%E8%BF%87%E7%A8%8B">2.1. 深度合成过程&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#211-%E6%AD%A3%E5%90%91%E8%BF%87%E7%A8%8B">2.1.1. 正向过程&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#212-%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B">2.1.2. 反向过程&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a href="#22-%E6%8A%95%E5%BD%B1%E8%BF%87%E7%A8%8B">2.2. 投影过程&lt;/a>
+&lt;ul>
+&lt;li>&lt;a href="#221-%E6%AD%A3%E5%90%91%E8%BF%87%E7%A8%8B">2.2.1. 正向过程&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#222-%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B">2.2.2. 反向过程&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-矩阵求导的常用方法">1. 矩阵求导的常用方法&lt;/h2>
+&lt;h3 id="11-矩阵求导的一般方法">1.1. 矩阵求导的一般方法&lt;/h3>
+&lt;p>在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：&lt;/p>
+&lt;ol>
+&lt;li>向量对标量求导&lt;/li>
+&lt;li>向量对向量求导&lt;/li>
+&lt;li>向量对矩阵求导&lt;/li>
+&lt;li>矩阵对标量求导&lt;/li>
+&lt;li>矩阵对向量求导&lt;/li>
+&lt;li>矩阵对矩阵求导&lt;/li>
+&lt;/ol>
+&lt;p>事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。&lt;/p>
+&lt;h4 id="111-矩阵对标量求导">1.1.1. 矩阵对标量求导&lt;/h4>
+&lt;p>假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：&lt;/p>
+$$
+\mathbf A= 
+\left[
+\begin{matrix}
+a_{11}&amp; a_{12}&amp; \cdots&amp; \ a_{1n} \\
+a_{21}&amp; a_{22}&amp; \cdots&amp; \ a_{2n} \\
+\vdots&amp; \vdots&amp; \ddots&amp; \vdots \\
+a_{n1}&amp; a_{n2}&amp; \cdots&amp; \ a_{nn} \\
+\end{matrix}
+\right]
+$$&lt;p>那么，$\frac{d \mathbf A}{d k}$被定义为：&lt;/p></description></item><item><title>Mathematics In 3DGS 1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</link><pubDate>Wed, 01 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</guid><description>&lt;ul>
 &lt;li>&lt;a href="#1-%E4%BD%93%E6%B8%B2%E6%9F%93">1. 体渲染&lt;/a>
 &lt;ul>
 &lt;li>&lt;a href="#11-%E6%B8%B2%E6%9F%93%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90">1.1. 渲染行为分析&lt;/a>

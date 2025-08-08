@@ -1,0 +1,80 @@
+<!doctype html><html><!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Lie Group and Lie Algebra - WangJV Blog</title><meta name=viewport content="width=device-width,initial-scale=1"><meta itemprop=name content="Lie Group and Lie Algebra"><meta itemprop=description content="我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 群 和 微分流形 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。
+事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：
+封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$ 结合律：$\forall c_1, c_2, c_3 \in C, [[c_1, c_2], c_3 ] = [c_1, [c_2, c_3]]$ 单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$ 逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$ 在研究群的性质时，我们需要清晰的认识到 集合 和 定义在集合上的 二元运算 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “操作不变形”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。"><meta itemprop=datePublished content="2025-06-25T17:13:56+08:00"><meta itemprop=dateModified content="2025-06-25T17:13:56+08:00"><meta itemprop=wordCount content="860"><meta property="og:url" content="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/"><meta property="og:site_name" content="WangJV Blog"><meta property="og:title" content="Lie Group and Lie Algebra"><meta property="og:description" content="我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 群 和 微分流形 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。
+事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：
+封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$ 结合律：$\forall c_1, c_2, c_3 \in C, [[c_1, c_2], c_3 ] = [c_1, [c_2, c_3]]$ 单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$ 逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$ 在研究群的性质时，我们需要清晰的认识到 集合 和 定义在集合上的 二元运算 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “操作不变形”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。"><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-06-25T17:13:56+08:00"><meta property="article:modified_time" content="2025-06-25T17:13:56+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Lie Group and Lie Algebra"><meta name=twitter:description content="我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 群 和 微分流形 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。
+事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：
+封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$ 结合律：$\forall c_1, c_2, c_3 \in C, [[c_1, c_2], c_3 ] = [c_1, [c_2, c_3]]$ 单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$ 逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$ 在研究群的性质时，我们需要清晰的认识到 集合 和 定义在集合上的 二元运算 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “操作不变形”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。"><link rel=stylesheet type=text/css media=screen href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/main.css><link id=dark-scheme rel=stylesheet type=text/css href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/dark.css><script src=https://wangjv0812.github.io/WangJV-Blog-Pages/js/main.js></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js></script><script>MathJax={tex:{displayMath:[["\\[","\\]"],["$$","$$"]],inlineMath:[["\\(","\\)"],["$","$"]]},loader:{load:["ui/safe"]}}</script></head><body><div class="container wrapper"><div class=header><h1 class=site-title><a href=https://wangjv0812.github.io/WangJV-Blog-Pages/>WangJV Blog</a></h1><div class=site-description><nav class="nav social"><ul class=flat></ul></nav></div><nav class=nav><ul class=flat></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>25</span>
+<span class=rest>Jun 2025</span></div></div><div class=matter><h1 class=title>Lie Group and Lie Algebra</h1></div></div><p>我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 <strong>群</strong> 和 <strong>微分流形</strong> 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。</p><p>事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：</p><ol><li>封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$</li><li>结合律：$\forall c_1, c_2, c_3 \in C, [[c_1, c_2], c_3 ] = [c_1, [c_2, c_3]]$</li><li>单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$</li><li>逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$</li></ol><p>在研究群的性质时，我们需要清晰的认识到 <strong>集合</strong> 和 定义在集合上的 <strong>二元运算</strong> 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “<strong>操作不变形</strong>”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。</p><p>另一个很经典的例子是用群来描述等边三角形的旋转不变形。但是这个例子我们后面再补充</p><h2 id=1-群的结构和基本操作>1. 群的结构和基本操作</h2><h3 id=11-子群>1.1. 子群</h3><p>对于集合 $G$ 的一个子集 $H \subset G$，在群 $G$ 定义的运算律 $\cdot$ 上满足群的性质，就称 $H$ 为 $G$ 的子群。不难察觉到，单位元 $e$ 一定在 $H$ 上。例如任意通过坐标原点的直线都可以看作定义在加法上的对 $R(2)$ 的子群。</p><h3 id=12-陪群>1.2. 陪群</h3><p>对于一个群 $G$ 和其子群 $N$，$N$ 对 $g \in G$ 的陪集定义为</p>$$
+\begin{aligned}
+&\text{rightcoset: } & Ng = \{n \cdot g \mid \forall n \in N\} \\
+&\text{leftcoset: } & gN = \{g \cdot n \mid \forall n \in N\} \\
+\end{aligned}
+$$<p>对于陪集，有很多信息可以研究。不妨先看看左右陪集的关系，也就是著名的 <strong>陪集定理</strong></p><h4 id=122-陪集定理>1.2.2. 陪集定理</h4><p>对于一个子集 $N$，其左右陪集合要么没有相同元素，要么完全相等</p><p>证明：对于子集 $N$ 的两个陪集 $g_1 N$ 和 $g_2 N$，假设有一个相同元素:</p>$$
+g_1 n_1 = g_2 n_2
+$$<p>那么应有：</p>$$
+\begin{aligned}
+g_1 N &= g_1 n_1 N & \text{because } N \text{ is closed}\\
+&= g_2 n_2 N & \text{because } g_1 n_1 = g_2 n_2\\
+&= g_2 N & \text{because } N \text{ is closed}
+\end{aligned}
+$$<p>可以看到，如果 $g_1 N$ 和 $g_2 N$ 有一个相同元素，那么它们就完全相等。也就是说，$g_1 N = g_2 N$。</p><p>从陪集定理可以看出来，因为配集之间绝对不重复，可以用来分割群 $G = \cup_{i} g_i N$，缺那个元素就用该元素作为生成元搞一个陪集就好了。因为该元素一定可以在生成的陪集中找到。事实上这个分割的思路就是后面要讲到的商群和核的基础。</p><h4 id=123-陪集的重复性>1.2.3. 陪集的重复性</h4><p>对于 $aN$，容易找到 $\forall a' \in aN$，满足 $a' N = aN$。证明很容易，不妨假设 a&rsquo; = an&rsquo;。那么有 $a'N = an'N = aN$</p><h3 id=13-共轭子群--正规子群normal-subgroup>1.3. 共轭子群 / 正规子群（normal subgroup）</h3><p>刚才提到了，两个陪集要么完全不同，要么完全相同。那么不妨思考，对于群 $G$ 如果可以找到一个子群 $N$，满足对于 $\forall g \in G$，满足其左右陪集都相等，我们称之为 $G$ 的正规子群。</p>$$
+\begin{aligned}
+gN = Ng & & \forall g \in G
+\end{aligned}
+$$<p>或者变形一下，变为更常见的形式：</p>$$
+N = \{gNg^{-1} \mid \forall g \in G\}
+$$<p>事实上这个形式也很重要。一般而言，我们称 $n_\alpha = g n_\beta g^{-1} \exists g \in G$ 为 $n_\alpha$ 和 $n_\beta$ 共轭。</p><h3 id=14-群中心>1.4. 群中心</h3><p>群中心是一个特殊的正规子群，定义为群中对其他元素交换的部分，即：</p>$$
+C(G) = \{g_c \mid g_c \in G, g_cg = gg_c \forall g \in G\}
+$$<p>不难证明群的中心一定是正规子群。事实上只需要证明 $\forall g \in G, z \in C(G), gzg^{-1} \in C(G)$。即 $gzg^{-1} = gg^{-1}z = z$。群的中心位正规子群。反过来不难发现，正规子群不一定是群的中心。群的中心要求对任意元素交换，即 $gz = zg$，但是正规子群之要求 $gz_1 = z_2 g,\ \{z_1, z_2\} \in Z$ 即可。</p><h3 id=15-商群>1.5. 商群</h3><p>不难发现，正规子群的左配集本身可以构成一个群。我们便称之为商群。定义群 $G$ 和正规子群 $N$，有：</p>$$
+G/N = \{gN \mid \forall g \in G\}
+$$<p>这个定义看起来很难理解，用比较简答的话说就是：<em>对于不同的 $g \in G$，$gN$ 组成的集合可以在 $G$ 定义的运算上构成一个群</em>。好吧我知道这个解释只能让你知道商群张什么样，但是还是不知道为什么要定义它。但是不妨先接受它，我们先证明它是一个群，之后再来讨论起实质上的含义。</p><ul><li><strong>幺元</strong></li></ul><p>我们不妨直接定义 $eN$ 为商群的幺元。不难发现其满足：</p>$$
+gN \cdot eN = gN \cdot N = gN
+$$<ul><li><strong>封闭性</strong></li></ul><p>对于商群中任意两个元素 $g_1 N, g_2 N$，有：</p>$$
+\begin{aligned}
+g_1 N g_2 N = g_1 g_2 N g_2^{-1} g_2 N = g_1 g_2 N
+\end{aligned}
+$$<p>这个证明不难看出，只有 $N$ 是正规子群时才能保证</p><ul><li><strong>结合律</strong></li></ul><p>对于商群中的三个元素 $g_1N, g_2N, g_3N$，有：</p>$$
+\begin{aligned}
+(g_1N g_2N) g_3N &= g_1g_2 N g_3 N = g_1g_2g_3 N\\
+&= g_1N g_2g_3N = g_1N (g_2N g_3N)\\
+\end{aligned}
+$$<ul><li><strong>逆元</strong></li></ul><p>对于任意元素 $gN$，我们总可以找到 $g^{-1}N$，满足:</p>$$
+gN g^{-1}N = eN
+$$<ul><li><strong>运算的良定性</strong></li></ul><p>最后，还需要再证明最后一个重要性。事实上这个性质是前面所有证明的前提，但是为了该证明更好理解，我们放在后面讨论。我们前面在讨论商群时提到了，对于 $g_1' \neq g_1, g_1'N = g_1N, g_2' \neq g_2, g_2'N = g_2N$。是否有 $g_1N g_2N = g_1'N g_2'N$。即陪群上的运算是否会与陪集的选择有关。不妨看：</p>$$
+\begin{aligned}
+g_1'N g_2'N &= g_1' g_2' N\\
+&= g_1' N g_2'\\
+&= g_1 N g_2'\\
+&= g_1 N g_2 N
+\end{aligned}
+$$<p>可以看到，只要商群上的元素相同（即配集相同），即便配集的生成元不同，运算的结果也相同。</p><p>结合前面介绍的陪集定理，可以知道群 $G$ 商的每个元素都可以在商群的元素中找到。事实上，商群是使用不变子群对原始群做的一个 &ldquo;分割&rdquo;。即通过不变子群和群中元素的 “作用” 产生陪集来讲</p><p>这个理解可以在后面的核同构中得到更深刻的诠释。</p><p><img src=Images/the%20divergence%20of%20R%282%29.png alt="the divergence of R(2)"></p><h2 id=2-同态-homomorphism-和同构-isomorphism>2. 同态 (Homomorphism) 和同构 (isomorphism)</h2><p>我们可以将同态和同构这两个概念一同讨论，不妨先讨论同态：</p><p>同态指的是可以保持群的结构（运算运算）的映射。即对于两个群 $G_1$ 和 $G_2$，如果存在一个映射 $\phi: G_1 \to G_2$，使得：</p>$$
+\phi(g_1 g_2) = \phi(g_1) \cdot \phi(g_2) \quad \forall g_1, g_2 \in G_1
+$$<p>这个映射有一种给人一种群运算穿透映射的印象。直观的讲，映射 $\phi$ 将 $G_1$ 翻译到了 $G_2$ 中，同时不改变运算关系。有趣的一点是，这个映射 $\phi$ 会将 $G_1$ 中的单位元映射到 $G_2$ 的单位元上，类似的，逆元也有类似的对应关系。</p><p>可以看到，<strong>同态既不要求单射也不要求满射</strong>, 而<strong>同构是既要求单射又要求满射的同态</strong>.</p><h3 id=21-映射的核和核同态定理>2.1. 映射的核和核同态定理</h3><h4 id=211-映射的核>2.1.1. 映射的核</h4><p>对于一个群同态 (Homomorphism) $f: G_1 \to G_2$，映射 $f$ 的核 $\text{Ker}(f)$ 定位为 $G_1$ 中所有的映射到 $G_2$ 中的单位元上的元素：</p>$$
+\text{Ker}(f) = \{g\in G_1 \mid f(g) = e_H\}
+$$<p>一个直观的理解是，映射的核实质上衡量了映射 $f$ 中，$G_1$ 中有多少信息消失了，或者说被压缩了，这个理解在后面介绍的 映射的核与商群之间的关系时由根深刻的认识。</p><h4 id=212-同态核定理第一同态定理>2.1.2. 同态核定理（第一同态定理）</h4><p>同态核定理可以描述为：</p><ol><li>同态核 $\text{Ker}(f)$ 是 $G_1$ 的正规子群</li><li>商群 $G_1/\text{Ker}(f)$ 与 $G_2$ 同构</li></ol><p>事实上上面第二条描述是不完备的，上面的描述需要 $\phi$ 是一个满射，如果不是满射的话，需要将 $G_2$ 替换为 $G_2$ 的子群 $\text{Im}(f)$；不过这个简化无伤大雅。完整版本用符号可以表示为：</p>$$
+G/\text{Ker}(f) \simeq \text{Im}(f)
+$$<p>结合商群和陪集定理，可以对核同态定理有一个直观且清晰的认识：同态核 $\text{Ker}(f)$ 可以将 $G_1$ 分割为 $G_1 = \cup_{i}\text{Ker}(f)g_{1i}$。核同态定理的证明过程可以总结为：</p><ol><li>证明 $\text{Ker}(f)$ 是 $G_1$ 上的正规子群</li></ol><p>对于任意 $k_1, k_2 \in \text{Ker}(f)$，根据核的定义我们知道一定有 $k_1, k_2 \in G_1$，只需要证明 $\text{Ker}(f)$ 满足群的四个性质。对于幺元性和结合性我们无需证明，这在核的定义中是显然的，只需证明封闭性和逆元：</p>$$
+\begin{array}{cl}
+&\text{封闭性}： & \phi(k_1k_2) = \phi(k_1)\phi(k_2) = h_e \in \text{Ker}(f)\\
+&\text{逆元}： & \phi(k_1k_1^{-1}) = \phi(k_1)\phi(k_1^{-1}) = h_e
+\end{array}
+$$<p>之后需要证明其是正规子群。对于 $\forall g \in G_1$，有：</p>$$
+\begin{aligned}
+\phi(g k_1 g^{-1})
+&= \phi(g)\phi(k_1)\phi(g)^{-1}\\
+&= h_g h_e h_g^{-1}\\
+&= h_e \in G_2
+\end{aligned}
+$$<ol start=2><li>下面我们证明使用核 $\text{Ker}(f)$ 分割出的 $G_1$ 中的元素全部被映射到了 $G_2$ 的同一个元素上：</li></ol>$$
+\phi(g\text{Ker}(f)) = \phi(g)\phi(\text{Ker}(f)) = \phi(g) \in G_2
+$$<p>这就可以看到，通过 $\text{Ker}(f)$ 对原本的操作产生了一个分割。核 $\text{Ker}(f)$ 的作用就是将映射 $\phi$ 映射到同一个元素的所有 “源元素” 打包。</p><ol start=3><li>下面我们不妨定义一个商群 $G/\text{Ker}(f)$ 到 $G_2$ 到映射 $f$：</li></ol>$$
+f(g) = \phi(g/\text{Ker}(f))
+$$<p>这一步事实上证明了映射 $\phi(g/\text{Ker}(f))$ 是满射。只要再这个映射是单射的，就证明了商群 $g/\text{Ker}(f)$ 和 $\phi(G_1)$ 是完全等价的，是同构的。</p><ol start=4><li>证明映射 $\phi(g/\text{Ker}(f))$ 是单射，不妨用反证法证明</li></ol><p>先假设存在 $g_1 \text{Ker}(f) \neq g_2\text{Ker}(f)$，满足像相同</p><p>现在对 $\phi(g_1)$ = $\phi(g_2)$ 这个等式两边同时左乘 $\phi(g_1)^{-1}$。我们知道 $\phi(g_1)^{-1} = \phi(g_1^{-1})$，有：</p>$$
+\begin{aligned}
+\phi(g_1^{-1})\phi(g_1) &= \phi(g_1^{-1})\phi(g_2)\\
+h_e &= \phi(g_1^{-1}g_2)\\
+\end{aligned}
+$$<p>根据核的定义，应有 $g_1^{-1}g_2 \in \text{Ker}(f)$。在介绍陪集时我们知道，两个陪集合要么完全相同，要么完全不同。那么由 $g_1^{-1}g_2 \in \text{Ker}(f)$ 恰恰可以说明 $g_1 \text{Ker}(f) = g_2\text{Ker}(f)$。</p><p>与假设不符，证明完毕。</p><h3 id=22-同构映射>2.2. 同构映射</h3><p>同构（Isomorphism）就是一个双射（或者说一一映射）版本的同态（Homomorphism）。同构的好处是如果两个群之间存在一个同构映射，在事实上说明这两个群是完全等价的（元素之间可以一一映射，还保留群结构，或者说群元素之间的作用关系）。</p><p>一个群上的任意性质都可以无损的迁移到和其同构的群上。</p><h2 id=3-群作用和变换群>3. 群作用和变换群</h2><h3 id=31-左右作用和伴随作用>3.1. 左右作用和伴随作用</h3><ol><li>左作用：对于群 $G$，$\forall g, g' \in G$，定义左作用为一个映射 $L_g: G \to G$, $L_g g' = gg'$</li><li>右作用：对于群 $G$，$\forall g, g' \in G$，定义右作用为一个映射 $R_g: G \to G$, $R_g g' = g'g^{-1}$</li><li><strong>伴随作用</strong>（非常重要滴）：对于群 $G$，$\forall g, g' \in G$，定义伴随作用为 $\text{Ad}_g g' = gg'g^{-1}$</li></ol><p>伴随作用是非常非常重要，可以预告一下，后面的李群和李代数操作中，伴随作用可以用来“挪动李代数的展开原点“。显然，伴随作用是一个同构映射，容易证明其可以保持群的运算（结构），且是一一映射。还需要题的一点是，虽然这里叫伴随，其实 $Ad$，Adjacend 也可以被翻译成共轭，就是前面 &ldquo;共轭子群&rdquo;。</p><h3 id=32-变换群与自同构映射>3.2. 变换群与自同构映射</h3><p>之前我们接触的群所描述的对象都是一些比较自然的对象，下面我们将看到群这个数学工具所具有的巨大的承载能力。不妨思考，对于一个集合 $X$，双射 $\phi: X \to X$ 称为定义在 $X$ 上的置换作用。对于置换作用，我们可以定义映射的 “乘法”（事实上称之为一个 “二元运算” 更加准确）:</p><p>对于任意定义在 $X$ 上的两个一一映射 $\phi,\psi$，其乘法 $\phi\psi = \phi(\psi())$。容易证明，在这个二元运算的定义下，$X$ 的置换群构成一个群。定义在 $X$ 上的全部二元运算称为 $X$ 上的 <strong>完全置换群</strong> $S_X$。如果集合 $X$ 有 $n$ 个元素，对应的完全置换群称之为 <strong>$n$阶置换群</strong>，有 $n!$ 个元素（因为这是一个一一映射，一共有 $n!$ 中可能的映射关系 ）。还需要提一小点，完全置换群还可以作用在无穷集合上（甚至希尔伯特空间）。</p><p>形式化的讲，完全置换群 $S_X$ 可以写作:</p>$$
+S_X = \{\text{all map from } X \to X\}
+$$<p>从左变换群或者右变换群可以看出，群 $G$ 的完全变换群中一定存在一个子群同构于 $G$。证明也很容易，左变换群或者右变换群就与 $G$ 同构。</p><p>但是显然的，完全置换去中很多运算本身并无法在群 $G$ 上形成一个同构。我们将在 $G$ 上同构的映射称为 <strong>自同构映射</strong>，自同构映射构成的群称为 <strong>自同构映射群</strong> $AutG$。</p><p>自同构群实质上表示的是保持群 $G$ 的结构（运算规则）的映射，实质上是对 $G$ 上的元素的 “重排”。但是很多时候这种 “重排作用” 并不是来自于群 $G$ 内部的作用（可以不由群内元素作用，或者不由群内定义的运算）。因此我们需要明确，完全由群内元素作用的同构映射，我们称之为 <strong>内自同构映射</strong> $InnG$。可以证明，自同构映射一定是 群内 <strong>伴随作用</strong> 诱导出来的。</p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://wangjv0812.github.io/WangJV-Blog-Pages/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div></div><div class="footer wrapper"><nav class=nav><div>2025</div></nav></div></body></html>
