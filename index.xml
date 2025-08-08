@@ -133,7 +133,7 @@ $$
 \end{array}
 $$&lt;p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p>
 &lt;h3 id="12-最大后验估计">1.2. 最大后验估计&lt;/h3>
-&lt;p>最大后验估计需要完成如下一个优化问题：&lt;/p></description></item><item><title>DreamFusion</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/dreamfusion/</link><pubDate>Thu, 17 Oct 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/dreamfusion/</guid><description>&lt;h2 id="1-图像平面对齐">1. 图像平面对齐&lt;/h2>
+&lt;p>最大后验估计需要完成如下一个优化问题：&lt;/p></description></item><item><title>BARF: Bundle Adjusting Neural Radiance Field</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</link><pubDate>Thu, 17 Oct 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</guid><description>&lt;h2 id="1-图像平面对齐">1. 图像平面对齐&lt;/h2>
 &lt;p>思考我们有一系列位姿$x$不准确的图像。我们希望找到一个图像的扭曲变换（warp transform）$\mathcal W(x,p)$ 我们知道，两个平面之间的投影变换可以通过homography变换来描述。变换 $\mathcal W(x,p)$ 受到参数 $p$控制。我们希望能通过不断修正参数 $p = p + \Delta p$来修正图像的位姿，实现最终的图像对齐。假设我们有两张照片 $\mathcal I_1(x), \mathcal I_2(x)$这个对齐过程可以通过下面这样一个最优指标来描述：&lt;/p>
 $$
 \min \sum_x \lvert
