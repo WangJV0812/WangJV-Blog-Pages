@@ -1,19 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link><description>Recent content on WangJV Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Wed, 06 Aug 2025 16:29:40 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/index.xml" rel="self" type="application/rss+xml"/><item><title>ScoreMatching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</link><pubDate>Wed, 06 Aug 2025 16:29:40 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</guid><description>&lt;ul>
-&lt;li>&lt;a href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8-score-matching">1. 为什么要用 Score Matching&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#2-score-function">2. Score Function&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#21-langevin-dynamics">2.1. Langevin Dynamics&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#3-score-matching">3. Score Matching&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#4-%E8%AE%A8%E8%AE%BA">4. 讨论&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#41-%E5%93%88%E9%92%A6%E6%A3%AE%E8%BF%B9%E4%BC%B0%E8%AE%A1-hutchinsons-trace-estimation">4.1. 哈钦森迹估计 (Hutchinson&amp;rsquo;s Trace Estimation)&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#reference">reference&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;h2 id="1-为什么要用-score-matching">1. 为什么要用 Score Matching&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link><description>Recent content on WangJV Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Wed, 06 Aug 2025 16:29:40 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/index.xml" rel="self" type="application/rss+xml"/><item><title>ScoreMatching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</link><pubDate>Wed, 06 Aug 2025 16:29:40 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</guid><description>&lt;h2 id="1-为什么要用-score-matching">1. 为什么要用 Score Matching&lt;/h2>
 &lt;p>很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：&lt;/p>
 $$
 \begin{array}{c}
@@ -21,7 +6,25 @@ p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
 \text{where: } Z(\theta) = \int q(x\mid \theta) dx
 \end{array}
 $$&lt;p>但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）&lt;/p>
-&lt;p>要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。&lt;/p></description></item><item><title>Lie Group and Lie Algebra</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</guid><description>&lt;p>我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong>群&lt;/strong> 和 &lt;strong>微分流形&lt;/strong> 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p>
+&lt;p>要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。&lt;/p>
+&lt;h2 id="2-score-function">2. Score Function&lt;/h2>
+&lt;p>对于一个受到参数 $\boldsymbol{\theta}$ 控制的，关于随机向量 $\boldsymbol{\xi}$ 的随机分布 $p(\boldsymbol{\xi}, \boldsymbol{\theta})$。我们定义其对数梯度为其 Score Function。形式化的，可以写作：&lt;/p>
+$$
+\psi (\boldsymbol{\xi}, \boldsymbol{\theta}) =
+\begin{pmatrix}
+ \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_1}\\
+ \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_2}\\
+ \vdots\\
+ \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_n}
+\end{pmatrix} =
+\begin{pmatrix}
+ \psi_1(\boldsymbol{\xi}, \boldsymbol{\theta})\\
+ \psi_2(\boldsymbol{\xi}, \boldsymbol{\theta})\\
+ \vdots\\
+ \psi_n(\boldsymbol{\xi}, \boldsymbol{\theta})
+\end{pmatrix} =
+\nabla_{\boldsymbol{\xi}} \log p(\boldsymbol{\xi}, \boldsymbol{\theta})
+$$&lt;p>我们不难发现：&lt;/p></description></item><item><title>Lie Group and Lie Algebra</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</guid><description>&lt;p>我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong>群&lt;/strong> 和 &lt;strong>微分流形&lt;/strong> 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p>
 &lt;p>事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：&lt;/p>
 &lt;ol>
 &lt;li>封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$&lt;/li>
@@ -49,90 +52,19 @@ $$
  \mathcal F_1^T \boldsymbol{r}_1 &amp;= \mathcal F_2^T \boldsymbol{R}_{21} \boldsymbol{r}_1\\
  \mathcal F_1^T \boldsymbol{r}_1 &amp;= \left(\boldsymbol{R}_{12} \mathcal F_2\right)^T \boldsymbol{r}_2\\
 \end{aligned}
-$$&lt;p>那么应该有：&lt;/p></description></item><item><title>From Transformer to VGGT</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</link><pubDate>Fri, 18 Apr 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</guid><description>&lt;ul>
-&lt;li>&lt;a href="#1-preliminary-attention-and-vit">1. Preliminary: Attention and ViT&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#11-encoder-and-decoder">1.1. Encoder and Decoder&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#12-attention">1.2. Attention&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#13-multi-head-attention">1.3. Multi-head Attention&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#14-attention-%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BD%BF%E7%94%A8%E7%BB%86%E8%8A%82">1.4. Attention 的一些使用细节&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#15-%E9%80%90%E4%BD%8D%E7%BD%AEposition-wise%E7%9A%84%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C">1.5. 逐位置（position-wise）的前馈网络&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#16-%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81">1.6. 位置编码&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#17-%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90">1.7. 复杂度分析&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#18-vision-transformer">1.8. Vision Transformer&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#2-vggt-introduction">2. VGGT Introduction&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#3-method">3. Method&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#31-%E9%97%AE%E9%A2%98%E5%AE%9A%E4%B9%89%E5%92%8C%E7%AC%A6%E5%8F%B7%E7%BA%A6%E5%AE%9A">3.1. 问题定义和符号约定&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#32-%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96%E9%AA%A8%E5%B9%B2%E7%BD%91%E7%BB%9C">3.2. 特征提取骨干网络&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#33-%E4%BA%A4%E6%9B%BF%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6">3.3. 交替注意力机制&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#34-%E9%A2%84%E6%B5%8B%E5%A4%B4">3.4. 预测头&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#341-%E5%9D%90%E6%A0%87%E7%B3%BB">3.4.1 坐标系&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#342-%E7%9B%B8%E6%9C%BA%E5%8F%82%E6%95%B0%E9%A2%84%E6%B5%8B%E5%A4%B4">3.4.2 相机参数预测头&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#343-%E7%A8%A0%E5%AF%86%E9%A2%84%E6%B5%8B%E5%A4%B4">3.4.3 稠密预测头&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#344-%E8%B7%9F%E8%B8%AA%E5%A4%B4">3.4.4 跟踪头&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#4-training">4. Training&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#41-%E7%9B%B8%E6%9C%BA%E6%8D%9F%E5%A4%B1">4.1. 相机损失&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#42-%E6%B7%B1%E5%BA%A6%E5%92%8C%E7%82%B9%E5%9B%BE%E6%8D%9F%E5%A4%B1">4.2. 深度和点图损失&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#43-%E8%B7%9F%E8%B8%AA%E6%8D%9F%E5%A4%B1">4.3. 跟踪损失&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#44-%E7%9C%9F%E5%80%BC%E5%9D%90%E6%A0%87%E7%B3%BB%E5%BD%92%E4%B8%80%E5%8C%96">4.4. 真值坐标系归一化&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#45-%E8%AE%AD%E7%BB%83%E7%BB%86%E8%8A%82">4.5. 训练细节&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#5-experiments">5. Experiments&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#references">References&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#appendix">Appendix&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#a-huber-loss">A. huber loss&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;h2 id="1-preliminary-attention-and-vit">1. Preliminary: Attention and ViT&lt;/h2>
-&lt;p>我们先来回顾一下经典的 Transformer 结构，之后从 Transformer 的角度来理解 ViT，这样大家能更好的理解 VGGT 和 MASt3R、DUSt3R 之类工作的苦恼之处。&lt;/p></description></item><item><title>DUSt3R and MUSt3R</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</link><pubDate>Mon, 10 Mar 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</guid><description>&lt;ul>
-&lt;li>&lt;a href="#1-dust3r">1. DUSt3R&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#11-introduction">1.1. Introduction&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#12-method-and-forward">1.2. Method and forward&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#121-ponit-map">1.2.1. Ponit Map&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#122-%E7%9B%B8%E6%9C%BA%E5%92%8C%E5%9C%BA%E6%99%AF">1.2.2. 相机和场景&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#123-%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84">1.2.3. 网络结构&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#13-training">1.3. Training&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#131-%E4%B8%89%E7%BB%B4%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1">1.3.1. 三维回归损失&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#132-%E7%BD%AE%E4%BF%A1%E6%8D%9F%E5%A4%B1">1.3.2. 置信损失&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#14-%E5%BA%94%E7%94%A8">1.4. 应用&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#141-%E4%B8%89%E7%BB%B4%E7%82%B9%E5%8C%B9%E9%85%8D">1.4.1. 三维点匹配&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#142-%E6%81%A2%E5%A4%8D%E7%9B%B8%E6%9C%BA%E5%86%85%E5%8F%82">1.4.2. 恢复相机内参&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#143-%E7%9B%B8%E5%AF%B9%E4%BD%8D%E7%BD%AE%E5%A7%BF%E4%BC%B0%E8%AE%A1">1.4.3. 相对位置姿估计&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#2-mast3r">2. MASt3R&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#21-%E5%8C%B9%E9%85%8D%E5%A4%B4">2.1. 匹配头&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#22-%E5%8C%B9%E9%85%8D-loss">2.2. 匹配 loss&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#23-%E5%BF%AB%E9%80%9F%E7%9B%B8%E4%BA%92%E5%8C%B9%E9%85%8D-fast-reciprocal-matching">2.3. 快速相互匹配 (Fast reciprocal matching)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#24-%E4%BB%8E%E7%B2%97%E5%88%B0%E7%BB%86%E7%9A%84%E5%8C%B9%E9%85%8D">2.4. 从粗到细的匹配&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#reference">Reference&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;h2 id="1-dust3r">1. DUSt3R&lt;/h2>
+$$&lt;p>那么应该有：&lt;/p></description></item><item><title>From Transformer to VGGT</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</link><pubDate>Fri, 18 Apr 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</guid><description>&lt;h2 id="1-preliminary-attention-and-vit">1. Preliminary: Attention and ViT&lt;/h2>
+&lt;p>我们先来回顾一下经典的 Transformer 结构，之后从 Transformer 的角度来理解 ViT，这样大家能更好的理解 VGGT 和 MASt3R、DUSt3R 之类工作的苦恼之处。&lt;/p>
+&lt;p>
+ &lt;img src="Images/VGGT%20Attention%20pipline.png" alt="VGGT Attention pipline">
+
+&lt;/p>
+&lt;h3 id="11-encoder-and-decoder">1.1. Encoder and Decoder&lt;/h3>
+&lt;p>深度学习名著 《&lt;a href="https://arxiv.org/pdf/1706.03762">Attention is all you need&lt;/a>》 提出的古典派 Attention（这么说是因为由于 Transformer 的大火，Attention 机制的变种已经太多了，我们只关注最经典的架构就好，其他都大同小异）。最经典的 Transformer 致力于解决翻译问题，是一个十分经典的 nlp 问题，采用了最经典的 Encoder-Decoder 结构。&lt;/p>
+&lt;p>Encoder 由 6 个完全相同的层堆叠而成，每个层由两个子层组成。第一个层负责实现 multi-head self-attention 机制；第二个层是一个简单的全连接前馈网络。为了避免在训练中出现梯度消失的问题，Transformer 在子层间采用了残差链接，之后对子层的输出做归一化（即 Add&amp;amp;Norm）那个块。因此，每个子层的输出可以表示为：&lt;/p>
+$$
+\text{LayerNorm}(x+\text{Sublayer}(x))
+$$&lt;p>其中 $\text{Sublayer}(x)$ 是每个子层具体的实现。为了方便残差链接，每层的输出和输入（包括 embedding layers）都被约定为 $d_{module} = 512$。（至少 Attention is all you need 是这样的）。&lt;/p>
+&lt;p>Decoder 也是由完全相同的层堆叠而成，和 Encoder 不同的是 Decoder 的每个层也有三个子层。Decoder 的第一个子层是 masked multi-head self-attention，负责对输入的 embedding 做自注意力机制，之后将输入的 embedding 和 encoder 编码的结合结合起来。后面的层和 Encoder 一样，都是 multi-head self-attention 和前馈网络的组合。&lt;/p></description></item><item><title>DUSt3R and MUSt3R</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</link><pubDate>Mon, 10 Mar 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</guid><description>&lt;h2 id="1-dust3r">1. DUSt3R&lt;/h2>
 &lt;h3 id="11-introduction">1.1. Introduction&lt;/h3>
 &lt;p>一般而言，现代的 MVS 和 SFM 的流程总是可以总结为以下几个子问题&lt;/p>
 &lt;ul>
@@ -144,7 +76,15 @@ $$&lt;p>那么应该有：&lt;/p></description></item><item><title>From Transfor
 &lt;li>密集重建&lt;/li>
 &lt;/ul>
 &lt;p>但是在这个复杂的过程中，每个子问题都对原始问题做了简化，无法完美解决，为后面的步骤引入了噪声，从而导致整个系统显的“精致而脆弱”。在这方面，每个子问题之间缺乏沟通就很能说明问题：如果能将这些缓解紧耦合到一起，将噪声统一的，全局的考虑，可以很大程度上解决应为过度简化和解耦导致的种种问题。此外，这个流程中的关键步骤很脆弱，在很多情况下容易出错。例如，很多 SFM 方法都依赖于相机参数的估计，但是如果遇到观察比较少、非漫反射表面或者相机姿态运动较为单一时，相机参数估计可能失效，导致整个 SFM 过程都会失效。归根结底：&lt;strong>一个多视图立体视觉（MVS）算法的性能仅取决于输入图像和相机参数的质量&lt;/strong>&lt;/p>
-&lt;p>事实上，单张图或者多张图哦通过深度学习的方式提取深度并不罕有。但是在不引入额外的先验信息时，这个问题往往是&lt;strong>不适定的&lt;/strong>，所以这些方法利用神经网络从大量数据中学习巨量的三维先验知识来解决模糊性问题。这些方法可以分为两类。第一类利用类别级别的物体先验知识，事实上 DreamFusion 就属于这类工作，可以从单张照片或者一句自然语言描述生成三纬结构。另一种与 DUSt3R 较为类似，系统的学习一般的场景来实现单目深度估计。但是一般而言，例如 SuperGlue 之类，在训练和推理过程中，都没有显然的引入三维结构的信息，也没有扔掉相机矩阵的桎梏。可以说，DUSt3R 是一种基于深度学习的 ALL in One 的深度估计方法，入了点图（Point Map）表示，使网络能够在规范框架中预测三维形状。&lt;/p></description></item><item><title>homography</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</link><pubDate>Fri, 14 Feb 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</guid><description>&lt;p>假设我们有两个坐标系 $\mathcal F_a, \ \mathcal F_b$，有一个点 $P$ 在一个平面上。在两个坐标系下，这个点可以描述为 $\rho_a, \rho_b$；对应的平面可以通过法向量和截距来描述：$\{n_a. d_a\}, \{n_b. d_b\}$。&lt;/p>
+&lt;p>事实上，单张图或者多张图哦通过深度学习的方式提取深度并不罕有。但是在不引入额外的先验信息时，这个问题往往是&lt;strong>不适定的&lt;/strong>，所以这些方法利用神经网络从大量数据中学习巨量的三维先验知识来解决模糊性问题。这些方法可以分为两类。第一类利用类别级别的物体先验知识，事实上 DreamFusion 就属于这类工作，可以从单张照片或者一句自然语言描述生成三纬结构。另一种与 DUSt3R 较为类似，系统的学习一般的场景来实现单目深度估计。但是一般而言，例如 SuperGlue 之类，在训练和推理过程中，都没有显然的引入三维结构的信息，也没有扔掉相机矩阵的桎梏。可以说，DUSt3R 是一种基于深度学习的 ALL in One 的深度估计方法，入了点图（Point Map）表示，使网络能够在规范框架中预测三维形状。&lt;/p>
+&lt;h3 id="12-method-and-forward">1.2. Method and forward&lt;/h3>
+&lt;h4 id="121-ponit-map">1.2.1. Ponit Map&lt;/h4>
+&lt;p>接下来，我们将图片中每个像素对应的三维点构成的集合称为 &lt;strong>点图&lt;/strong>（point map） $X \in R^{W×H×3}$。与分辨率为 $W×H$的对应RGB图像 $I$相关联，&lt;strong>点图 $X$ 在图像像素与三维点之间形成一一映射&lt;/strong>，即对于所有像素坐标 $(i, j) \in \{1...W\}×\{1...H\}$，都有 $I_{i,j} \leftrightarrow X_{i,j}$。此处每个像素点对应于一个三维点实事丧引入了一个简化假设，即假设观测的场景全部是不透明且漫反射的，不存在透过某个物体并观察到另一个物体的情况。&lt;/p>
+&lt;h4 id="122-相机和场景">1.2.2. 相机和场景&lt;/h4>
+&lt;p>相机与场景。给定相机内参 $K \in \mathbb{R}^{3 ×3}$ ，所观测场景的点图 $X$ 可以直接从真实深度图：&lt;/p>
+$$
+D \in \mathbb{R}^{W ×H}
+$$&lt;p>中获取，其公式为&lt;/p></description></item><item><title>homography</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</link><pubDate>Fri, 14 Feb 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</guid><description>&lt;p>假设我们有两个坐标系 $\mathcal F_a, \ \mathcal F_b$，有一个点 $P$ 在一个平面上。在两个坐标系下，这个点可以描述为 $\rho_a, \rho_b$；对应的平面可以通过法向量和截距来描述：$\{n_a. d_a\}, \{n_b. d_b\}$。&lt;/p>
 &lt;p>此外，该点有在图像坐标系下的描述 $p_a, p_b$ 和对应的相机矩阵 $K_a, K_b$。那么可以写出：&lt;/p>
 $$
 \begin{aligned}
@@ -165,64 +105,17 @@ $$
 &amp;z_b n^T_b K_b^{-1} p_b + d_b = 0\\
 &amp;z_b = -\frac{d_b}{n^T_b K_b^{-1} p_b}\\
 \end{aligned}
-$$&lt;p>带入到 $\rho_a, \rho_b$ 的表达式中，有：&lt;/p></description></item><item><title>DreamFusion</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</link><pubDate>Wed, 18 Dec 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</guid><description>&lt;ul>
-&lt;li>&lt;a href="#1-%E4%BD%BF%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E8%B7%AF%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90">1. 使用神经网路进行数据生成&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#11-%E5%BD%92%E4%B8%80%E5%8C%96%E5%B8%B8%E6%95%B0%E8%BF%91%E4%BC%BC">1.1. 归一化常数近似&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#12-autoregress-module-%E8%87%AA%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B">1.2. Autoregress Module (自回归模型)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#13-normalizing-flows-%E5%BD%92%E4%B8%80%E5%8C%96%E6%B5%81%E6%A8%A1%E5%9E%8B">1.3. Normalizing Flows (归一化流模型)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#14-variational-autoencoder%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81">1.4. Variational Autoencoder（变分自编码）&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#15-score-function-based-data-generating">1.5. Score Function Based Data Generating&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#16-langevin-dynamics">1.6. Langevin Dynamics&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#2-diffusion">2. Diffusion&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#21-forward-diffusion-process">2.1. Forward diffusion process&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#22-reverse-diffusion-process">2.2. Reverse diffusion process&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#23-training">2.3. Training&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#3-dreamfusion">3. DreamFusion&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#31-%E5%9F%BA%E6%9C%AC%E5%AE%9E%E7%8E%B0">3.1. 基本实现&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#32-sds-loss%E4%BB%8E-diffusion-module-%E4%B8%AD%E6%8F%90%E5%8F%96%E7%9F%A5%E8%AF%86">3.2. SDS Loss：从 diffusion module 中提取知识&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#4-reference">4. Reference&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#5-append">5. Append&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#51-boltzmann-distribution">5.1. Boltzmann Distribution&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#52-ddpm-%E5%92%8C-score-module-%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB">5.2. DDPM 和 Score Module 之间的关系&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;h2 id="1-使用神经网路进行数据生成">1. 使用神经网路进行数据生成&lt;/h2>
+$$&lt;p>带入到 $\rho_a, \rho_b$ 的表达式中，有：&lt;/p></description></item><item><title>DreamFusion</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</link><pubDate>Wed, 18 Dec 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</guid><description>&lt;h2 id="1-使用神经网路进行数据生成">1. 使用神经网路进行数据生成&lt;/h2>
 &lt;p>使用神经网络生成一个高维度数据是机器学习中非常重要的一个工作。我们假设数据集 $\left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\}$ 为一个大小为$n$的数据集，该数据集统一的服从一个概率分布 $p_{data}(\boldsymbol{x})$ 。我们假设对数据集的抽样都是独立同分布的，即：&lt;/p>
 $$
 \left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\} \sim p_{data}(\boldsymbol{x})
-$$&lt;p>那么丛现有数据生成新的数据的核心就是使用神经网络学习这个概率分布。不妨假设学习的概率分布为 $\hat p_\theta(\boldsymbol x)$。我们会希望 $\hat p_\theta(\boldsymbol x)$ 尽可能的接近 $p_{data}(\boldsymbol(x))$ 。为了衡量真是分布和我们学习的分布之间的差距，我们需要定义一个距离函数 $D(\cdot \mid \cdot)$ 我们可以定义优化目标：&lt;/p></description></item><item><title>Kalman_filter</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</link><pubDate>Mon, 04 Nov 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</guid><description>&lt;ul>
-&lt;li>&lt;a href="#1-%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E4%BC%B0%E8%AE%A1">1. 最大后验估计&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#11-%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0">1.1. 状态估计问题描述&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#12-%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E4%BC%B0%E8%AE%A1">1.2. 最大后验估计&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#2-%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2">2. 卡尔曼滤波&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#21-%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E6%96%AD%E6%8E%A8%E5%AF%BC-kalman-filter">2.1. 贝叶斯推断推导 kalman filter&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#22-%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E8%81%94%E5%90%88%E9%AB%98%E6%96%AF%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E7%9A%84%E5%88%86%E8%A7%A3%E6%8E%A8%E6%96%AD">2.2. 数学基础：联合高斯概率分布的分解（推断）&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#3-extended-kalman-filterekf">3. Extended Kalman Filter（EKF）&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#31-%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83%E7%9A%84%E9%9D%9E%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2%E7%BA%BF%E6%80%A7%E5%8C%96%E6%96%B9%E6%B3%95">3.1. 高斯分布的非线性变换（线性化方法）&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#32-extended-kalman-filter">3.2. Extended Kalman Filter&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#4-error-state-kalman-filtereskf">4. Error State Kalman Filter（ESKF）&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;p>ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。&lt;/p>
+$$&lt;p>那么丛现有数据生成新的数据的核心就是使用神经网络学习这个概率分布。不妨假设学习的概率分布为 $\hat p_\theta(\boldsymbol x)$。我们会希望 $\hat p_\theta(\boldsymbol x)$ 尽可能的接近 $p_{data}(\boldsymbol(x))$ 。为了衡量真是分布和我们学习的分布之间的差距，我们需要定义一个距离函数 $D(\cdot \mid \cdot)$ 我们可以定义优化目标：&lt;/p>
+$$
+\hat \theta = \arg \min_{\theta} D\left(p_{data}(\boldsymbol{x}) \mid \hat p_\theta(\boldsymbol x) \right)
+$$&lt;p>关于距离函数，我们可以定义 $D(\cdot \mid \cdot)$ 为 f-divergence 定义为：&lt;/p>
+$$
+D_f(p_{data}(\boldsymbol(x)) \mid \hat p_\theta(\boldsymbol x)) = \int p_\theta(\boldsymbol x) f \left(\frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)}\right) d\boldsymbol x
+$$&lt;p>不妨取 $f(x) = x\log x$ ，我们可以得到 KL 散度：&lt;/p></description></item><item><title>Kalman_filter</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</link><pubDate>Mon, 04 Nov 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</guid><description>&lt;p>ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。&lt;/p>
 &lt;h2 id="1-最大后验估计">1. 最大后验估计&lt;/h2>
 &lt;h3 id="11-状态估计问题描述">1.1. 状态估计问题描述&lt;/h3>
 &lt;p>我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：&lt;/p>
@@ -238,40 +131,9 @@ $$
  \text{过程噪声} &amp; x_k \sim \mathcal G (x \mid 0, Q_k) \\
  \text{观测噪声} &amp; \omega_k \sim \mathcal G (x \mid 0, R_k)
 \end{array}
-$$&lt;p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p></description></item><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;ul>
-&lt;li>&lt;a href="#1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#2-%E6%A6%82%E8%BF%B0%E5%92%8C%E8%83%8C%E6%99%AF">2. 概述和背景&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#21-%E8%83%8C%E6%99%AF">2.1. 背景&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#3-3dgaussian-%E7%9A%84%E7%BB%93%E6%9E%84%E5%8C%96-hierarchy-%E7%9A%84%E7%BB%86%E8%8A%82%E5%B1%82%E6%AC%A1-lod">3. 3DGaussian 的结构化 (hierarchy) 的细节层次 (LOD)&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#31-%E7%94%9F%E6%88%90%E4%B8%8D%E5%90%8C%E5%88%86%E8%BE%A8%E7%8E%87%E7%9A%84%E9%AB%98%E6%96%AF%E7%90%83">3.1. 生成不同分辨率的高斯球&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#32-%E5%B1%82%E6%AC%A1%E5%88%87%E5%89%B2%E9%80%89%E6%8B%A9%E5%92%8C%E6%B0%B4%E5%B9%B3%E5%88%87%E6%8D%A2">3.2. 层次切割选择和水平切换&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#4-%E4%BC%98%E5%8C%96%E5%92%8C%E7%BB%93%E6%9E%84%E5%B1%82%E6%AC%A1%E5%8E%8B%E7%BC%A9">4. 优化和结构层次压缩&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#41-%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84%E7%9A%84%E4%BC%98%E5%8C%96">4.1. 层次结构的优化&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#42-%E7%BB%93%E6%9E%84%E5%B1%82%E6%AC%A1%E5%8E%8B%E7%BC%A9">4.2. 结构层次压缩&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#5-%E5%A4%A7%E5%9C%BA%E6%99%AF%E8%AE%AD%E7%BB%83">5. 大场景训练&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#51-%E7%B2%97%E5%88%9D%E5%A7%8B%E5%8C%96%E5%92%8C%E5%9D%97%E7%BB%86%E5%88%86">5.1. 粗初始化和块细分&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#52-%E5%9D%97%E5%B0%BA%E5%BA%A6%E7%9A%84%E8%AE%AD%E7%BB%83">5.2. 块尺度的训练&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#53-%E5%9D%97%E6%95%B4%E5%90%88%E5%92%8C%E6%B8%B2%E6%9F%93">5.3. 块整合和渲染&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#6-%E9%99%84%E5%BD%95">6. 附录&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#61-%E5%A6%82%E4%BD%95%E9%99%8D%E4%BD%8E%E9%AB%98%E6%96%AF%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%A4%8D%E6%9D%82%E5%BA%A6">6.1. 如何降低高斯混合模型的复杂度&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#%E5%8F%82%E8%80%83">参考&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;h2 id="1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/h2>
+$$&lt;p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p>
+&lt;h3 id="12-最大后验估计">1.2. 最大后验估计&lt;/h3>
+&lt;p>最大后验估计需要完成如下一个优化问题：&lt;/p></description></item><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;h2 id="1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/h2>
 &lt;p>3D Gaussian Splatting 面临着一个几乎看起来无法规避的问题，就是我们需要给每个高斯函数分配一定的存储空间，并在训练时对其优化；并且在训练和渲染时需要同时将所有的高斯函数加载到设备的现存中，这导致训练和渲染在计算上是十分昂贵的。这导致我们总是要在渲染、重建质量和速度之间作出权衡，甚至很多时候是没办法训练的。这制约了 Splatting 在大场景的工作（例如城市级）上的应用。&lt;/p>
 &lt;p>那么一个很显然的想法，就是在较远时提供一个较低的分辨率，实现一个分层级的渲染和训练，并且只加载视角可见的部分。那么需要的方法有两点：&lt;/p>
 &lt;ol>
@@ -303,51 +165,16 @@ G(x,y) &amp;= \exp
 \right\}
 \end{aligned}
 $$&lt;p>
-其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p></description></item><item><title>Mathematics In 3DGS 2</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</link><pubDate>Fri, 17 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</guid><description>&lt;ul>
-&lt;li>&lt;a href="#1-%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95">1. 矩阵求导的常用方法&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#11-%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E4%B8%80%E8%88%AC%E6%96%B9%E6%B3%95">1.1. 矩阵求导的一般方法&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#111-%E7%9F%A9%E9%98%B5%E5%AF%B9%E6%A0%87%E9%87%8F%E6%B1%82%E5%AF%BC">1.1.1. 矩阵对标量求导&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#112-%E7%9F%A9%E9%98%B5%E5%AF%B9%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC">1.1.2. 矩阵对矩阵求导&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#12-%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E5%85%A8%E5%BE%AE%E5%88%86%E6%96%B9%E6%B3%95">1.2. 矩阵求导的全微分方法&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#121-%E6%AD%A3%E5%90%91%E4%BC%A0%E6%92%AD%E7%9A%84%E8%AE%A1%E7%AE%97">1.2.1. 正向传播的计算&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#122-%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%9A%84%E8%AE%A1%E7%AE%97">1.2.2. 反向传播的计算&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#123-frobenius%E5%86%85%E7%A7%AF">1.2.3. Frobenius内积&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#13-%E5%B8%B8%E8%A7%81%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%E7%9A%84%E6%B1%82%E5%AF%BC">1.3. 常见矩阵运算的求导&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#131-%E5%8A%A0%E6%B3%95">1.3.1. 加法&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#132-%E4%B9%98%E6%B3%95">1.3.2. 乘法&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#133-%E6%B1%82%E9%80%86">1.3.3. 求逆&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#134-%E4%BA%8C%E6%AC%A1%E5%9E%8B">1.3.4. 二次型&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#135-%E8%A1%8C%E5%88%97%E5%BC%8F">1.3.5. 行列式&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#2-3dgs-%E4%B8%AD%E5%85%89%E6%A0%85%E5%8C%96%E7%9A%84%E6%AD%A3%E5%90%91%E5%92%8C%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B">2. 3DGS 中光栅化的正向和反向过程&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#21-%E6%B7%B1%E5%BA%A6%E5%90%88%E6%88%90%E8%BF%87%E7%A8%8B">2.1. 深度合成过程&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#211-%E6%AD%A3%E5%90%91%E8%BF%87%E7%A8%8B">2.1.1. 正向过程&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#212-%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B">2.1.2. 反向过程&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#22-%E6%8A%95%E5%BD%B1%E8%BF%87%E7%A8%8B">2.2. 投影过程&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#221-%E6%AD%A3%E5%90%91%E8%BF%87%E7%A8%8B">2.2.1. 正向过程&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#222-%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B">2.2.2. 反向过程&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;h2 id="1-矩阵求导的常用方法">1. 矩阵求导的常用方法&lt;/h2>
+其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p>
+&lt;h2 id="3-3dgaussian-的结构化-hierarchy-的细节层次-lod">3. 3DGaussian 的结构化 (hierarchy) 的细节层次 (LOD)&lt;/h2>
+&lt;p>在处理大型场景以允许有效渲染大量内容时，细节级别 (LOD) 解决方案至关重要；因此，我们的目标是创建一个层次结构，表示原始 3DGS 优化生成的原语。遵循图形中的传统LOD方法，我们需要&lt;/p>
+&lt;ol>
+&lt;li>找到候选3DGS基元，并定义如何将它们合并到中间节点&lt;/li>
+&lt;li>提供一种有效的方法来确定层次结构中的切割，从而在质量和速度之间提供良好的折衷&lt;/li>
+&lt;li>层次结构级别之间的平滑过渡策略&lt;/li>
+&lt;/ol>
+&lt;h3 id="31-生成不同分辨率的高斯球">3.1. 生成不同分辨率的高斯球&lt;/h3>
+&lt;p>我们为每个块创建一个具有内部节点和叶节点的基于树的层次结构。每个节点都与一个 3D 高斯相关联，该高斯要么是来自原始优化的叶节点，要么是合并的内部节点。我们对中间节点的要求是它们应该：&lt;/p></description></item><item><title>Mathematics In 3DGS 2</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</link><pubDate>Fri, 17 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</guid><description>&lt;h2 id="1-矩阵求导的常用方法">1. 矩阵求导的常用方法&lt;/h2>
 &lt;h3 id="11-矩阵求导的一般方法">1.1. 矩阵求导的一般方法&lt;/h3>
 &lt;p>在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：&lt;/p>
 &lt;ol>
@@ -371,39 +198,18 @@ a_{21}&amp; a_{22}&amp; \cdots&amp; \ a_{2n} \\
 a_{n1}&amp; a_{n2}&amp; \cdots&amp; \ a_{nn} \\
 \end{matrix}
 \right]
-$$&lt;p>那么，$\frac{d \mathbf A}{d k}$被定义为：&lt;/p></description></item><item><title>Mathematics In 3DGS 1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</link><pubDate>Wed, 01 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</guid><description>&lt;ul>
-&lt;li>&lt;a href="#1-%E4%BD%93%E6%B8%B2%E6%9F%93">1. 体渲染&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#11-%E6%B8%B2%E6%9F%93%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90">1.1. 渲染行为分析&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#111-%E5%90%B8%E6%94%B6">1.1.1 吸收&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#112-%E6%94%BE%E5%B0%84">1.1.2. 放射&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#113-%E5%A4%96%E6%95%A3%E5%B0%84">1.1.3. 外散射&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#114-%E5%86%85%E6%95%A3%E5%B0%84">1.1.4. 内散射&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#12-%E6%B8%B2%E6%9F%93%E6%96%B9%E7%A8%8B">1.2. 渲染方程&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#2-%E5%BF%AB%E9%80%9F%E5%85%89%E6%A0%85%E5%8C%96">2. 快速光栅化&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8%E9%AB%98%E6%96%AF%E5%87%BD%E6%95%B0">3. 为什么使用高斯函数&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#31-%E9%87%87%E6%A0%B7%E6%B7%B7%E5%8F%A0%E5%92%8C%E6%8A%97%E6%B7%B7%E5%8F%A0">3.1 采样、混叠和抗混叠&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#32-%E9%87%8D%E5%BB%BA%E6%A0%B8">3.2 重建核&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#33-splatting%E8%BF%87%E7%A8%8B">3.3 Splatting过程&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#34-%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83%E4%BD%9C%E4%B8%BA%E9%87%8D%E5%BB%BA%E6%A0%B8%E6%89%80%E5%B8%A6%E6%9D%A5%E7%9A%84%E7%89%B9%E6%AE%8A%E7%BB%93%E6%9E%84">3.4 高斯分布作为重建核所带来的特殊结构&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;a href="#%E5%8F%82%E8%80%83">参考&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#%E9%99%84%E5%BD%95">附录&lt;/a>
-&lt;ul>
-&lt;li>&lt;a href="#a-%E5%A6%82%E4%BD%95%E8%A7%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B">A. 如何解常微分方程&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#b-%E6%97%B6%E5%9F%9F%E9%A2%91%E5%9F%9F%E5%8D%B7%E7%A7%AF">B. 时域、频域、卷积&lt;/a>&lt;/li>
-&lt;li>&lt;a href="#c-%E5%9C%A8%E9%87%8D%E5%BB%BA%E4%B8%AD%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7%E8%B4%A8%E8%AF%81%E6%98%8E">C. 在重建中高斯分布的重要性质证明&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;h2 id="1-体渲染">1. 体渲染&lt;/h2>
+$$&lt;p>那么，$\frac{d \mathbf A}{d k}$被定义为：&lt;/p>
+$$
+\frac{d \mathbf A}{d k} =
+\left[
+\begin{matrix}
+\frac{d a_{11}}{d k}&amp; \frac{d a_{12}}{d k}&amp; \cdots&amp; \ \frac{d a_{1n}}{d k}&amp; \\
+\frac{d a_{21}}{d k}&amp; \frac{d a_{22}}{d k}&amp; \cdots&amp; \ \frac{d a_{2n}}{d k}&amp; \\
+\vdots&amp; \vdots&amp; \ddots&amp; \vdots \\
+\frac{d a_{n1}}{d k}&amp; \frac{d a_{n2}}{d k}&amp; \cdots&amp; \ \frac{d a_{nn}}{d k}&amp; \\
+\end{matrix}
+\right]
+$$&lt;p>于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \mathbf A}$，其定义为：&lt;/p></description></item><item><title>Mathematics In 3DGS 1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</link><pubDate>Wed, 01 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</guid><description>&lt;h2 id="1-体渲染">1. 体渲染&lt;/h2>
 &lt;p>体渲染的提出时为了解决如云、烟等非刚体的光学行为。可以理解为用于解决对光学&lt;strong>不是完全反射&lt;/strong>，有复杂&lt;strong>透射&lt;/strong>的光学行为。为了对这个光学行为建模，我们将云团（为了叙述方便，我们后面统一将被渲染物体称为云团）视为一团飘忽不定的粒子。光沿直线方向穿过一堆粒子 (粉色部分)，如果能计算出每根光线从最开始发射，到最终打到成像平面上的辐射强度，我们就可以渲染出投影图像。而渲染要做的就是对这个过程进行建模。为了简化计算，我们就假设光子只跟它附近的粒子发生作用，这个范围就是图中圆柱体大小的区间。&lt;/p>
 &lt;p>
  &lt;img src="Images/image-20240125001336326.png" alt="Volumn Rendering">
@@ -432,4 +238,13 @@ $$&lt;p>
  &lt;img src="Images/image-20240125003153333.png" alt="Volumn Rendering">
 
 &lt;/p>
-&lt;p>假定这个厚度是$\Delta s$，那么在这个厚度内，圆柱体体积为$E\Delta s$，粒子总数为$\rho E \Delta s$。这些粒子遮挡的面积为$\rho E \Delta s A$，占整个底面积的比例为$\rho E\Delta sA/E=\rho A\Delta s_{\mathrm{o}}$。也就是说，当一束光通过这个圆柱体的时候，有$\rho A\Delta s$的概率会被遮挡。&lt;/p></description></item></channel></rss>
+&lt;p>假定这个厚度是$\Delta s$，那么在这个厚度内，圆柱体体积为$E\Delta s$，粒子总数为$\rho E \Delta s$。这些粒子遮挡的面积为$\rho E \Delta s A$，占整个底面积的比例为$\rho E\Delta sA/E=\rho A\Delta s_{\mathrm{o}}$。也就是说，当一束光通过这个圆柱体的时候，有$\rho A\Delta s$的概率会被遮挡。&lt;/p>
+&lt;p>换句话说，如果我们在圆柱体的一端发射无数光线 (假设都朝相同的方向)，在另一端接收，会发现有些光线安然通过，有些则被粒子遮挡 (吸收)。但可以确定的是，这些接受到的光线总强度，相比入射光线总强度而言，会有$\rho A\Delta s$比例的衰减，即接受到的光的强度均值是入射光的$\rho A\Delta s$倍。其数学形式可以写作：
+&lt;/p>
+$$
+I_0 - I_i = \Delta I = -\rho(s)AI(s)\Delta s
+$$&lt;p>
+这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p>
+$$
+\frac{dI}{ds}=-\rho(s)AI(s)=-\tau_{a}(s)I(s)
+$$&lt;p>那么有：&lt;/p></description></item></channel></rss>
