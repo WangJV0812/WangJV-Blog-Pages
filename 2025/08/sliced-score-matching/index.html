@@ -1,0 +1,54 @@
+<!doctype html><html><!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Sliced Score Matching - WangJV Blog</title><meta name=viewport content="width=device-width,initial-scale=1"><meta itemprop=name content="Sliced Score Matching"><meta itemprop=description content="1. 目的和动机 在之前的关于 Score Matching 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：
+$$ \begin{aligned} J(\theta) &= \text{E}_{\xi \sim p_X(\xi)}\left[ \text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right)+ \frac 1 2\left\| \nabla_\xi \log p(\xi, \theta)\right\|^2 \right] \\ &= \text{E}_{\xi \sim p_X(\xi)}\left[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)+ \frac 1 2\left\| \psi(\xi, \theta)\right \|^2 \right] \\ \end{aligned} $$但是成为可能不代表它好算。Score Matching 引入了对原始分布的 Hessian Matrix 的迹 $\nabla^2_\xi \log p(\xi, \theta)$ 的计算。显然，这比直接计算归一化系数简单了不少，但是对于一个维度为 $d$ 的随机向量的估计，需要进行 $d$ 次反向传播，者仍然十分困难。更可怕的是，在反向传播的过程中需要计算：
+$$ \frac{\partial}{\partial \theta} \big[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)\big] = \text{tr} \left(\frac{\partial^2}{\partial \theta \xi} \psi(\xi, \theta)\right) $$这一项对于数值计算而言就是灾难。在实践中，需要找到一个真实可行的简化方法。人们常常使用的方法有："><meta itemprop=datePublished content="2025-08-11T17:02:00+08:00"><meta itemprop=dateModified content="2025-08-11T17:02:00+08:00"><meta itemprop=wordCount content="355"><meta property="og:url" content="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/"><meta property="og:site_name" content="WangJV Blog"><meta property="og:title" content="Sliced Score Matching"><meta property="og:description" content="1. 目的和动机 在之前的关于 Score Matching 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：
+$$ \begin{aligned} J(\theta) &= \text{E}_{\xi \sim p_X(\xi)}\left[ \text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right)+ \frac 1 2\left\| \nabla_\xi \log p(\xi, \theta)\right\|^2 \right] \\ &= \text{E}_{\xi \sim p_X(\xi)}\left[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)+ \frac 1 2\left\| \psi(\xi, \theta)\right \|^2 \right] \\ \end{aligned} $$但是成为可能不代表它好算。Score Matching 引入了对原始分布的 Hessian Matrix 的迹 $\nabla^2_\xi \log p(\xi, \theta)$ 的计算。显然，这比直接计算归一化系数简单了不少，但是对于一个维度为 $d$ 的随机向量的估计，需要进行 $d$ 次反向传播，者仍然十分困难。更可怕的是，在反向传播的过程中需要计算：
+$$ \frac{\partial}{\partial \theta} \big[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)\big] = \text{tr} \left(\frac{\partial^2}{\partial \theta \xi} \psi(\xi, \theta)\right) $$这一项对于数值计算而言就是灾难。在实践中，需要找到一个真实可行的简化方法。人们常常使用的方法有："><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-08-11T17:02:00+08:00"><meta property="article:modified_time" content="2025-08-11T17:02:00+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Sliced Score Matching"><meta name=twitter:description content="1. 目的和动机 在之前的关于 Score Matching 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：
+$$ \begin{aligned} J(\theta) &= \text{E}_{\xi \sim p_X(\xi)}\left[ \text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right)+ \frac 1 2\left\| \nabla_\xi \log p(\xi, \theta)\right\|^2 \right] \\ &= \text{E}_{\xi \sim p_X(\xi)}\left[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)+ \frac 1 2\left\| \psi(\xi, \theta)\right \|^2 \right] \\ \end{aligned} $$但是成为可能不代表它好算。Score Matching 引入了对原始分布的 Hessian Matrix 的迹 $\nabla^2_\xi \log p(\xi, \theta)$ 的计算。显然，这比直接计算归一化系数简单了不少，但是对于一个维度为 $d$ 的随机向量的估计，需要进行 $d$ 次反向传播，者仍然十分困难。更可怕的是，在反向传播的过程中需要计算：
+$$ \frac{\partial}{\partial \theta} \big[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)\big] = \text{tr} \left(\frac{\partial^2}{\partial \theta \xi} \psi(\xi, \theta)\right) $$这一项对于数值计算而言就是灾难。在实践中，需要找到一个真实可行的简化方法。人们常常使用的方法有："><link rel=stylesheet type=text/css media=screen href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/main.css><link id=dark-scheme rel=stylesheet type=text/css href=https://wangjv0812.github.io/WangJV-Blog-Pages/css/dark.css><script src=https://wangjv0812.github.io/WangJV-Blog-Pages/js/main.js></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js></script><script>MathJax={tex:{displayMath:[["\\[","\\]"],["$$","$$"]],inlineMath:[["\\(","\\)"],["$","$"]]},loader:{load:["ui/safe"]}}</script></head><body><div class="container wrapper"><div class=header><h1 class=site-title><a href=https://wangjv0812.github.io/WangJV-Blog-Pages/>WangJV Blog</a></h1><div class=site-description><nav class="nav social"><ul class=flat></ul></nav></div><nav class=nav><ul class=flat></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>11</span>
+<span class=rest>Aug 2025</span></div></div><div class=matter><h1 class=title>Sliced Score Matching</h1></div></div><h2 id=1-目的和动机>1. 目的和动机</h2><p>在之前的关于 <a href=https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/>Score Matching</a> 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：</p>$$
+\begin{aligned}
+J(\theta)
+&= \text{E}_{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right)+ \frac 1 2\left\| \nabla_\xi \log p(\xi, \theta)\right\|^2
+\right] \\
+&= \text{E}_{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)+ \frac 1 2\left\| \psi(\xi, \theta)\right \|^2
+\right] \\
+\end{aligned}
+$$<p>但是成为可能不代表它好算。Score Matching 引入了对原始分布的 Hessian Matrix 的迹 $\nabla^2_\xi \log p(\xi, \theta)$ 的计算。显然，这比直接计算归一化系数简单了不少，但是对于一个维度为 $d$ 的随机向量的估计，需要进行 $d$ 次反向传播，者仍然十分困难。更可怕的是，在反向传播的过程中需要计算：</p>$$
+\frac{\partial}{\partial \theta} \big[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)\big] = \text{tr} \left(\frac{\partial^2}{\partial \theta \xi} \psi(\xi, \theta)\right)
+$$<p>这一项对于数值计算而言就是灾难。在实践中，需要找到一个真实可行的简化方法。人们常常使用的方法有：</p><ol><li>Sliced score matching</li><li>Denoising score matching (DSM)</li></ol><p>本文要讨论的则就是 Sliced Score Matching。</p><h2 id=2-sliced-score-matching>2. Sliced Score Matching</h2><p>受到 Sliced Wasserstein distance 的启发，宋飏博士提出 Sliced Score Matching 的方法。显然，处理一个 $1$ 维向量而非一个 $d$ 维向量容易非常多。那么如果我们将模型分布和真实分布 $p(\theta, \xi), p_X(\xi)$ 的 score function. $\psi(\theta, \xi), \psi_X(\xi)$ 随机的投影到一个随机变量 $v\sim p_V(v)$ 上，去计算在投影向量上的平均 difference。那么，传统的 Score Matching 用的 fisher divergence 就变成了：</p>$$
+\begin{aligned}
+J(\theta, p(v))
+= \frac 1 2 \mathbb{E}_{v\sim p(v)}
+\text{E}_{\xi \sim p_X(\xi)}\bigg[
+\left\|
+\psi(\xi_i, \theta) - \psi_X(\xi_i)
+\right\| ^2
+\bigg]
+\end{aligned}
+$$<p>之后的推导和 Score Matching 一直，只不过由于引入了随机向量 $v$，我们对 $v$ 增加了一些约束，这要求：</p>$$
+\begin{array}{l}
+\mathbb{E}_{v\sim p(v)}\left[vv^T\right] > 0\\
+\mathbb{E}_{v\sim p(v)}\left[\| v \|_2^2\right] < \infty\\
+\end{array}
+$$<p>事实上，这也是一个很弱的约束，大部分分布都满足。一般而言，$v$ 取标准高斯分布或者 Rademacher distribution 就好了。我们隐去具体的推导步骤（和 <a href=https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/>Score Matching</a> 是一样的），此处给出结果</p>$$
+\begin{aligned}
+J(\theta, p(v))
+&= \frac 1 2 \mathbb{E}_{v\sim p(v)}\text{E}_{\xi \sim p_X(\xi)}\bigg[\left\|
+\psi(\xi_i, \theta) - \psi_X(\xi_i)
+\right\| ^2\bigg]\\
+&= \mathbb{E}_{v\sim p(v)}\text{E}_{\xi \sim p_X(\xi)}\bigg[
+v^T \nabla_\xi \psi(\xi, \theta) v + \frac 1 2\left\| v^T\psi(\xi, \theta)\right \|^2
+\bigg]\\
+\end{aligned}
+$$<p>对于数据集中的一个 $\xi_i^N$，或者说对于真实分布 $p_x(\xi)$ 的 $N$ 个采样中的一个。我们随机的在分布 $p(v)$ 中进行 $M$ 次抽样，其中任一个用于投影的随机向量 $v_{ij}^{NM}$。那么对应的估计可以写作：</p>$$
+\hat{J}(\theta, x_i^N, v_{ij}^{NM}) = \frac 1 N \frac 1 M \sum_{i=1}^{N} \sum_{j=1}^{M}
+v_{ij}^T \nabla_\xi \psi(\xi_i, \theta) v_{ij} + \frac 1 2\left\| v_{ij}^T\psi(\xi_i, \theta)
+\right \|^2
+$$<p>注意力集中！不难注意到，由于 $v$ 服从高斯分布或者 Rademacher distribution，有（推导见附录）：</p>$$
+\mathbb{E}_{p(v)} \left[\left(v^T \psi(\xi_i, \theta)\right)^2\right] = \left\|\psi(\xi_i, \theta)\right\|^2_2
+$$<p>那么，上式可以简化为：</p>$$
+\hat{J}_{vr}(\theta, x_i^N, v_{ij}^{NM}) = \frac 1 N \frac 1 M \sum_{i=1}^{N} \sum_{j=1}^{M}
+v_{ij}^T \nabla_\xi \psi(\xi_i, \theta) v_{ij} + \frac 1 2 \left\|\psi(\xi_i, \theta)\right\|^2_2
+$$<p>事实上，我们在 Score Matching 中，已经 “剧透” 了这部分内容。$v_{ij}^T \nabla_\xi \psi(\xi_i, \theta) v_{ij}$ 就是上一篇文章中介绍的 Hessain Trace Estimation。显然的，$\hat{J}_{vr}$ 的表现是优于 $\hat{J}$（不只是在计算复杂度上，还在估计的效果上）。由于我们通过解析的方法事实上消除了 $\left\| \psi(\xi, \theta)\right \|^2$ 的随机性，这在事实上移除了一个对结果方差的 “贡献源”，有效的降低了结果的方差。</p><p>关于 $v_{ij}^T \nabla_\xi \psi(\xi_i, \theta) v_{ij}$ 的估计，我们在上一篇文章中已经介绍了。具体参考 <a href=https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/#41-%E5%93%88%E9%92%A6%E6%A3%AE%E8%BF%B9%E4%BC%B0%E8%AE%A1-hutchinsons-trace-estimation>Score Matching 4.1. 哈钦森迹估计</a>。之前在计算 $\text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)$ 时，需要进行 $d$ 次反向传播，而对于一次 $v_i$，$v_{ij}^T \nabla_\xi \psi(\xi_i, \theta) v_{ij}$ 只需要进行一次反向传播。而一般而言，$M << d$，极大的降低了算法的复杂度。</p><p>在实践中，分布 $p(v)$ 的采样次数 $M$ 可以用于平衡计算复杂度和估计的方差。有趣的是 YangSong 的论文中指出，甚至 $M = 1$ 也是一个不错的选择。</p><h2 id=appendix>Appendix</h2><hr class=footer-separator><div class=tags></div><div class=back><a href=https://wangjv0812.github.io/WangJV-Blog-Pages/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div></div><div class="footer wrapper"><nav class=nav><div>2025</div></nav></div></body></html>

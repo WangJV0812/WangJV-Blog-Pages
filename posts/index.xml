@@ -1,4 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/posts/</link><description>Recent content in Posts on WangJV Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Wed, 06 Aug 2025 16:29:40 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>ScoreMatching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</link><pubDate>Wed, 06 Aug 2025 16:29:40 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</guid><description>&lt;h2 id="1-为什么要用-score-matching">1. 为什么要用 Score Matching&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/posts/</link><description>Recent content in Posts on WangJV Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Mon, 11 Aug 2025 17:02:00 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Sliced Score Matching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</link><pubDate>Mon, 11 Aug 2025 17:02:00 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</guid><description>&lt;h2 id="1-目的和动机">1. 目的和动机&lt;/h2>
+&lt;p>在之前的关于 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：&lt;/p>
+$$
+\begin{aligned} 
+J(\theta)
+&amp;= \text{E}_{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right)+ \frac 1 2\left\| \nabla_\xi \log p(\xi, \theta)\right\|^2
+\right] \\
+&amp;= \text{E}_{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)+ \frac 1 2\left\| \psi(\xi, \theta)\right \|^2
+\right] \\
+\end{aligned}
+$$&lt;p>但是成为可能不代表它好算。Score Matching 引入了对原始分布的 Hessian Matrix 的迹 $\nabla^2_\xi \log p(\xi, \theta)$ 的计算。显然，这比直接计算归一化系数简单了不少，但是对于一个维度为 $d$ 的随机向量的估计，需要进行 $d$ 次反向传播，者仍然十分困难。更可怕的是，在反向传播的过程中需要计算：&lt;/p>
+$$
+\frac{\partial}{\partial \theta} \big[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)\big] = \text{tr} \left(\frac{\partial^2}{\partial \theta \xi} \psi(\xi, \theta)\right)
+$$&lt;p>这一项对于数值计算而言就是灾难。在实践中，需要找到一个真实可行的简化方法。人们常常使用的方法有：&lt;/p></description></item><item><title>ScoreMatching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</link><pubDate>Wed, 06 Aug 2025 16:29:40 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</guid><description>&lt;h2 id="1-为什么要用-score-matching">1. 为什么要用 Score Matching&lt;/h2>
 &lt;p>很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：&lt;/p>
 $$
 \begin{array}{c}
