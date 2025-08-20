@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/posts/</link><description>Recent content in Posts on WangJV Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Mon, 11 Aug 2025 17:02:00 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Sliced Score Matching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</link><pubDate>Mon, 11 Aug 2025 17:02:00 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</guid><description>&lt;h2 id="1-目的和动机">1. 目的和动机&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/posts/</link><description>Recent content in Posts on WangJV Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Mon, 18 Aug 2025 18:08:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Noise Contrastive Estimation</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</link><pubDate>Mon, 18 Aug 2025 18:08:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</guid><description>&lt;h2 id="1-动机">1. 动机&lt;/h2>
+&lt;p>在无监督学习时，我们往往都需要处理维度非常大的数据。例如无监督学习的一个经典案例：图像生成。对于一个尺寸为 $1920 \times 1080$ 的图片，其像素总量为 $2073600$，生成一张这样的照片时，我们需要对一个维度为 $2073600$ 的随机分布建模和采样。这些维度之间不可能是完全独立的，这个原因很显然，如果所有的维度完全独立，生成的数据就是完全随机的，不会包含任何信息。相邻像素的颜色、纹理高度相关，真正需要被建模的自由度远小于像素个数&lt;/p>
+&lt;p>可以说，我们希望通过无监督学习学习到的数据之间的规律，就建模在数据维度之间的约束中，或者换一个更常用的说法，数据之间的规律。由于数据维度之间约束的存在，数据的维度一定是小于（甚至可以说远远小于）其随机向量的维度。我们希望建模的数据事实上存在于一个高维空间上的流形上，而无监督学习实质上是通过神经网络，建模这个高位空间中数据分布的流形。&lt;/p>
+&lt;p>有了上面的理解，原本的如何从数据中挖掘关系这个问题就被转换为如何对数据所在的流形建模。这个问题并不容易，流形的复杂性和高维数据的稀疏性都给建模带来了挑战。目前一个主流的思路是通过概率分布对流形建模。显然，概率分布可以很方便的表达流形上的几何结构；对于一个维度为 $d$ 的概率分布，可以理解为一个从 $R^d \to R$ 的映射，当然这个映射需要满足非负和归一化。那么对于不属于流形上的点，映射到 $0$ 就好了。当然，概率分布带给我们的好处远不止于此：&lt;/p>
+&lt;ol>
+&lt;li>概率分布本身可以很方便的处理噪声，可以很方便的用于处理真实的，带噪声的真实数据。&lt;/li>
+&lt;li>概率分布的采样和优化十分方便，有很多现成的研究成果&lt;/li>
+&lt;li>概率分布本身赋予流形一个 “软边界”。这让模型的泛化能力有保障。&lt;/li>
+&lt;/ol>
+&lt;p>但是概率模型依然不是完美的。一般而言，我们假设存在一个理想分布 $p_d(x)$，它表达了完美的，真实的数据的分布。这是一个 “可望而不可达” 的理想分布，我们所用的数据集 $x_1, x_2, \cdots x_n$ 可以认为从分布 $p_d(x)$ 中做的采样。（一种柏拉图式的哲学）。我们希望可以通过一个受到参数 $\theta$ 控制的模型分布 $p(x, \theta)$ 来逼近和代替真实分布 $p_d(x)$。&lt;/p>
+&lt;p>我们的神经网络不可能直接建模非归一化模型，模型本身几乎一定是非归一化的。假设我们只能建模一个非归一化模型 $q(x\mid \theta)$，则需要通过归一化系数将其转换为归一化的。&lt;/p>
+$$
+\begin{aligned}
+p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
+\text{where: } Z(\theta) = \int q(x\mid \theta) dx
+\end{aligned}
+$$&lt;p>但是归一化系数 $Z(\theta) = \int q(x\mid \theta) dx$ 对于高维分布几乎是不可能直接计算的。我们希望能找到一些办法，避免对归一化系数的直接计算，&lt;code>Noise Contrastive Estimation&lt;/code> 就是为此而提出的一种方法。（当然，其他方法还可以参考 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 和 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/#1-%E4%BD%BF%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E8%B7%AF%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90">使用神经网路进行数据生成&lt;/a>）&lt;/p></description></item><item><title>Sliced Score Matching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</link><pubDate>Mon, 11 Aug 2025 17:02:00 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</guid><description>&lt;h2 id="1-目的和动机">1. 目的和动机&lt;/h2>
 &lt;p>在之前的关于 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：&lt;/p>
 $$
 \begin{aligned} 
