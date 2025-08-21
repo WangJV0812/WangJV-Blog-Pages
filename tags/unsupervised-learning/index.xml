@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Unsupervised Learning on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/unsupervised-learning/</link><description>Recent content in Unsupervised Learning on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.148.2</generator><language>en-us</language><lastBuildDate>Mon, 18 Aug 2025 18:08:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/unsupervised-learning/index.xml" rel="self" type="application/rss+xml"/><item><title>Noise Contrastive Estimation</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</link><pubDate>Mon, 18 Aug 2025 18:08:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</guid><description>&lt;h2 id="1-动机">1. 动机&lt;/h2>
+&lt;p>在无监督学习时，我们往往都需要处理维度非常大的数据。例如无监督学习的一个经典案例：图像生成。对于一个尺寸为 $1920 \times 1080$ 的图片，其像素总量为 $2073600$，生成一张这样的照片时，我们需要对一个维度为 $2073600$ 的随机分布建模和采样。这些维度之间不可能是完全独立的，这个原因很显然，如果所有的维度完全独立，生成的数据就是完全随机的，不会包含任何信息。相邻像素的颜色、纹理高度相关，真正需要被建模的自由度远小于像素个数&lt;/p>
+&lt;p>可以说，我们希望通过无监督学习学习到的数据之间的规律，就建模在数据维度之间的约束中，或者换一个更常用的说法，数据之间的规律。由于数据维度之间约束的存在，数据的维度一定是小于（甚至可以说远远小于）其随机向量的维度。我们希望建模的数据事实上存在于一个高维空间上的流形上，而无监督学习实质上是通过神经网络，建模这个高位空间中数据分布的流形。&lt;/p>
+&lt;p>有了上面的理解，原本的如何从数据中挖掘关系这个问题就被转换为如何对数据所在的流形建模。这个问题并不容易，流形的复杂性和高维数据的稀疏性都给建模带来了挑战。目前一个主流的思路是通过概率分布对流形建模。显然，概率分布可以很方便的表达流形上的几何结构；对于一个维度为 $d$ 的概率分布，可以理解为一个从 $R^d \to R$ 的映射，当然这个映射需要满足非负和归一化。那么对于不属于流形上的点，映射到 $0$ 就好了。当然，概率分布带给我们的好处远不止于此：&lt;/p>
+&lt;ol>
+&lt;li>概率分布本身可以很方便的处理噪声，可以很方便的用于处理真实的，带噪声的真实数据。&lt;/li>
+&lt;li>概率分布的采样和优化十分方便，有很多现成的研究成果&lt;/li>
+&lt;li>概率分布本身赋予流形一个 “软边界”。这让模型的泛化能力有保障。&lt;/li>
+&lt;/ol>
+&lt;p>但是概率模型依然不是完美的。一般而言，我们假设存在一个理想分布 $p_d(x)$，它表达了完美的，真实的数据的分布。这是一个 “可望而不可达” 的理想分布，我们所用的数据集 $x_1, x_2, \cdots x_n$ 可以认为从分布 $p_d(x)$ 中做的采样。（一种柏拉图式的哲学）。我们希望可以通过一个受到参数 $\theta$ 控制的模型分布 $p(x, \theta)$ 来逼近和代替真实分布 $p_d(x)$。&lt;/p>
+&lt;p>我们的神经网络不可能直接建模非归一化模型，模型本身几乎一定是非归一化的。假设我们只能建模一个非归一化模型 $q(x\mid \theta)$，则需要通过归一化系数将其转换为归一化的。&lt;/p>
+$$
+\begin{aligned}
+p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
+\text{where: } Z(\theta) = \int q(x\mid \theta) dx
+\end{aligned}
+$$&lt;p>但是归一化系数 $Z(\theta) = \int q(x\mid \theta) dx$ 对于高维分布几乎是不可能直接计算的。我们希望能找到一些办法，避免对归一化系数的直接计算，&lt;code>Noise Contrastive Estimation&lt;/code> 就是为此而提出的一种方法。（当然，其他方法还可以参考 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 和 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/#1-%E4%BD%BF%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E8%B7%AF%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90">使用神经网路进行数据生成&lt;/a>）&lt;/p></description></item><item><title>Sliced Score Matching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</link><pubDate>Mon, 11 Aug 2025 17:02:00 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</guid><description>&lt;h2 id="1-目的和动机">1. 目的和动机&lt;/h2>
+&lt;p>在之前的关于 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：&lt;/p>
+$$
+\begin{aligned}
+J(\theta)
+&amp;= \text{E}_{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right)+ \frac 1 2\left\| \nabla_\xi \log p(\xi, \theta)\right\|^2
+\right] \\
+&amp;= \text{E}_{\xi \sim p_X(\xi)}\left[
+\text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)+ \frac 1 2\left\| \psi(\xi, \theta)\right \|^2
+\right] \\
+\end{aligned}
+$$&lt;p>但是成为可能不代表它好算。Score Matching 引入了对原始分布的 Hessian Matrix 的迹 $\nabla^2_\xi \log p(\xi, \theta)$ 的计算。显然，这比直接计算归一化系数简单了不少，但是对于一个维度为 $d$ 的随机向量的估计，需要进行 $d$ 次反向传播，者仍然十分困难。更可怕的是，在反向传播的过程中需要计算：&lt;/p>
+$$
+\frac{\partial}{\partial \theta} \big[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)\big] = \text{tr} \left(\frac{\partial^2}{\partial \theta \xi} \psi(\xi, \theta)\right)
+$$&lt;p>这一项对于数值计算而言就是灾难。在实践中，需要找到一个真实可行的简化方法。人们常常使用的方法有：&lt;/p></description></item><item><title>ScoreMatching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</link><pubDate>Wed, 06 Aug 2025 16:29:40 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</guid><description>&lt;h2 id="1-为什么要用-score-matching">1. 为什么要用 Score Matching&lt;/h2>
+&lt;p>很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：&lt;/p>
+$$
+\begin{array}{c}
+p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
+\text{where: } Z(\theta) = \int q(x\mid \theta) dx
+\end{array}
+$$&lt;p>但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）&lt;/p>
+&lt;p>要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。&lt;/p>
+&lt;h2 id="2-score-function">2. Score Function&lt;/h2>
+&lt;p>对于一个受到参数 $\boldsymbol{\theta}$ 控制的，关于随机向量 $\boldsymbol{\xi}$ 的随机分布 $p(\boldsymbol{\xi}, \boldsymbol{\theta})$。我们定义其对数梯度为其 Score Function。形式化的，可以写作：&lt;/p>
+$$
+\psi (\boldsymbol{\xi}, \boldsymbol{\theta}) =
+\begin{pmatrix}
+\frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_1}\\
+\frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_2}\\
+\vdots\\
+\frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_n}
+\end{pmatrix} =
+\begin{pmatrix}
+\psi_1(\boldsymbol{\xi}, \boldsymbol{\theta})\\
+\psi_2(\boldsymbol{\xi}, \boldsymbol{\theta})\\
+\vdots\\
+\psi_n(\boldsymbol{\xi}, \boldsymbol{\theta})
+\end{pmatrix} =
+\nabla_{\boldsymbol{\xi}} \log p(\boldsymbol{\xi}, \boldsymbol{\theta})
+$$&lt;p>我们不难发现：&lt;/p></description></item><item><title>DreamFusion</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</link><pubDate>Wed, 18 Dec 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</guid><description>&lt;h2 id="1-使用神经网路进行数据生成">1. 使用神经网路进行数据生成&lt;/h2>
+&lt;p>使用神经网络生成一个高维度数据是机器学习中非常重要的一个工作。我们假设数据集 $\left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\}$ 为一个大小为$n$的数据集，该数据集统一的服从一个概率分布 $p_{data}(\boldsymbol{x})$ 。我们假设对数据集的抽样都是独立同分布的，即：&lt;/p>
+$$
+\left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\} \sim p_{data}(\boldsymbol{x})
+$$&lt;p>那么丛现有数据生成新的数据的核心就是使用神经网络学习这个概率分布。不妨假设学习的概率分布为 $\hat p_\theta(\boldsymbol x)$。我们会希望 $\hat p_\theta(\boldsymbol x)$ 尽可能的接近 $p_{data}(\boldsymbol(x))$ 。为了衡量真是分布和我们学习的分布之间的差距，我们需要定义一个距离函数 $D(\cdot \mid \cdot)$ 我们可以定义优化目标：&lt;/p>
+$$
+\hat \theta = \arg \min_{\theta} D\left(p_{data}(\boldsymbol{x}) \mid \hat p_\theta(\boldsymbol x) \right)
+$$&lt;p>关于距离函数，我们可以定义 $D(\cdot \mid \cdot)$ 为 f-divergence 定义为：&lt;/p>
+$$
+D_f(p_{data}(\boldsymbol(x)) \mid \hat p_\theta(\boldsymbol x)) = \int p_\theta(\boldsymbol x) f \left(\frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)}\right) d\boldsymbol x
+$$&lt;p>不妨取 $f(x) = x\log x$ ，我们可以得到 KL 散度：&lt;/p></description></item></channel></rss>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Gaussian Splatting on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/gaussian-splatting/</link><description>Recent content in Gaussian Splatting on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.148.2</generator><language>en-us</language><lastBuildDate>Mon, 08 Jul 2024 16:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/gaussian-splatting/index.xml" rel="self" type="application/rss+xml"/><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;h2 id="1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/h2>
+&lt;p>3D Gaussian Splatting 面临着一个几乎看起来无法规避的问题，就是我们需要给每个高斯函数分配一定的存储空间，并在训练时对其优化；并且在训练和渲染时需要同时将所有的高斯函数加载到设备的现存中，这导致训练和渲染在计算上是十分昂贵的。这导致我们总是要在渲染、重建质量和速度之间作出权衡，甚至很多时候是没办法训练的。这制约了 Splatting 在大场景的工作（例如城市级）上的应用。&lt;/p>
+&lt;p>那么一个很显然的想法，就是在较远时提供一个较低的分辨率，实现一个分层级的渲染和训练，并且只加载视角可见的部分。那么需要的方法有两点：&lt;/p>
+&lt;ol>
+&lt;li>引入结构层次（Hierarchy），使用一种高效细节级别解决方案（Level of Detial）。&lt;/li>
+&lt;li>引入分置策略（divide-and-conquer），让我们可以在独立的训练和渲染每一个小块。&lt;/li>
+&lt;/ol>
+&lt;p>同时，通过不同层级的结构（Guassian Function）可以用来优化中间层的高斯函数。这篇文章所提出的策略可以实时的渲染非常大的场景，覆盖长达几公里的轨迹，持续长达一小时。&lt;/p>
+&lt;p>&lt;img alt="db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/images/db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434.png">&lt;/p>
+&lt;h2 id="2-概述和背景">2. 概述和背景&lt;/h2>
+&lt;h3 id="21-背景">2.1. 背景&lt;/h3>
+&lt;p>3DGS 提供了一种基于体积基元的空间场景表达方法，每个体积基元含有如下特征：&lt;/p>
+&lt;ol>
+&lt;li>位置（或者说均值$\mu$）&lt;/li>
+&lt;li>协方差矩阵$\Sigma$&lt;/li>
+&lt;li>透明度（$o$）&lt;/li>
+&lt;li>球谐系数（$SH$）用于表达与视角相关的颜色，或者直接使用颜色&lt;/li>
+&lt;/ol>
+&lt;p>三维基元可以投影到二维屏幕空间上，并且通过 $\alpha\text{-blander}$ 来实现光栅化。 $\alpha\text{-blander}$ 的权重为：
+&lt;/p>
+$$
+\begin{aligned}
+\alpha &amp;= \text{oG}\\
+G(x,y) &amp;= \exp
+\left\{
+-\frac 12 ([x,y]^T-\mu')^T\Sigma'^{-1}([x,y]^T-\mu')
+\right\}
+\end{aligned}
+$$&lt;p>
+其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p>
+&lt;h2 id="3-3dgaussian-的结构化-hierarchy-的细节层次-lod">3. 3DGaussian 的结构化 (hierarchy) 的细节层次 (LOD)&lt;/h2>
+&lt;p>在处理大型场景以允许有效渲染大量内容时，细节级别 (LOD) 解决方案至关重要；因此，我们的目标是创建一个层次结构，表示原始 3DGS 优化生成的原语。遵循图形中的传统LOD方法，我们需要&lt;/p>
+&lt;ol>
+&lt;li>找到候选3DGS基元，并定义如何将它们合并到中间节点&lt;/li>
+&lt;li>提供一种有效的方法来确定层次结构中的切割，从而在质量和速度之间提供良好的折衷&lt;/li>
+&lt;li>层次结构级别之间的平滑过渡策略&lt;/li>
+&lt;/ol>
+&lt;h3 id="31-生成不同分辨率的高斯球">3.1. 生成不同分辨率的高斯球&lt;/h3>
+&lt;p>我们为每个块创建一个具有内部节点和叶节点的基于树的层次结构。每个节点都与一个 3D 高斯相关联，该高斯要么是来自原始优化的叶节点，要么是合并的内部节点。我们对中间节点的要求是它们应该：&lt;/p></description></item></channel></rss>
