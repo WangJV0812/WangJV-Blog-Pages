@@ -59,4 +59,13 @@ $$&lt;p>
 $$
 I_0 - I_i = \Delta I = -\rho(s)AI(s)\Delta s
 $$&lt;p>
-这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p></description></item></channel></rss>
+这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p>
+$$
+\frac{dI}{ds}=-\rho(s)AI(s)=-\tau_{a}(s)I(s)
+$$&lt;p>那么有：&lt;/p>
+$$
+I(s)=I_{0}\exp(-\int_{0}^{s}\tau_{a}(t)dt)
+$$&lt;p>其中$I_o$时表示了光线的起始点。那么针对出射光而言有：&lt;/p>
+$$
+I_{o}=I_{i}\exp(-\int_{i}^{o}\tau_{a}(t)dt)_{0}
+$$&lt;p>此式的物理含义是显而易见的：如果离子云是均匀的，那么射入粒子云的光线会指数衰减，这被称为：比尔-朗伯吸收定律 (Beer-Lambert law)。&lt;/p></description></item></channel></rss>

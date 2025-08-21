@@ -18,4 +18,10 @@
 &lt;p>相机与场景。给定相机内参 $K \in \mathbb{R}^{3 ×3}$ ，所观测场景的点图 $X$ 可以直接从真实深度图：&lt;/p>
 $$
 D \in \mathbb{R}^{W ×H}
-$$&lt;p>中获取，其公式为&lt;/p></description></item></channel></rss>
+$$&lt;p>中获取，其公式为&lt;/p>
+$$
+\begin{aligned}
+X_{i, j}
+&amp;= K^{-1}D_{i,j}[i , j , 1]^{\top}\\
+\end{aligned}
+$$&lt;p>其中， $X$ 是在相机坐标系中表示的。接下来，我们将在相机 $m$ 的坐标系中表示的、来自相机 $\pi$ 的点图 $X^{n}$ 记为 $X^{n, m}$，表示第 $n$ 帧在 第 $m$ 帧的坐标系下的点图为 ：&lt;/p></description></item></channel></rss>

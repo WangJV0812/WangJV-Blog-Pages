@@ -8,4 +8,11 @@ $$
 $$&lt;p>关于距离函数，我们可以定义 $D(\cdot \mid \cdot)$ 为 f-divergence 定义为：&lt;/p>
 $$
 D_f(p_{data}(\boldsymbol(x)) \mid \hat p_\theta(\boldsymbol x)) = \int p_\theta(\boldsymbol x) f \left(\frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)}\right) d\boldsymbol x
-$$&lt;p>不妨取 $f(x) = x\log x$ ，我们可以得到 KL 散度：&lt;/p></description></item></channel></rss>
+$$&lt;p>不妨取 $f(x) = x\log x$ ，我们可以得到 KL 散度：&lt;/p>
+$$
+\begin{aligned}
+D_{KL}(p_{data}(\boldsymbol(x)) \mid \hat p_\theta(\boldsymbol x))
+&amp;= \int p_{data}(\boldsymbol x) \log \frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)} d\boldsymbol x\\
+&amp;= \mathbb E_{p_{data}(\boldsymbol x)}\left[ \log \frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)} \right]
+\end{aligned}
+$$&lt;p>我们可以用抽样的均值来代替期望，有：&lt;/p></description></item></channel></rss>

@@ -27,7 +27,13 @@ $$&lt;p>其中 $\text{Sublayer}(x)$ 是每个子层具体的实现。为了方�
 &lt;p>相机与场景。给定相机内参 $K \in \mathbb{R}^{3 ×3}$ ，所观测场景的点图 $X$ 可以直接从真实深度图：&lt;/p>
 $$
 D \in \mathbb{R}^{W ×H}
-$$&lt;p>中获取，其公式为&lt;/p></description></item><item><title>homography</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</link><pubDate>Fri, 14 Feb 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</guid><description>&lt;p>假设我们有两个坐标系 $\mathcal F_a, \ \mathcal F_b$，有一个点 $P$ 在一个平面上。在两个坐标系下，这个点可以描述为 $\rho_a, \rho_b$；对应的平面可以通过法向量和截距来描述：$\{n_a. d_a\}, \{n_b. d_b\}$。&lt;/p>
+$$&lt;p>中获取，其公式为&lt;/p>
+$$
+\begin{aligned}
+X_{i, j}
+&amp;= K^{-1}D_{i,j}[i , j , 1]^{\top}\\
+\end{aligned}
+$$&lt;p>其中， $X$ 是在相机坐标系中表示的。接下来，我们将在相机 $m$ 的坐标系中表示的、来自相机 $\pi$ 的点图 $X^{n}$ 记为 $X^{n, m}$，表示第 $n$ 帧在 第 $m$ 帧的坐标系下的点图为 ：&lt;/p></description></item><item><title>homography</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</link><pubDate>Fri, 14 Feb 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</guid><description>&lt;p>假设我们有两个坐标系 $\mathcal F_a, \ \mathcal F_b$，有一个点 $P$ 在一个平面上。在两个坐标系下，这个点可以描述为 $\rho_a, \rho_b$；对应的平面可以通过法向量和截距来描述：$\{n_a. d_a\}, \{n_b. d_b\}$。&lt;/p>
 &lt;p>此外，该点有在图像坐标系下的描述 $p_a, p_b$ 和对应的相机矩阵 $K_a, K_b$。那么可以写出：&lt;/p>
 $$
 \begin{aligned}

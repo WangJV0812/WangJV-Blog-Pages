@@ -14,7 +14,9 @@ $$
 p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
 \text{where: } Z(\theta) = \int q(x\mid \theta) dx
 \end{aligned}
-$$&lt;p>但是归一化系数 $Z(\theta) = \int q(x\mid \theta) dx$ 对于高维分布几乎是不可能直接计算的。我们希望能找到一些办法，避免对归一化系数的直接计算，&lt;code>Noise Contrastive Estimation&lt;/code> 就是为此而提出的一种方法。（当然，其他方法还可以参考 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 和 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/#1-%E4%BD%BF%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E8%B7%AF%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90">使用神经网路进行数据生成&lt;/a>）&lt;/p></description></item><item><title>Sliced Score Matching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</link><pubDate>Mon, 11 Aug 2025 17:02:00 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</guid><description>&lt;h2 id="1-目的和动机">1. 目的和动机&lt;/h2>
+$$&lt;p>但是归一化系数 $Z(\theta) = \int q(x\mid \theta) dx$ 对于高维分布几乎是不可能直接计算的。我们希望能找到一些办法，避免对归一化系数的直接计算，&lt;code>Noise Contrastive Estimation&lt;/code> 就是为此而提出的一种方法。（当然，其他方法还可以参考 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 和 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/#1-%E4%BD%BF%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E8%B7%AF%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90">使用神经网路进行数据生成&lt;/a>）&lt;/p>
+&lt;h2 id="2-通过比较来估计密度density-estimation-by-comparison">2. 通过比较来估计密度（Density Estimation by Comparison）&lt;/h2>
+&lt;p>当我们希望从一系列离散的，从一个未知分布的采样 $\{X\}_n$ 估计出具体的分布时，我们几乎一定会去提取分布的中特征。或者换句话说，我们是通过刻画分布的性质来估计未知分布的密度的。甚至可以说刻画其性质是第一性的。因此一个显然的思路是，如果我们提供一个已知的、与目标分布显著不同的噪声分布 $p_n(x)$。之后训练一个神经网络，用于区分数据来自于数据分布 $p_d(x)$ 还是噪声分布 $p_n(x)$，神经网络自然而然的就学习到了数据分布的特征。这个过程实质上就实现了数据生成的目标，即学习数据的潜在分布。而这个过程则将原本的无监督学习转换为一个简单的，有负样本的，简单的而分类问题。换句话说，&lt;strong>NCE不直接估计概率密度，而是通过学习区分“真实数据”和“人工产生的噪声”来间接地学习模型参数。&lt;/strong>&lt;/p></description></item><item><title>Sliced Score Matching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</link><pubDate>Mon, 11 Aug 2025 17:02:00 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</guid><description>&lt;h2 id="1-目的和动机">1. 目的和动机&lt;/h2>
 &lt;p>在之前的关于 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：&lt;/p>
 $$
 \begin{aligned}
@@ -65,4 +67,11 @@ $$
 $$&lt;p>关于距离函数，我们可以定义 $D(\cdot \mid \cdot)$ 为 f-divergence 定义为：&lt;/p>
 $$
 D_f(p_{data}(\boldsymbol(x)) \mid \hat p_\theta(\boldsymbol x)) = \int p_\theta(\boldsymbol x) f \left(\frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)}\right) d\boldsymbol x
-$$&lt;p>不妨取 $f(x) = x\log x$ ，我们可以得到 KL 散度：&lt;/p></description></item></channel></rss>
+$$&lt;p>不妨取 $f(x) = x\log x$ ，我们可以得到 KL 散度：&lt;/p>
+$$
+\begin{aligned}
+D_{KL}(p_{data}(\boldsymbol(x)) \mid \hat p_\theta(\boldsymbol x))
+&amp;= \int p_{data}(\boldsymbol x) \log \frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)} d\boldsymbol x\\
+&amp;= \mathbb E_{p_{data}(\boldsymbol x)}\left[ \log \frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)} \right]
+\end{aligned}
+$$&lt;p>我们可以用抽样的均值来代替期望，有：&lt;/p></description></item></channel></rss>
