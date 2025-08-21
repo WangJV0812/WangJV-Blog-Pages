@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/posts/</link><description>Recent content in Posts on WangJV Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Mon, 18 Aug 2025 18:08:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Noise Contrastive Estimation</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</link><pubDate>Mon, 18 Aug 2025 18:08:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</guid><description>&lt;h2 id="1-动机">1. 动机&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/posts/</link><description>Recent content in Posts on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.148.2</generator><language>en-us</language><lastBuildDate>Mon, 18 Aug 2025 18:08:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Noise Contrastive Estimation</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</link><pubDate>Mon, 18 Aug 2025 18:08:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</guid><description>&lt;h2 id="1-动机">1. 动机&lt;/h2>
 &lt;p>在无监督学习时，我们往往都需要处理维度非常大的数据。例如无监督学习的一个经典案例：图像生成。对于一个尺寸为 $1920 \times 1080$ 的图片，其像素总量为 $2073600$，生成一张这样的照片时，我们需要对一个维度为 $2073600$ 的随机分布建模和采样。这些维度之间不可能是完全独立的，这个原因很显然，如果所有的维度完全独立，生成的数据就是完全随机的，不会包含任何信息。相邻像素的颜色、纹理高度相关，真正需要被建模的自由度远小于像素个数&lt;/p>
 &lt;p>可以说，我们希望通过无监督学习学习到的数据之间的规律，就建模在数据维度之间的约束中，或者换一个更常用的说法，数据之间的规律。由于数据维度之间约束的存在，数据的维度一定是小于（甚至可以说远远小于）其随机向量的维度。我们希望建模的数据事实上存在于一个高维空间上的流形上，而无监督学习实质上是通过神经网络，建模这个高位空间中数据分布的流形。&lt;/p>
 &lt;p>有了上面的理解，原本的如何从数据中挖掘关系这个问题就被转换为如何对数据所在的流形建模。这个问题并不容易，流形的复杂性和高维数据的稀疏性都给建模带来了挑战。目前一个主流的思路是通过概率分布对流形建模。显然，概率分布可以很方便的表达流形上的几何结构；对于一个维度为 $d$ 的概率分布，可以理解为一个从 $R^d \to R$ 的映射，当然这个映射需要满足非负和归一化。那么对于不属于流形上的点，映射到 $0$ 就好了。当然，概率分布带给我们的好处远不止于此：&lt;/p>
@@ -17,7 +17,7 @@ p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
 $$&lt;p>但是归一化系数 $Z(\theta) = \int q(x\mid \theta) dx$ 对于高维分布几乎是不可能直接计算的。我们希望能找到一些办法，避免对归一化系数的直接计算，&lt;code>Noise Contrastive Estimation&lt;/code> 就是为此而提出的一种方法。（当然，其他方法还可以参考 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 和 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/#1-%E4%BD%BF%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E8%B7%AF%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90">使用神经网路进行数据生成&lt;/a>）&lt;/p></description></item><item><title>Sliced Score Matching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</link><pubDate>Mon, 11 Aug 2025 17:02:00 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</guid><description>&lt;h2 id="1-目的和动机">1. 目的和动机&lt;/h2>
 &lt;p>在之前的关于 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：&lt;/p>
 $$
-\begin{aligned} 
+\begin{aligned}
 J(\theta)
 &amp;= \text{E}_{\xi \sim p_X(\xi)}\left[
 \text{tr} \left(\nabla^2_\xi \log p(\xi, \theta)\right)+ \frac 1 2\left\| \nabla_\xi \log p(\xi, \theta)\right\|^2
@@ -43,16 +43,16 @@ $$&lt;p>但是在很多情况下，生成模型需要处理一个极高维度随
 $$
 \psi (\boldsymbol{\xi}, \boldsymbol{\theta}) =
 \begin{pmatrix}
- \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_1}\\
- \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_2}\\
- \vdots\\
- \frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_n}
+\frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_1}\\
+\frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_2}\\
+\vdots\\
+\frac{\partial p(\boldsymbol{\xi}, \boldsymbol{\theta})}{\partial \boldsymbol{\xi}_n}
 \end{pmatrix} =
 \begin{pmatrix}
- \psi_1(\boldsymbol{\xi}, \boldsymbol{\theta})\\
- \psi_2(\boldsymbol{\xi}, \boldsymbol{\theta})\\
- \vdots\\
- \psi_n(\boldsymbol{\xi}, \boldsymbol{\theta})
+\psi_1(\boldsymbol{\xi}, \boldsymbol{\theta})\\
+\psi_2(\boldsymbol{\xi}, \boldsymbol{\theta})\\
+\vdots\\
+\psi_n(\boldsymbol{\xi}, \boldsymbol{\theta})
 \end{pmatrix} =
 \nabla_{\boldsymbol{\xi}} \log p(\boldsymbol{\xi}, \boldsymbol{\theta})
 $$&lt;p>我们不难发现：&lt;/p></description></item><item><title>Lie Group and Lie Algebra</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</guid><description>&lt;p>我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong>群&lt;/strong> 和 &lt;strong>微分流形&lt;/strong> 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p>
@@ -63,32 +63,9 @@ $$&lt;p>我们不难发现：&lt;/p></description></item><item><title>Lie Group 
 &lt;li>单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$&lt;/li>
 &lt;li>逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$&lt;/li>
 &lt;/ol>
-&lt;p>在研究群的性质时，我们需要清晰的认识到 &lt;strong>集合&lt;/strong> 和 定义在集合上的 &lt;strong>二元运算&lt;/strong> 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “&lt;strong>操作不变形&lt;/strong>”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。&lt;/p></description></item><item><title>3D Kinematics and Dynamics</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</link><pubDate>Fri, 20 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</guid><description>&lt;h2 id="1-旋转矩阵">1. 旋转矩阵&lt;/h2>
-&lt;p>对于空间中的一个向量 $\boldsymbol{r}$，在坐标系 $\mathcal F_1, \mathcal F_2$ 下，用坐标描述有：&lt;/p>
-$$
-\boldsymbol{r} = \mathcal F_1^T \boldsymbol{r}_1 = \mathcal F_2^T \boldsymbol{r}_2
-$$&lt;p>应有：&lt;/p>
-$$
-\boldsymbol{r}_1 = \mathcal F_1 \mathcal F_2^T \boldsymbol{r}_2
-$$&lt;p>我们令：&lt;/p>
-$$
-\boldsymbol R_{12} = \mathcal F_1 \mathcal F_2^T
-$$&lt;p>各种文献中旋转矩阵的定义十分混乱，我们遵从这样一个定义：$\boldsymbol R_{12}$，即将同一个向量丛坐标系 $\mathcal F_2$ 变换到坐标系 $\mathcal F_1$ 下。坐标系变换有：&lt;/p>
-$$
-\boldsymbol R_{12} \mathcal F_2= \mathcal F_1 \mathcal F_2^T \mathcal F_2 = \mathcal F_1
-$$&lt;p>类似的，我们还可以用向量的坐标和基之间的关系来推导坐标变换：&lt;/p>
-$$
-\begin{aligned}
- \boldsymbol{r}_2 &amp;= \boldsymbol{R}_{21} \boldsymbol{r}_1\\
- \mathcal F_1^T \boldsymbol{r}_1 &amp;= \mathcal F_2^T \boldsymbol{R}_{21} \boldsymbol{r}_1\\
- \mathcal F_1^T \boldsymbol{r}_1 &amp;= \left(\boldsymbol{R}_{12} \mathcal F_2\right)^T \boldsymbol{r}_2\\
-\end{aligned}
-$$&lt;p>那么应该有：&lt;/p></description></item><item><title>From Transformer to VGGT</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</link><pubDate>Fri, 18 Apr 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</guid><description>&lt;h2 id="1-preliminary-attention-and-vit">1. Preliminary: Attention and ViT&lt;/h2>
+&lt;p>在研究群的性质时，我们需要清晰的认识到 &lt;strong>集合&lt;/strong> 和 定义在集合上的 &lt;strong>二元运算&lt;/strong> 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “&lt;strong>操作不变形&lt;/strong>”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。&lt;/p></description></item><item><title>3D Kinematics and Dynamics</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</link><pubDate>Fri, 20 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</guid><description>深入探讨三维空间中的运动学和动力学基础，包括旋转矩阵、四元数和李群理论</description></item><item><title>From Transformer to VGGT</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</link><pubDate>Fri, 18 Apr 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</guid><description>&lt;h2 id="1-preliminary-attention-and-vit">1. Preliminary: Attention and ViT&lt;/h2>
 &lt;p>我们先来回顾一下经典的 Transformer 结构，之后从 Transformer 的角度来理解 ViT，这样大家能更好的理解 VGGT 和 MASt3R、DUSt3R 之类工作的苦恼之处。&lt;/p>
-&lt;p>
- &lt;img src="Images/VGGT%20Attention%20pipline.png" alt="VGGT Attention pipline">
-
-&lt;/p>
+&lt;p>&lt;img alt="VGGT Attention pipline" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/Images/VGGT%20Attention%20pipline.png">&lt;/p>
 &lt;h3 id="11-encoder-and-decoder">1.1. Encoder and Decoder&lt;/h3>
 &lt;p>深度学习名著 《&lt;a href="https://arxiv.org/pdf/1706.03762">Attention is all you need&lt;/a>》 提出的古典派 Attention（这么说是因为由于 Transformer 的大火，Attention 机制的变种已经太多了，我们只关注最经典的架构就好，其他都大同小异）。最经典的 Transformer 致力于解决翻译问题，是一个十分经典的 nlp 问题，采用了最经典的 Encoder-Decoder 结构。&lt;/p>
 &lt;p>Encoder 由 6 个完全相同的层堆叠而成，每个层由两个子层组成。第一个层负责实现 multi-head self-attention 机制；第二个层是一个简单的全连接前馈网络。为了避免在训练中出现梯度消失的问题，Transformer 在子层间采用了残差链接，之后对子层的输出做归一化（即 Add&amp;amp;Norm）那个块。因此，每个子层的输出可以表示为：&lt;/p>
@@ -152,35 +129,19 @@ $$&lt;p>不妨取 $f(x) = x\log x$ ，我们可以得到 KL 散度：&lt;/p></de
 &lt;p>我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：&lt;/p>
 $$
 \begin{array}{l}
- x_k = A_{k-1}x_{k-1} + v_k + \omega_k\\
- y_k = Cx_k + n_k
+x_k = A_{k-1}x_{k-1} + v_k + \omega_k\\
+y_k = Cx_k + n_k
 \end{array}
 $$&lt;p>其中，有：&lt;/p>
 $$
 \begin{array}{ll}
- \text{初始噪声} &amp; x_0 \sim \mathcal G (x \mid 0, P_0) \\
- \text{过程噪声} &amp; x_k \sim \mathcal G (x \mid 0, Q_k) \\
- \text{观测噪声} &amp; \omega_k \sim \mathcal G (x \mid 0, R_k)
+\text{初始噪声} &amp; x_0 \sim \mathcal G (x \mid 0, P_0) \\
+\text{过程噪声} &amp; x_k \sim \mathcal G (x \mid 0, Q_k) \\
+\text{观测噪声} &amp; \omega_k \sim \mathcal G (x \mid 0, R_k)
 \end{array}
 $$&lt;p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p>
 &lt;h3 id="12-最大后验估计">1.2. 最大后验估计&lt;/h3>
-&lt;p>最大后验估计需要完成如下一个优化问题：&lt;/p></description></item><item><title>BARF: Bundle Adjusting Neural Radiance Field</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</link><pubDate>Thu, 17 Oct 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</guid><description>&lt;h2 id="1-图像平面对齐">1. 图像平面对齐&lt;/h2>
-&lt;p>思考我们有一系列位姿$x$不准确的图像。我们希望找到一个图像的扭曲变换（warp transform）$\mathcal W(x,p)$ 我们知道，两个平面之间的投影变换可以通过homography变换来描述。变换 $\mathcal W(x,p)$ 受到参数 $p$控制。我们希望能通过不断修正参数 $p = p + \Delta p$来修正图像的位姿，实现最终的图像对齐。假设我们有两张照片 $\mathcal I_1(x), \mathcal I_2(x)$这个对齐过程可以通过下面这样一个最优指标来描述：&lt;/p>
-$$
-\min \sum_x \lvert
- \mathcal I_1(\mathcal W(x,p)) -
- \mathcal I_2(x)
-\rvert^2
-$$&lt;p>我们讲对 $p$ 的修正 $\mathcal W(x,p)$ 带入$\mathcal I_1(x)$中，并做泰勒展开：&lt;/p>
-$$
-\mathcal I_1(W(x,p+\Delta p)) = \mathcal I_1(\mathcal W(x,p)) + J(x,p) \Delta p
-$$&lt;p>带入误差形式中，有：&lt;/p>
-$$
-E(\Delta p) = \lvert \sum_x(\mathcal I_1(\mathcal W(x,p)) + J(x,p) \Delta p - \mathcal I_2(x))\rvert^2
-$$&lt;p>使用梯度下降，有：&lt;/p>
-$$
-\frac{\partial E(\Delta p)}{\partial \Delta p} =2\sum_x J^T(x,p) [\mathcal I_1(\mathcal W(x,p)) + J(x,p) \Delta p - \mathcal I_2(x)] = 0
-$$&lt;p>重新整理，有：&lt;/p></description></item><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;h2 id="1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/h2>
+&lt;p>最大后验估计需要完成如下一个优化问题：&lt;/p></description></item><item><title>BARF: Bundle Adjusting Neural Radiance Field</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</link><pubDate>Thu, 17 Oct 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</guid><description>探讨 BARF 方法：如何在未知相机位姿的情况下优化神经辐射场，实现图像对齐和3D重建</description></item><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;h2 id="1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/h2>
 &lt;p>3D Gaussian Splatting 面临着一个几乎看起来无法规避的问题，就是我们需要给每个高斯函数分配一定的存储空间，并在训练时对其优化；并且在训练和渲染时需要同时将所有的高斯函数加载到设备的现存中，这导致训练和渲染在计算上是十分昂贵的。这导致我们总是要在渲染、重建质量和速度之间作出权衡，甚至很多时候是没办法训练的。这制约了 Splatting 在大场景的工作（例如城市级）上的应用。&lt;/p>
 &lt;p>那么一个很显然的想法，就是在较远时提供一个较低的分辨率，实现一个分层级的渲染和训练，并且只加载视角可见的部分。那么需要的方法有两点：&lt;/p>
 &lt;ol>
@@ -188,10 +149,7 @@ $$&lt;p>重新整理，有：&lt;/p></description></item><item><title>Hierarchic
 &lt;li>引入分置策略（divide-and-conquer），让我们可以在独立的训练和渲染每一个小块。&lt;/li>
 &lt;/ol>
 &lt;p>同时，通过不同层级的结构（Guassian Function）可以用来优化中间层的高斯函数。这篇文章所提出的策略可以实时的渲染非常大的场景，覆盖长达几公里的轨迹，持续长达一小时。&lt;/p>
-&lt;p>
- &lt;img src="./images/db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434.png" alt="db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434">
-
-&lt;/p>
+&lt;p>&lt;img alt="db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/images/db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434.png">&lt;/p>
 &lt;h2 id="2-概述和背景">2. 概述和背景&lt;/h2>
 &lt;h3 id="21-背景">2.1. 背景&lt;/h3>
 &lt;p>3DGS 提供了一种基于体积基元的空间场景表达方法，每个体积基元含有如下特征：&lt;/p>
@@ -206,7 +164,7 @@ $$&lt;p>重新整理，有：&lt;/p></description></item><item><title>Hierarchic
 $$
 \begin{aligned}
 \alpha &amp;= \text{oG}\\
-G(x,y) &amp;= \exp 
+G(x,y) &amp;= \exp
 \left\{
 -\frac 12 ([x,y]^T-\mu')^T\Sigma'^{-1}([x,y]^T-\mu')
 \right\}
@@ -236,7 +194,7 @@ $$&lt;p>
 &lt;h4 id="111-矩阵对标量求导">1.1.1. 矩阵对标量求导&lt;/h4>
 &lt;p>假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：&lt;/p>
 $$
-\mathbf A= 
+\mathbf A=
 \left[
 \begin{matrix}
 a_{11}&amp; a_{12}&amp; \cdots&amp; \ a_{1n} \\
@@ -258,10 +216,7 @@ $$
 \right]
 $$&lt;p>于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \mathbf A}$，其定义为：&lt;/p></description></item><item><title>Mathematics In 3DGS 1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</link><pubDate>Wed, 01 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</guid><description>&lt;h2 id="1-体渲染">1. 体渲染&lt;/h2>
 &lt;p>体渲染的提出时为了解决如云、烟等非刚体的光学行为。可以理解为用于解决对光学&lt;strong>不是完全反射&lt;/strong>，有复杂&lt;strong>透射&lt;/strong>的光学行为。为了对这个光学行为建模，我们将云团（为了叙述方便，我们后面统一将被渲染物体称为云团）视为一团飘忽不定的粒子。光沿直线方向穿过一堆粒子 (粉色部分)，如果能计算出每根光线从最开始发射，到最终打到成像平面上的辐射强度，我们就可以渲染出投影图像。而渲染要做的就是对这个过程进行建模。为了简化计算，我们就假设光子只跟它附近的粒子发生作用，这个范围就是图中圆柱体大小的区间。&lt;/p>
-&lt;p>
- &lt;img src="Images/image-20240125001336326.png" alt="Volumn Rendering">
-
-&lt;/p>
+&lt;p>&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001336326.png">&lt;/p>
 &lt;h3 id="11-渲染行为分析">1.1. 渲染行为分析&lt;/h3>
 &lt;p>光线与粒子发生发生的作用有如下几类：&lt;/p>
 &lt;ol>
@@ -270,10 +225,7 @@ $$&lt;p>于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \
 &lt;li>&lt;strong>外散射 (out-scattering)&lt;/strong>：光子在撞击到粒子后，可能会发生弹射，导致方向发生偏移，会减弱入射光强度。&lt;/li>
 &lt;li>&lt;strong>内散射 (in-scattering)&lt;/strong>：其他方向的光子在撞到粒子后，可能和当前方向上的光子重合，从而增强当前光路上的辐射强度。&lt;/li>
 &lt;/ol>
-&lt;p>
- &lt;img src="Images/image-20240125001538229.png" alt="Volumn Rendering">
-
-&lt;/p>
+&lt;p>&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001538229.png">&lt;/p>
 &lt;p>那么对于任意一个云团块而言，出射光与入射光之间的变化量，可以表示为这四个过程的叠加。我们假设入射光线的强度为$I_i$，出射光线为$I_o$，那么有：&lt;/p>
 $$
 l_o-\mathrm{I}_i= dL(x,\omega) =emission+inscattering-outscatting-absorption
@@ -281,17 +233,11 @@ $$&lt;p>
 下面针对吸收、发射、内散射、外散射四个环节进行分析。&lt;/p>
 &lt;h4 id="111-吸收">1.1.1 吸收&lt;/h4>
 &lt;p>我们假设半透明物体中的每个粒子的半径为$r$， 每个粒子的投影面积为$A=$ $\pi r^2$， 并假设圆柱体中粒子的密度为$\rho$，圆柱体的底面积是$E$，并且圆柱体的厚度足够薄。&lt;/p>
-&lt;p>
- &lt;img src="Images/image-20240125003153333.png" alt="Volumn Rendering">
-
-&lt;/p>
+&lt;p>&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125003153333.png">&lt;/p>
 &lt;p>假定这个厚度是$\Delta s$，那么在这个厚度内，圆柱体体积为$E\Delta s$，粒子总数为$\rho E \Delta s$。这些粒子遮挡的面积为$\rho E \Delta s A$，占整个底面积的比例为$\rho E\Delta sA/E=\rho A\Delta s_{\mathrm{o}}$。也就是说，当一束光通过这个圆柱体的时候，有$\rho A\Delta s$的概率会被遮挡。&lt;/p>
 &lt;p>换句话说，如果我们在圆柱体的一端发射无数光线 (假设都朝相同的方向)，在另一端接收，会发现有些光线安然通过，有些则被粒子遮挡 (吸收)。但可以确定的是，这些接受到的光线总强度，相比入射光线总强度而言，会有$\rho A\Delta s$比例的衰减，即接受到的光的强度均值是入射光的$\rho A\Delta s$倍。其数学形式可以写作：
 &lt;/p>
 $$
 I_0 - I_i = \Delta I = -\rho(s)AI(s)\Delta s
 $$&lt;p>
-这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p>
-$$
-\frac{dI}{ds}=-\rho(s)AI(s)=-\tau_{a}(s)I(s)
-$$&lt;p>那么有：&lt;/p></description></item></channel></rss>
+这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p></description></item></channel></rss>
