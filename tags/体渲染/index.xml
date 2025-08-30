@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>体渲染 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E4%BD%93%E6%B8%B2%E6%9F%93/</link><description>Recent content in 体渲染 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.148.2</generator><language>en-us</language><lastBuildDate>Mon, 08 Jul 2024 16:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E4%BD%93%E6%B8%B2%E6%9F%93/index.xml" rel="self" type="application/rss+xml"/><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;h2 id="1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/h2>
-&lt;p>3D Gaussian Splatting 面临着一个几乎看起来无法规避的问题，就是我们需要给每个高斯函数分配一定的存储空间，并在训练时对其优化；并且在训练和渲染时需要同时将所有的高斯函数加载到设备的现存中，这导致训练和渲染在计算上是十分昂贵的。这导致我们总是要在渲染、重建质量和速度之间作出权衡，甚至很多时候是没办法训练的。这制约了 Splatting 在大场景的工作（例如城市级）上的应用。&lt;/p>
-&lt;p>那么一个很显然的想法，就是在较远时提供一个较低的分辨率，实现一个分层级的渲染和训练，并且只加载视角可见的部分。那么需要的方法有两点：&lt;/p>
-&lt;ol>
-&lt;li>引入结构层次（Hierarchy），使用一种高效细节级别解决方案（Level of Detial）。&lt;/li>
-&lt;li>引入分置策略（divide-and-conquer），让我们可以在独立的训练和渲染每一个小块。&lt;/li>
-&lt;/ol>
-&lt;p>同时，通过不同层级的结构（Guassian Function）可以用来优化中间层的高斯函数。这篇文章所提出的策略可以实时的渲染非常大的场景，覆盖长达几公里的轨迹，持续长达一小时。&lt;/p>
-&lt;p>&lt;img alt="db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/images/db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434.png">&lt;/p>
-&lt;h2 id="2-概述和背景">2. 概述和背景&lt;/h2>
-&lt;h3 id="21-背景">2.1. 背景&lt;/h3>
-&lt;p>3DGS 提供了一种基于体积基元的空间场景表达方法，每个体积基元含有如下特征：&lt;/p>
-&lt;ol>
-&lt;li>位置（或者说均值$\mu$）&lt;/li>
-&lt;li>协方差矩阵$\Sigma$&lt;/li>
-&lt;li>透明度（$o$）&lt;/li>
-&lt;li>球谐系数（$SH$）用于表达与视角相关的颜色，或者直接使用颜色&lt;/li>
-&lt;/ol>
-&lt;p>三维基元可以投影到二维屏幕空间上，并且通过 $\alpha\text{-blander}$ 来实现光栅化。 $\alpha\text{-blander}$ 的权重为：
-&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>体渲染 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E4%BD%93%E6%B8%B2%E6%9F%93/</link><description>Recent content in 体渲染 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.149.0</generator><language>en-us</language><lastBuildDate>Mon, 08 Jul 2024 16:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E4%BD%93%E6%B8%B2%E6%9F%93/index.xml" rel="self" type="application/rss+xml"/><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;h2 id="1-abstract--introduction"&gt;1. Abstract &amp;amp; Introduction&lt;/h2&gt;
+&lt;p&gt;3D Gaussian Splatting 面临着一个几乎看起来无法规避的问题，就是我们需要给每个高斯函数分配一定的存储空间，并在训练时对其优化；并且在训练和渲染时需要同时将所有的高斯函数加载到设备的现存中，这导致训练和渲染在计算上是十分昂贵的。这导致我们总是要在渲染、重建质量和速度之间作出权衡，甚至很多时候是没办法训练的。这制约了 Splatting 在大场景的工作（例如城市级）上的应用。&lt;/p&gt;
+&lt;p&gt;那么一个很显然的想法，就是在较远时提供一个较低的分辨率，实现一个分层级的渲染和训练，并且只加载视角可见的部分。那么需要的方法有两点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;引入结构层次（Hierarchy），使用一种高效细节级别解决方案（Level of Detial）。&lt;/li&gt;
+&lt;li&gt;引入分置策略（divide-and-conquer），让我们可以在独立的训练和渲染每一个小块。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;同时，通过不同层级的结构（Guassian Function）可以用来优化中间层的高斯函数。这篇文章所提出的策略可以实时的渲染非常大的场景，覆盖长达几公里的轨迹，持续长达一小时。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/images/db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434.png"&gt;&lt;/p&gt;
+&lt;h2 id="2-概述和背景"&gt;2. 概述和背景&lt;/h2&gt;
+&lt;h3 id="21-背景"&gt;2.1. 背景&lt;/h3&gt;
+&lt;p&gt;3DGS 提供了一种基于体积基元的空间场景表达方法，每个体积基元含有如下特征：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;位置（或者说均值$\mu$）&lt;/li&gt;
+&lt;li&gt;协方差矩阵$\Sigma$&lt;/li&gt;
+&lt;li&gt;透明度（$o$）&lt;/li&gt;
+&lt;li&gt;球谐系数（$SH$）用于表达与视角相关的颜色，或者直接使用颜色&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;三维基元可以投影到二维屏幕空间上，并且通过 $\alpha\text{-blander}$ 来实现光栅化。 $\alpha\text{-blander}$ 的权重为：
+&lt;/p&gt;
 $$
 \begin{aligned}
 \alpha &amp;= \text{oG}\\
@@ -26,36 +26,36 @@ G(x,y) &amp;= \exp
 -\frac 12 ([x,y]^T-\mu')^T\Sigma'^{-1}([x,y]^T-\mu')
 \right\}
 \end{aligned}
-$$&lt;p>
-其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p>
-&lt;h2 id="3-3dgaussian-的结构化-hierarchy-的细节层次-lod">3. 3DGaussian 的结构化 (hierarchy) 的细节层次 (LOD)&lt;/h2>
-&lt;p>在处理大型场景以允许有效渲染大量内容时，细节级别 (LOD) 解决方案至关重要；因此，我们的目标是创建一个层次结构，表示原始 3DGS 优化生成的原语。遵循图形中的传统LOD方法，我们需要&lt;/p>
-&lt;ol>
-&lt;li>找到候选3DGS基元，并定义如何将它们合并到中间节点&lt;/li>
-&lt;li>提供一种有效的方法来确定层次结构中的切割，从而在质量和速度之间提供良好的折衷&lt;/li>
-&lt;li>层次结构级别之间的平滑过渡策略&lt;/li>
-&lt;/ol>
-&lt;h3 id="31-生成不同分辨率的高斯球">3.1. 生成不同分辨率的高斯球&lt;/h3>
-&lt;p>我们为每个块创建一个具有内部节点和叶节点的基于树的层次结构。每个节点都与一个 3D 高斯相关联，该高斯要么是来自原始优化的叶节点，要么是合并的内部节点。我们对中间节点的要求是它们应该：&lt;/p>
-&lt;ol>
-&lt;li>保持与叶节点相同的快速光栅化例程&lt;/li>
-&lt;li>尽可能准确地表示子节点的外观。因此，我们需要定义具有 3DGS 原语所有属性的 3D 高斯的中间节点。例如保持它原本所有的特征：均值$\mu$、协方差$\Sigma$、透明度 $o$ 等等。&lt;/li>
-&lt;/ol>
-&lt;p>对于均值和协方差，有很多文献详尽的描述了这个混合过程。可以通过如下公式混合 $N$ 个在第 $l$ 级的均值为 $\mu_i^l$，协方差为 $\Sigma_i^l$ 高斯函数。我们可以通过评估这 $N$ 个高斯函数和待估计的高斯函数之间的 3D Kullback-Leibler divergence。3DKL 散度描述了两个高斯函数之间的相关性。那么显然的，假设$f = \sum_{i=1}^{N}\mathcal \alpha_i N(\mu_i, \Sigma_i)$，g为我们所需要新的高斯函数，应该有：
-&lt;/p></description></item><item><title>Mathematics In 3DGS 2</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</link><pubDate>Fri, 17 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</guid><description>&lt;h2 id="1-矩阵求导的常用方法">1. 矩阵求导的常用方法&lt;/h2>
-&lt;h3 id="11-矩阵求导的一般方法">1.1. 矩阵求导的一般方法&lt;/h3>
-&lt;p>在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：&lt;/p>
-&lt;ol>
-&lt;li>向量对标量求导&lt;/li>
-&lt;li>向量对向量求导&lt;/li>
-&lt;li>向量对矩阵求导&lt;/li>
-&lt;li>矩阵对标量求导&lt;/li>
-&lt;li>矩阵对向量求导&lt;/li>
-&lt;li>矩阵对矩阵求导&lt;/li>
-&lt;/ol>
-&lt;p>事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。&lt;/p>
-&lt;h4 id="111-矩阵对标量求导">1.1.1. 矩阵对标量求导&lt;/h4>
-&lt;p>假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：&lt;/p>
+$$&lt;p&gt;
+其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p&gt;
+&lt;h2 id="3-3dgaussian-的结构化-hierarchy-的细节层次-lod"&gt;3. 3DGaussian 的结构化 (hierarchy) 的细节层次 (LOD)&lt;/h2&gt;
+&lt;p&gt;在处理大型场景以允许有效渲染大量内容时，细节级别 (LOD) 解决方案至关重要；因此，我们的目标是创建一个层次结构，表示原始 3DGS 优化生成的原语。遵循图形中的传统LOD方法，我们需要&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;找到候选3DGS基元，并定义如何将它们合并到中间节点&lt;/li&gt;
+&lt;li&gt;提供一种有效的方法来确定层次结构中的切割，从而在质量和速度之间提供良好的折衷&lt;/li&gt;
+&lt;li&gt;层次结构级别之间的平滑过渡策略&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="31-生成不同分辨率的高斯球"&gt;3.1. 生成不同分辨率的高斯球&lt;/h3&gt;
+&lt;p&gt;我们为每个块创建一个具有内部节点和叶节点的基于树的层次结构。每个节点都与一个 3D 高斯相关联，该高斯要么是来自原始优化的叶节点，要么是合并的内部节点。我们对中间节点的要求是它们应该：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;保持与叶节点相同的快速光栅化例程&lt;/li&gt;
+&lt;li&gt;尽可能准确地表示子节点的外观。因此，我们需要定义具有 3DGS 原语所有属性的 3D 高斯的中间节点。例如保持它原本所有的特征：均值$\mu$、协方差$\Sigma$、透明度 $o$ 等等。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;对于均值和协方差，有很多文献详尽的描述了这个混合过程。可以通过如下公式混合 $N$ 个在第 $l$ 级的均值为 $\mu_i^l$，协方差为 $\Sigma_i^l$ 高斯函数。我们可以通过评估这 $N$ 个高斯函数和待估计的高斯函数之间的 3D Kullback-Leibler divergence。3DKL 散度描述了两个高斯函数之间的相关性。那么显然的，假设$f = \sum_{i=1}^{N}\mathcal \alpha_i N(\mu_i, \Sigma_i)$，g为我们所需要新的高斯函数，应该有：
+&lt;/p&gt;</description></item><item><title>Mathematics In 3DGS 2</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</link><pubDate>Fri, 17 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</guid><description>&lt;h2 id="1-矩阵求导的常用方法"&gt;1. 矩阵求导的常用方法&lt;/h2&gt;
+&lt;h3 id="11-矩阵求导的一般方法"&gt;1.1. 矩阵求导的一般方法&lt;/h3&gt;
+&lt;p&gt;在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;向量对标量求导&lt;/li&gt;
+&lt;li&gt;向量对向量求导&lt;/li&gt;
+&lt;li&gt;向量对矩阵求导&lt;/li&gt;
+&lt;li&gt;矩阵对标量求导&lt;/li&gt;
+&lt;li&gt;矩阵对向量求导&lt;/li&gt;
+&lt;li&gt;矩阵对矩阵求导&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。&lt;/p&gt;
+&lt;h4 id="111-矩阵对标量求导"&gt;1.1.1. 矩阵对标量求导&lt;/h4&gt;
+&lt;p&gt;假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：&lt;/p&gt;
 $$
 \mathbf A=
 \left[
@@ -66,7 +66,7 @@ a_{21}&amp; a_{22}&amp; \cdots&amp; \ a_{2n} \\
 a_{n1}&amp; a_{n2}&amp; \cdots&amp; \ a_{nn} \\
 \end{matrix}
 \right]
-$$&lt;p>那么，$\frac{d \mathbf A}{d k}$被定义为：&lt;/p>
+$$&lt;p&gt;那么，$\frac{d \mathbf A}{d k}$被定义为：&lt;/p&gt;
 $$
 \frac{d \mathbf A}{d k} =
 \left[
@@ -77,39 +77,39 @@ $$
 \frac{d a_{n1}}{d k}&amp; \frac{d a_{n2}}{d k}&amp; \cdots&amp; \ \frac{d a_{nn}}{d k}&amp; \\
 \end{matrix}
 \right]
-$$&lt;p>于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \mathbf A}$，其定义为：&lt;/p></description></item><item><title>Mathematics In 3DGS 1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</link><pubDate>Wed, 01 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</guid><description>&lt;h2 id="1-体渲染">1. 体渲染&lt;/h2>
-&lt;p>体渲染的提出时为了解决如云、烟等非刚体的光学行为。可以理解为用于解决对光学&lt;strong>不是完全反射&lt;/strong>，有复杂&lt;strong>透射&lt;/strong>的光学行为。为了对这个光学行为建模，我们将云团（为了叙述方便，我们后面统一将被渲染物体称为云团）视为一团飘忽不定的粒子。光沿直线方向穿过一堆粒子 (粉色部分)，如果能计算出每根光线从最开始发射，到最终打到成像平面上的辐射强度，我们就可以渲染出投影图像。而渲染要做的就是对这个过程进行建模。为了简化计算，我们就假设光子只跟它附近的粒子发生作用，这个范围就是图中圆柱体大小的区间。&lt;/p>
-&lt;p>&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001336326.png">&lt;/p>
-&lt;h3 id="11-渲染行为分析">1.1. 渲染行为分析&lt;/h3>
-&lt;p>光线与粒子发生发生的作用有如下几类：&lt;/p>
-&lt;ol>
-&lt;li>&lt;strong>吸收 (absorption)&lt;/strong>：光子被粒子吸收，会导致入射光的辐射强度减弱&lt;/li>
-&lt;li>&lt;strong>放射 (emission)&lt;/strong>：粒子本身可能发光，这会进一步增大辐射强度。&lt;/li>
-&lt;li>&lt;strong>外散射 (out-scattering)&lt;/strong>：光子在撞击到粒子后，可能会发生弹射，导致方向发生偏移，会减弱入射光强度。&lt;/li>
-&lt;li>&lt;strong>内散射 (in-scattering)&lt;/strong>：其他方向的光子在撞到粒子后，可能和当前方向上的光子重合，从而增强当前光路上的辐射强度。&lt;/li>
-&lt;/ol>
-&lt;p>&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001538229.png">&lt;/p>
-&lt;p>那么对于任意一个云团块而言，出射光与入射光之间的变化量，可以表示为这四个过程的叠加。我们假设入射光线的强度为$I_i$，出射光线为$I_o$，那么有：&lt;/p>
+$$&lt;p&gt;于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \mathbf A}$，其定义为：&lt;/p&gt;</description></item><item><title>Mathematics In 3DGS 1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</link><pubDate>Wed, 01 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</guid><description>&lt;h2 id="1-体渲染"&gt;1. 体渲染&lt;/h2&gt;
+&lt;p&gt;体渲染的提出时为了解决如云、烟等非刚体的光学行为。可以理解为用于解决对光学&lt;strong&gt;不是完全反射&lt;/strong&gt;，有复杂&lt;strong&gt;透射&lt;/strong&gt;的光学行为。为了对这个光学行为建模，我们将云团（为了叙述方便，我们后面统一将被渲染物体称为云团）视为一团飘忽不定的粒子。光沿直线方向穿过一堆粒子 (粉色部分)，如果能计算出每根光线从最开始发射，到最终打到成像平面上的辐射强度，我们就可以渲染出投影图像。而渲染要做的就是对这个过程进行建模。为了简化计算，我们就假设光子只跟它附近的粒子发生作用，这个范围就是图中圆柱体大小的区间。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001336326.png"&gt;&lt;/p&gt;
+&lt;h3 id="11-渲染行为分析"&gt;1.1. 渲染行为分析&lt;/h3&gt;
+&lt;p&gt;光线与粒子发生发生的作用有如下几类：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;吸收 (absorption)&lt;/strong&gt;：光子被粒子吸收，会导致入射光的辐射强度减弱&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;放射 (emission)&lt;/strong&gt;：粒子本身可能发光，这会进一步增大辐射强度。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;外散射 (out-scattering)&lt;/strong&gt;：光子在撞击到粒子后，可能会发生弹射，导致方向发生偏移，会减弱入射光强度。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;内散射 (in-scattering)&lt;/strong&gt;：其他方向的光子在撞到粒子后，可能和当前方向上的光子重合，从而增强当前光路上的辐射强度。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001538229.png"&gt;&lt;/p&gt;
+&lt;p&gt;那么对于任意一个云团块而言，出射光与入射光之间的变化量，可以表示为这四个过程的叠加。我们假设入射光线的强度为$I_i$，出射光线为$I_o$，那么有：&lt;/p&gt;
 $$
 l_o-\mathrm{I}_i= dL(x,\omega) =emission+inscattering-outscatting-absorption
-$$&lt;p>
-下面针对吸收、发射、内散射、外散射四个环节进行分析。&lt;/p>
-&lt;h4 id="111-吸收">1.1.1 吸收&lt;/h4>
-&lt;p>我们假设半透明物体中的每个粒子的半径为$r$， 每个粒子的投影面积为$A=$ $\pi r^2$， 并假设圆柱体中粒子的密度为$\rho$，圆柱体的底面积是$E$，并且圆柱体的厚度足够薄。&lt;/p>
-&lt;p>&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125003153333.png">&lt;/p>
-&lt;p>假定这个厚度是$\Delta s$，那么在这个厚度内，圆柱体体积为$E\Delta s$，粒子总数为$\rho E \Delta s$。这些粒子遮挡的面积为$\rho E \Delta s A$，占整个底面积的比例为$\rho E\Delta sA/E=\rho A\Delta s_{\mathrm{o}}$。也就是说，当一束光通过这个圆柱体的时候，有$\rho A\Delta s$的概率会被遮挡。&lt;/p>
-&lt;p>换句话说，如果我们在圆柱体的一端发射无数光线 (假设都朝相同的方向)，在另一端接收，会发现有些光线安然通过，有些则被粒子遮挡 (吸收)。但可以确定的是，这些接受到的光线总强度，相比入射光线总强度而言，会有$\rho A\Delta s$比例的衰减，即接受到的光的强度均值是入射光的$\rho A\Delta s$倍。其数学形式可以写作：
-&lt;/p>
+$$&lt;p&gt;
+下面针对吸收、发射、内散射、外散射四个环节进行分析。&lt;/p&gt;
+&lt;h4 id="111-吸收"&gt;1.1.1 吸收&lt;/h4&gt;
+&lt;p&gt;我们假设半透明物体中的每个粒子的半径为$r$， 每个粒子的投影面积为$A=$ $\pi r^2$， 并假设圆柱体中粒子的密度为$\rho$，圆柱体的底面积是$E$，并且圆柱体的厚度足够薄。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125003153333.png"&gt;&lt;/p&gt;
+&lt;p&gt;假定这个厚度是$\Delta s$，那么在这个厚度内，圆柱体体积为$E\Delta s$，粒子总数为$\rho E \Delta s$。这些粒子遮挡的面积为$\rho E \Delta s A$，占整个底面积的比例为$\rho E\Delta sA/E=\rho A\Delta s_{\mathrm{o}}$。也就是说，当一束光通过这个圆柱体的时候，有$\rho A\Delta s$的概率会被遮挡。&lt;/p&gt;
+&lt;p&gt;换句话说，如果我们在圆柱体的一端发射无数光线 (假设都朝相同的方向)，在另一端接收，会发现有些光线安然通过，有些则被粒子遮挡 (吸收)。但可以确定的是，这些接受到的光线总强度，相比入射光线总强度而言，会有$\rho A\Delta s$比例的衰减，即接受到的光的强度均值是入射光的$\rho A\Delta s$倍。其数学形式可以写作：
+&lt;/p&gt;
 $$
 I_0 - I_i = \Delta I = -\rho(s)AI(s)\Delta s
-$$&lt;p>
-这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p>
+$$&lt;p&gt;
+这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p&gt;
 $$
 \frac{dI}{ds}=-\rho(s)AI(s)=-\tau_{a}(s)I(s)
-$$&lt;p>那么有：&lt;/p>
+$$&lt;p&gt;那么有：&lt;/p&gt;
 $$
 I(s)=I_{0}\exp(-\int_{0}^{s}\tau_{a}(t)dt)
-$$&lt;p>其中$I_o$时表示了光线的起始点。那么针对出射光而言有：&lt;/p>
+$$&lt;p&gt;其中$I_o$时表示了光线的起始点。那么针对出射光而言有：&lt;/p&gt;
 $$
 I_{o}=I_{i}\exp(-\int_{i}^{o}\tau_{a}(t)dt)_{0}
-$$&lt;p>此式的物理含义是显而易见的：如果离子云是均匀的，那么射入粒子云的光线会指数衰减，这被称为：比尔-朗伯吸收定律 (Beer-Lambert law)。&lt;/p></description></item></channel></rss>
+$$&lt;p&gt;此式的物理含义是显而易见的：如果离子云是均匀的，那么射入粒子云的光线会指数衰减，这被称为：比尔-朗伯吸收定律 (Beer-Lambert law)。&lt;/p&gt;</description></item></channel></rss>

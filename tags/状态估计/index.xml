@@ -1,22 +1,22 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>状态估计 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1/</link><description>Recent content in 状态估计 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.148.2</generator><language>en-us</language><lastBuildDate>Mon, 04 Nov 2024 16:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1/index.xml" rel="self" type="application/rss+xml"/><item><title>Kalman_filter</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</link><pubDate>Mon, 04 Nov 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</guid><description>&lt;p>ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。&lt;/p>
-&lt;h2 id="1-最大后验估计">1. 最大后验估计&lt;/h2>
-&lt;h3 id="11-状态估计问题描述">1.1. 状态估计问题描述&lt;/h3>
-&lt;p>我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>状态估计 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1/</link><description>Recent content in 状态估计 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.149.0</generator><language>en-us</language><lastBuildDate>Mon, 04 Nov 2024 16:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1/index.xml" rel="self" type="application/rss+xml"/><item><title>Kalman_filter</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</link><pubDate>Mon, 04 Nov 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</guid><description>&lt;p&gt;ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。&lt;/p&gt;
+&lt;h2 id="1-最大后验估计"&gt;1. 最大后验估计&lt;/h2&gt;
+&lt;h3 id="11-状态估计问题描述"&gt;1.1. 状态估计问题描述&lt;/h3&gt;
+&lt;p&gt;我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：&lt;/p&gt;
 $$
 \begin{array}{l}
 x_k = A_{k-1}x_{k-1} + v_k + \omega_k\\
 y_k = Cx_k + n_k
 \end{array}
-$$&lt;p>其中，有：&lt;/p>
+$$&lt;p&gt;其中，有：&lt;/p&gt;
 $$
 \begin{array}{ll}
 \text{初始噪声} &amp; x_0 \sim \mathcal G (x \mid 0, P_0) \\
 \text{过程噪声} &amp; x_k \sim \mathcal G (x \mid 0, Q_k) \\
 \text{观测噪声} &amp; \omega_k \sim \mathcal G (x \mid 0, R_k)
 \end{array}
-$$&lt;p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p>
-&lt;h3 id="12-最大后验估计">1.2. 最大后验估计&lt;/h3>
-&lt;p>最大后验估计需要完成如下一个优化问题：&lt;/p>
+$$&lt;p&gt;我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p&gt;
+&lt;h3 id="12-最大后验估计"&gt;1.2. 最大后验估计&lt;/h3&gt;
+&lt;p&gt;最大后验估计需要完成如下一个优化问题：&lt;/p&gt;
 $$
 \hat x = \arg \max_{x} p(x \mid y, v)
-$$&lt;p>对于上面这个问题，通过贝叶斯定理，可以变形得：&lt;/p></description></item></channel></rss>
+$$&lt;p&gt;对于上面这个问题，通过贝叶斯定理，可以变形得：&lt;/p&gt;</description></item></channel></rss>

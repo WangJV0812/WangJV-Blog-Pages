@@ -1,27 +1,27 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>深度学习 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link><description>Recent content in 深度学习 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.148.2</generator><language>en-us</language><lastBuildDate>Mon, 10 Mar 2025 16:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml"/><item><title>DUSt3R and MUSt3R</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</link><pubDate>Mon, 10 Mar 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</guid><description>&lt;h2 id="1-dust3r">1. DUSt3R&lt;/h2>
-&lt;h3 id="11-introduction">1.1. Introduction&lt;/h3>
-&lt;p>一般而言，现代的 MVS 和 SFM 的流程总是可以总结为以下几个子问题&lt;/p>
-&lt;ul>
-&lt;li>特征点匹配&lt;/li>
-&lt;li>寻找本质矩阵&lt;/li>
-&lt;li>对点进行三角测量&lt;/li>
-&lt;li>对场景进行稀疏重建&lt;/li>
-&lt;li>估计相机参数，&lt;/li>
-&lt;li>密集重建&lt;/li>
-&lt;/ul>
-&lt;p>但是在这个复杂的过程中，每个子问题都对原始问题做了简化，无法完美解决，为后面的步骤引入了噪声，从而导致整个系统显的“精致而脆弱”。在这方面，每个子问题之间缺乏沟通就很能说明问题：如果能将这些缓解紧耦合到一起，将噪声统一的，全局的考虑，可以很大程度上解决应为过度简化和解耦导致的种种问题。此外，这个流程中的关键步骤很脆弱，在很多情况下容易出错。例如，很多 SFM 方法都依赖于相机参数的估计，但是如果遇到观察比较少、非漫反射表面或者相机姿态运动较为单一时，相机参数估计可能失效，导致整个 SFM 过程都会失效。归根结底：&lt;strong>一个多视图立体视觉（MVS）算法的性能仅取决于输入图像和相机参数的质量&lt;/strong>&lt;/p>
-&lt;p>事实上，单张图或者多张图哦通过深度学习的方式提取深度并不罕有。但是在不引入额外的先验信息时，这个问题往往是&lt;strong>不适定的&lt;/strong>，所以这些方法利用神经网络从大量数据中学习巨量的三维先验知识来解决模糊性问题。这些方法可以分为两类。第一类利用类别级别的物体先验知识，事实上 DreamFusion 就属于这类工作，可以从单张照片或者一句自然语言描述生成三纬结构。另一种与 DUSt3R 较为类似，系统的学习一般的场景来实现单目深度估计。但是一般而言，例如 SuperGlue 之类，在训练和推理过程中，都没有显然的引入三维结构的信息，也没有扔掉相机矩阵的桎梏。可以说，DUSt3R 是一种基于深度学习的 ALL in One 的深度估计方法，入了点图（Point Map）表示，使网络能够在规范框架中预测三维形状。&lt;/p>
-&lt;h3 id="12-method-and-forward">1.2. Method and forward&lt;/h3>
-&lt;h4 id="121-ponit-map">1.2.1. Ponit Map&lt;/h4>
-&lt;p>接下来，我们将图片中每个像素对应的三维点构成的集合称为 &lt;strong>点图&lt;/strong>（point map） $X \in R^{W×H×3}$。与分辨率为 $W×H$的对应RGB图像 $I$相关联，&lt;strong>点图 $X$ 在图像像素与三维点之间形成一一映射&lt;/strong>，即对于所有像素坐标 $(i, j) \in \{1...W\}×\{1...H\}$，都有 $I_{i,j} \leftrightarrow X_{i,j}$。此处每个像素点对应于一个三维点实事丧引入了一个简化假设，即假设观测的场景全部是不透明且漫反射的，不存在透过某个物体并观察到另一个物体的情况。&lt;/p>
-&lt;h4 id="122-相机和场景">1.2.2. 相机和场景&lt;/h4>
-&lt;p>相机与场景。给定相机内参 $K \in \mathbb{R}^{3 ×3}$ ，所观测场景的点图 $X$ 可以直接从真实深度图：&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>深度学习 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link><description>Recent content in 深度学习 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.149.0</generator><language>en-us</language><lastBuildDate>Mon, 10 Mar 2025 16:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml"/><item><title>DUSt3R and MUSt3R</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</link><pubDate>Mon, 10 Mar 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</guid><description>&lt;h2 id="1-dust3r"&gt;1. DUSt3R&lt;/h2&gt;
+&lt;h3 id="11-introduction"&gt;1.1. Introduction&lt;/h3&gt;
+&lt;p&gt;一般而言，现代的 MVS 和 SFM 的流程总是可以总结为以下几个子问题&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;特征点匹配&lt;/li&gt;
+&lt;li&gt;寻找本质矩阵&lt;/li&gt;
+&lt;li&gt;对点进行三角测量&lt;/li&gt;
+&lt;li&gt;对场景进行稀疏重建&lt;/li&gt;
+&lt;li&gt;估计相机参数，&lt;/li&gt;
+&lt;li&gt;密集重建&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;但是在这个复杂的过程中，每个子问题都对原始问题做了简化，无法完美解决，为后面的步骤引入了噪声，从而导致整个系统显的“精致而脆弱”。在这方面，每个子问题之间缺乏沟通就很能说明问题：如果能将这些缓解紧耦合到一起，将噪声统一的，全局的考虑，可以很大程度上解决应为过度简化和解耦导致的种种问题。此外，这个流程中的关键步骤很脆弱，在很多情况下容易出错。例如，很多 SFM 方法都依赖于相机参数的估计，但是如果遇到观察比较少、非漫反射表面或者相机姿态运动较为单一时，相机参数估计可能失效，导致整个 SFM 过程都会失效。归根结底：&lt;strong&gt;一个多视图立体视觉（MVS）算法的性能仅取决于输入图像和相机参数的质量&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;事实上，单张图或者多张图哦通过深度学习的方式提取深度并不罕有。但是在不引入额外的先验信息时，这个问题往往是&lt;strong&gt;不适定的&lt;/strong&gt;，所以这些方法利用神经网络从大量数据中学习巨量的三维先验知识来解决模糊性问题。这些方法可以分为两类。第一类利用类别级别的物体先验知识，事实上 DreamFusion 就属于这类工作，可以从单张照片或者一句自然语言描述生成三纬结构。另一种与 DUSt3R 较为类似，系统的学习一般的场景来实现单目深度估计。但是一般而言，例如 SuperGlue 之类，在训练和推理过程中，都没有显然的引入三维结构的信息，也没有扔掉相机矩阵的桎梏。可以说，DUSt3R 是一种基于深度学习的 ALL in One 的深度估计方法，入了点图（Point Map）表示，使网络能够在规范框架中预测三维形状。&lt;/p&gt;
+&lt;h3 id="12-method-and-forward"&gt;1.2. Method and forward&lt;/h3&gt;
+&lt;h4 id="121-ponit-map"&gt;1.2.1. Ponit Map&lt;/h4&gt;
+&lt;p&gt;接下来，我们将图片中每个像素对应的三维点构成的集合称为 &lt;strong&gt;点图&lt;/strong&gt;（point map） $X \in R^{W×H×3}$。与分辨率为 $W×H$的对应RGB图像 $I$相关联，&lt;strong&gt;点图 $X$ 在图像像素与三维点之间形成一一映射&lt;/strong&gt;，即对于所有像素坐标 $(i, j) \in \{1...W\}×\{1...H\}$，都有 $I_{i,j} \leftrightarrow X_{i,j}$。此处每个像素点对应于一个三维点实事丧引入了一个简化假设，即假设观测的场景全部是不透明且漫反射的，不存在透过某个物体并观察到另一个物体的情况。&lt;/p&gt;
+&lt;h4 id="122-相机和场景"&gt;1.2.2. 相机和场景&lt;/h4&gt;
+&lt;p&gt;相机与场景。给定相机内参 $K \in \mathbb{R}^{3 ×3}$ ，所观测场景的点图 $X$ 可以直接从真实深度图：&lt;/p&gt;
 $$
 D \in \mathbb{R}^{W ×H}
-$$&lt;p>中获取，其公式为&lt;/p>
+$$&lt;p&gt;中获取，其公式为&lt;/p&gt;
 $$
 \begin{aligned}
 X_{i, j}
 &amp;= K^{-1}D_{i,j}[i , j , 1]^{\top}\\
 \end{aligned}
-$$&lt;p>其中， $X$ 是在相机坐标系中表示的。接下来，我们将在相机 $m$ 的坐标系中表示的、来自相机 $\pi$ 的点图 $X^{n}$ 记为 $X^{n, m}$，表示第 $n$ 帧在 第 $m$ 帧的坐标系下的点图为 ：&lt;/p></description></item></channel></rss>
+$$&lt;p&gt;其中， $X$ 是在相机坐标系中表示的。接下来，我们将在相机 $m$ 的坐标系中表示的、来自相机 $\pi$ 的点图 $X^{n}$ 记为 $X^{n, m}$，表示第 $n$ 帧在 第 $m$ 帧的坐标系下的点图为 ：&lt;/p&gt;</description></item></channel></rss>

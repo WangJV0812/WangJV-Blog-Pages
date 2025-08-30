@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>图像处理 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</link><description>Recent content in 图像处理 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.148.2</generator><language>en-us</language><lastBuildDate>Fri, 14 Feb 2025 17:13:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/index.xml" rel="self" type="application/rss+xml"/><item><title>homography</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</link><pubDate>Fri, 14 Feb 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</guid><description>&lt;p>假设我们有两个坐标系 $\mathcal F_a, \ \mathcal F_b$，有一个点 $P$ 在一个平面上。在两个坐标系下，这个点可以描述为 $\rho_a, \rho_b$；对应的平面可以通过法向量和截距来描述：$\{n_a. d_a\}, \{n_b. d_b\}$。&lt;/p>
-&lt;p>此外，该点有在图像坐标系下的描述 $p_a, p_b$ 和对应的相机矩阵 $K_a, K_b$。那么可以写出：&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>图像处理 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</link><description>Recent content in 图像处理 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.149.0</generator><language>en-us</language><lastBuildDate>Fri, 14 Feb 2025 17:13:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/index.xml" rel="self" type="application/rss+xml"/><item><title>homography</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</link><pubDate>Fri, 14 Feb 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</guid><description>&lt;p&gt;假设我们有两个坐标系 $\mathcal F_a, \ \mathcal F_b$，有一个点 $P$ 在一个平面上。在两个坐标系下，这个点可以描述为 $\rho_a, \rho_b$；对应的平面可以通过法向量和截距来描述：$\{n_a. d_a\}, \{n_b. d_b\}$。&lt;/p&gt;
+&lt;p&gt;此外，该点有在图像坐标系下的描述 $p_a, p_b$ 和对应的相机矩阵 $K_a, K_b$。那么可以写出：&lt;/p&gt;
 $$
 \begin{aligned}
 p_a = \frac{1}{z_a} K_a \rho_a \\
 p_b = \frac{1}{z_b} K_b \rho_b
 \end{aligned}
-$$&lt;p>此外， 由于该点在对应的平面上，有平面约束：&lt;/p>
+$$&lt;p&gt;此外， 由于该点在对应的平面上，有平面约束：&lt;/p&gt;
 $$
 \begin{aligned}
 n^T_a \rho_a + d_a = 0 \\
 n^T_b \rho_b + d_b = 0
 \end{aligned}
-$$&lt;p>那么，将平面约束中的 $\rho$ 通过投影矩阵转换为像素坐标，有：&lt;/p>
+$$&lt;p&gt;那么，将平面约束中的 $\rho$ 通过投影矩阵转换为像素坐标，有：&lt;/p&gt;
 $$
 \begin{aligned}
 &amp;z_a n^T_a K_a^{-1} p_a + d_a = 0\\
@@ -19,4 +19,4 @@ $$
 &amp;z_b n^T_b K_b^{-1} p_b + d_b = 0\\
 &amp;z_b = -\frac{d_b}{n^T_b K_b^{-1} p_b}\\
 \end{aligned}
-$$&lt;p>带入到 $\rho_a, \rho_b$ 的表达式中，有：&lt;/p></description></item></channel></rss>
+$$&lt;p&gt;带入到 $\rho_a, \rho_b$ 的表达式中，有：&lt;/p&gt;</description></item></channel></rss>

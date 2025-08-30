@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/posts/</link><description>Recent content in Posts on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.148.2</generator><language>en-us</language><lastBuildDate>Mon, 18 Aug 2025 18:08:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Noise Contrastive Estimation</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</link><pubDate>Mon, 18 Aug 2025 18:08:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</guid><description>&lt;h2 id="1-动机">1. 动机&lt;/h2>
-&lt;p>在无监督学习时，我们往往都需要处理维度非常大的数据。例如无监督学习的一个经典案例：图像生成。对于一个尺寸为 $1920 \times 1080$ 的图片，其像素总量为 $2073600$，生成一张这样的照片时，我们需要对一个维度为 $2073600$ 的随机分布建模和采样。这些维度之间不可能是完全独立的，这个原因很显然，如果所有的维度完全独立，生成的数据就是完全随机的，不会包含任何信息。相邻像素的颜色、纹理高度相关，真正需要被建模的自由度远小于像素个数&lt;/p>
-&lt;p>可以说，我们希望通过无监督学习学习到的数据之间的规律，就建模在数据维度之间的约束中，或者换一个更常用的说法，数据之间的规律。由于数据维度之间约束的存在，数据的维度一定是小于（甚至可以说远远小于）其随机向量的维度。我们希望建模的数据事实上存在于一个高维空间上的流形上，而无监督学习实质上是通过神经网络，建模这个高位空间中数据分布的流形。&lt;/p>
-&lt;p>有了上面的理解，原本的如何从数据中挖掘关系这个问题就被转换为如何对数据所在的流形建模。这个问题并不容易，流形的复杂性和高维数据的稀疏性都给建模带来了挑战。目前一个主流的思路是通过概率分布对流形建模。显然，概率分布可以很方便的表达流形上的几何结构；对于一个维度为 $d$ 的概率分布，可以理解为一个从 $R^d \to R$ 的映射，当然这个映射需要满足非负和归一化。那么对于不属于流形上的点，映射到 $0$ 就好了。当然，概率分布带给我们的好处远不止于此：&lt;/p>
-&lt;ol>
-&lt;li>概率分布本身可以很方便的处理噪声，可以很方便的用于处理真实的，带噪声的真实数据。&lt;/li>
-&lt;li>概率分布的采样和优化十分方便，有很多现成的研究成果&lt;/li>
-&lt;li>概率分布本身赋予流形一个 “软边界”。这让模型的泛化能力有保障。&lt;/li>
-&lt;/ol>
-&lt;p>但是概率模型依然不是完美的。一般而言，我们假设存在一个理想分布 $p_d(x)$，它表达了完美的，真实的数据的分布。这是一个 “可望而不可达” 的理想分布，我们所用的数据集 $x_1, x_2, \cdots x_n$ 可以认为从分布 $p_d(x)$ 中做的采样。（一种柏拉图式的哲学）。我们希望可以通过一个受到参数 $\theta$ 控制的模型分布 $p(x, \theta)$ 来逼近和代替真实分布 $p_d(x)$。&lt;/p>
-&lt;p>我们的神经网络不可能直接建模非归一化模型，模型本身几乎一定是非归一化的。假设我们只能建模一个非归一化模型 $q(x\mid \theta)$，则需要通过归一化系数将其转换为归一化的。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/posts/</link><description>Recent content in Posts on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.149.0</generator><language>en-us</language><lastBuildDate>Mon, 18 Aug 2025 18:08:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Noise Contrastive Estimation</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</link><pubDate>Mon, 18 Aug 2025 18:08:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/noise-contrastive-estimation/</guid><description>&lt;h2 id="1-动机"&gt;1. 动机&lt;/h2&gt;
+&lt;p&gt;在无监督学习时，我们往往都需要处理维度非常大的数据。例如无监督学习的一个经典案例：图像生成。对于一个尺寸为 $1920 \times 1080$ 的图片，其像素总量为 $2073600$，生成一张这样的照片时，我们需要对一个维度为 $2073600$ 的随机分布建模和采样。这些维度之间不可能是完全独立的，这个原因很显然，如果所有的维度完全独立，生成的数据就是完全随机的，不会包含任何信息。相邻像素的颜色、纹理高度相关，真正需要被建模的自由度远小于像素个数&lt;/p&gt;
+&lt;p&gt;可以说，我们希望通过无监督学习学习到的数据之间的规律，就建模在数据维度之间的约束中，或者换一个更常用的说法，数据之间的规律。由于数据维度之间约束的存在，数据的维度一定是小于（甚至可以说远远小于）其随机向量的维度。我们希望建模的数据事实上存在于一个高维空间上的流形上，而无监督学习实质上是通过神经网络，建模这个高位空间中数据分布的流形。&lt;/p&gt;
+&lt;p&gt;有了上面的理解，原本的如何从数据中挖掘关系这个问题就被转换为如何对数据所在的流形建模。这个问题并不容易，流形的复杂性和高维数据的稀疏性都给建模带来了挑战。目前一个主流的思路是通过概率分布对流形建模。显然，概率分布可以很方便的表达流形上的几何结构；对于一个维度为 $d$ 的概率分布，可以理解为一个从 $R^d \to R$ 的映射，当然这个映射需要满足非负和归一化。那么对于不属于流形上的点，映射到 $0$ 就好了。当然，概率分布带给我们的好处远不止于此：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;概率分布本身可以很方便的处理噪声，可以很方便的用于处理真实的，带噪声的真实数据。&lt;/li&gt;
+&lt;li&gt;概率分布的采样和优化十分方便，有很多现成的研究成果&lt;/li&gt;
+&lt;li&gt;概率分布本身赋予流形一个 “软边界”。这让模型的泛化能力有保障。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;但是概率模型依然不是完美的。一般而言，我们假设存在一个理想分布 $p_d(x)$，它表达了完美的，真实的数据的分布。这是一个 “可望而不可达” 的理想分布，我们所用的数据集 $x_1, x_2, \cdots x_n$ 可以认为从分布 $p_d(x)$ 中做的采样。（一种柏拉图式的哲学）。我们希望可以通过一个受到参数 $\theta$ 控制的模型分布 $p(x, \theta)$ 来逼近和代替真实分布 $p_d(x)$。&lt;/p&gt;
+&lt;p&gt;我们的神经网络不可能直接建模非归一化模型，模型本身几乎一定是非归一化的。假设我们只能建模一个非归一化模型 $q(x\mid \theta)$，则需要通过归一化系数将其转换为归一化的。&lt;/p&gt;
 $$
 \begin{aligned}
 p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
 \text{where: } Z(\theta) = \int q(x\mid \theta) dx
 \end{aligned}
-$$&lt;p>但是归一化系数 $Z(\theta) = \int q(x\mid \theta) dx$ 对于高维分布几乎是不可能直接计算的。我们希望能找到一些办法，避免对归一化系数的直接计算，&lt;code>Noise Contrastive Estimation&lt;/code> 就是为此而提出的一种方法。（当然，其他方法还可以参考 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 和 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/#1-%E4%BD%BF%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E8%B7%AF%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90">使用神经网路进行数据生成&lt;/a>）&lt;/p>
-&lt;h2 id="2-通过比较来估计密度density-estimation-by-comparison">2. 通过比较来估计密度（Density Estimation by Comparison）&lt;/h2>
-&lt;p>当我们希望从一系列离散的，从一个未知分布的采样 $\{X\}_n$ 估计出具体的分布时，我们几乎一定会去提取分布的中特征。或者换句话说，我们是通过刻画分布的性质来估计未知分布的密度的。甚至可以说刻画其性质是第一性的。因此一个显然的思路是，如果我们提供一个已知的、与目标分布显著不同的噪声分布 $p_n(x)$。之后训练一个神经网络，用于区分数据来自于数据分布 $p_d(x)$ 还是噪声分布 $p_n(x)$，神经网络自然而然的就学习到了数据分布的特征。这个过程实质上就实现了数据生成的目标，即学习数据的潜在分布。而这个过程则将原本的无监督学习转换为一个简单的，有负样本的，简单的而分类问题。换句话说，&lt;strong>NCE不直接估计概率密度，而是通过学习区分“真实数据”和“人工产生的噪声”来间接地学习模型参数。&lt;/strong>&lt;/p></description></item><item><title>Sliced Score Matching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</link><pubDate>Mon, 11 Aug 2025 17:02:00 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</guid><description>&lt;h2 id="1-目的和动机">1. 目的和动机&lt;/h2>
-&lt;p>在之前的关于 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/">Score Matching&lt;/a> 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：&lt;/p>
+$$&lt;p&gt;但是归一化系数 $Z(\theta) = \int q(x\mid \theta) dx$ 对于高维分布几乎是不可能直接计算的。我们希望能找到一些办法，避免对归一化系数的直接计算，&lt;code&gt;Noise Contrastive Estimation&lt;/code&gt; 就是为此而提出的一种方法。（当然，其他方法还可以参考 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/"&gt;Score Matching&lt;/a&gt; 和 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/#1-%E4%BD%BF%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E8%B7%AF%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90"&gt;使用神经网路进行数据生成&lt;/a&gt;）&lt;/p&gt;
+&lt;h2 id="2-通过比较来估计密度density-estimation-by-comparison"&gt;2. 通过比较来估计密度（Density Estimation by Comparison）&lt;/h2&gt;
+&lt;p&gt;当我们希望从一系列离散的，从一个未知分布的采样 $\{X\}_n$ 估计出具体的分布时，我们几乎一定会去提取分布的中特征。或者换句话说，我们是通过刻画分布的性质来估计未知分布的密度的。甚至可以说刻画其性质是第一性的。因此一个显然的思路是，如果我们提供一个已知的、与目标分布显著不同的噪声分布 $p_n(x)$。之后训练一个神经网络，用于区分数据来自于数据分布 $p_d(x)$ 还是噪声分布 $p_n(x)$，神经网络自然而然的就学习到了数据分布的特征。这个过程实质上就实现了数据生成的目标，即学习数据的潜在分布。而这个过程则将原本的无监督学习转换为一个简单的，有负样本的，简单的而分类问题。换句话说，&lt;strong&gt;NCE不直接估计概率密度，而是通过学习区分“真实数据”和“人工产生的噪声”来间接地学习模型参数。&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>Sliced Score Matching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</link><pubDate>Mon, 11 Aug 2025 17:02:00 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/sliced-score-matching/</guid><description>&lt;h2 id="1-目的和动机"&gt;1. 目的和动机&lt;/h2&gt;
+&lt;p&gt;在之前的关于 &lt;a href="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/"&gt;Score Matching&lt;/a&gt; 的文章中，介绍了 Score Matching 的基本概念和方法。Score Matching 巧妙的引入了 Score Function，避免了直接计算高维随机向量的归一化系数，让估计一个高维分布成为了可能。其 Loss Function 可以写作：&lt;/p&gt;
 $$
 \begin{aligned}
 J(\theta)
@@ -28,20 +28,20 @@ J(\theta)
 \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)+ \frac 1 2\left\| \psi(\xi, \theta)\right \|^2
 \right] \\
 \end{aligned}
-$$&lt;p>但是成为可能不代表它好算。Score Matching 引入了对原始分布的 Hessian Matrix 的迹 $\nabla^2_\xi \log p(\xi, \theta)$ 的计算。显然，这比直接计算归一化系数简单了不少，但是对于一个维度为 $d$ 的随机向量的估计，需要进行 $d$ 次反向传播，者仍然十分困难。更可怕的是，在反向传播的过程中需要计算：&lt;/p>
+$$&lt;p&gt;但是成为可能不代表它好算。Score Matching 引入了对原始分布的 Hessian Matrix 的迹 $\nabla^2_\xi \log p(\xi, \theta)$ 的计算。显然，这比直接计算归一化系数简单了不少，但是对于一个维度为 $d$ 的随机向量的估计，需要进行 $d$ 次反向传播，者仍然十分困难。更可怕的是，在反向传播的过程中需要计算：&lt;/p&gt;
 $$
 \frac{\partial}{\partial \theta} \big[ \text{tr} \left(\nabla_\xi \psi(\xi, \theta)\right)\big] = \text{tr} \left(\frac{\partial^2}{\partial \theta \xi} \psi(\xi, \theta)\right)
-$$&lt;p>这一项对于数值计算而言就是灾难。在实践中，需要找到一个真实可行的简化方法。人们常常使用的方法有：&lt;/p></description></item><item><title>ScoreMatching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</link><pubDate>Wed, 06 Aug 2025 16:29:40 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</guid><description>&lt;h2 id="1-为什么要用-score-matching">1. 为什么要用 Score Matching&lt;/h2>
-&lt;p>很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：&lt;/p>
+$$&lt;p&gt;这一项对于数值计算而言就是灾难。在实践中，需要找到一个真实可行的简化方法。人们常常使用的方法有：&lt;/p&gt;</description></item><item><title>ScoreMatching</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</link><pubDate>Wed, 06 Aug 2025 16:29:40 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/08/scorematching/</guid><description>&lt;h2 id="1-为什么要用-score-matching"&gt;1. 为什么要用 Score Matching&lt;/h2&gt;
+&lt;p&gt;很多是否，我们希望从大量的数据 $x_1, x_2, \cdots x_n$（或者换句话说，从一个随机变量 $X$ 的大量抽象）还原回分布 $p(x)$ 本身。一个很显然的想法是通过一个带有可优化参数 $\theta$ 的函数 $q(x \mid \theta)$ 来还原/近似真实的数据分布。但是优化过程中，想要保证分布的归一化性质并不容易。一个很显然思路时优化完成后通过归一化系数来保证归一化性质：&lt;/p&gt;
 $$
 \begin{array}{c}
 p(x\mid \theta) = \frac{1}{Z(\theta)}q(x\mid \theta)\\
 \text{where: } Z(\theta) = \int q(x\mid \theta) dx
 \end{array}
-$$&lt;p>但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）&lt;/p>
-&lt;p>要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。&lt;/p>
-&lt;h2 id="2-score-function">2. Score Function&lt;/h2>
-&lt;p>对于一个受到参数 $\boldsymbol{\theta}$ 控制的，关于随机向量 $\boldsymbol{\xi}$ 的随机分布 $p(\boldsymbol{\xi}, \boldsymbol{\theta})$。我们定义其对数梯度为其 Score Function。形式化的，可以写作：&lt;/p>
+$$&lt;p&gt;但是在很多情况下，生成模型需要处理一个极高维度随机向量的概率分布的积分。此时归一化系数 $Z(\theta)$ 的计算几乎是不可能的。（如果实在希望直接计算，可以用数值方法或者 MCMC，但是这类方法同样很难直接计算。）&lt;/p&gt;
+&lt;p&gt;要解决归一化问题的办法其实很多，事实上这在随机分布估计中是一个很常见的问题。我们不妨举一些显然的方案，例如 Flow Module、Bolzemann Machine、Variational Autoencoder 等等。那么如果归一化的分布不好处理，我们是否可以找到一个与归一化的概率分布等价的，不需要归一换的形式？答案是肯定的，就是我们后面要介绍的 Score Function 和对应的估计的方法 Score Matching。&lt;/p&gt;
+&lt;h2 id="2-score-function"&gt;2. Score Function&lt;/h2&gt;
+&lt;p&gt;对于一个受到参数 $\boldsymbol{\theta}$ 控制的，关于随机向量 $\boldsymbol{\xi}$ 的随机分布 $p(\boldsymbol{\xi}, \boldsymbol{\theta})$。我们定义其对数梯度为其 Score Function。形式化的，可以写作：&lt;/p&gt;
 $$
 \psi (\boldsymbol{\xi}, \boldsymbol{\theta}) =
 \begin{pmatrix}
@@ -57,67 +57,67 @@ $$
 \psi_n(\boldsymbol{\xi}, \boldsymbol{\theta})
 \end{pmatrix} =
 \nabla_{\boldsymbol{\xi}} \log p(\boldsymbol{\xi}, \boldsymbol{\theta})
-$$&lt;p>我们不难发现：&lt;/p></description></item><item><title>Lie Group and Lie Algebra</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</guid><description>&lt;p>我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong>群&lt;/strong> 和 &lt;strong>微分流形&lt;/strong> 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p>
-&lt;p>事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：&lt;/p>
-&lt;ol>
-&lt;li>封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$&lt;/li>
-&lt;li>结合律：$\forall c_1, c_2, c_3 \in C, [[c_1, c_2], c_3 ] = [c_1, [c_2, c_3]]$&lt;/li>
-&lt;li>单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$&lt;/li>
-&lt;li>逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$&lt;/li>
-&lt;/ol>
-&lt;p>在研究群的性质时，我们需要清晰的认识到 &lt;strong>集合&lt;/strong> 和 定义在集合上的 &lt;strong>二元运算&lt;/strong> 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “&lt;strong>操作不变形&lt;/strong>”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。&lt;/p>
-&lt;p>另一个很经典的例子是用群来描述等边三角形的旋转不变形。但是这个例子我们后面再补充&lt;/p>
-&lt;h2 id="1-群的结构和基本操作">1. 群的结构和基本操作&lt;/h2>
-&lt;h3 id="11-子群">1.1. 子群&lt;/h3>
-&lt;p>对于集合 $G$ 的一个子集 $H \subset G$，在群 $G$ 定义的运算律 $\cdot$ 上满足群的性质，就称 $H$ 为 $G$ 的子群。不难察觉到，单位元 $e$ 一定在 $H$ 上。例如任意通过坐标原点的直线都可以看作定义在加法上的对 $R(2)$ 的子群。&lt;/p></description></item><item><title>3D Kinematics and Dynamics</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</link><pubDate>Fri, 20 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</guid><description>深入探讨三维空间中的运动学和动力学基础，包括旋转矩阵、四元数和李群理论</description></item><item><title>From Transformer to VGGT</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</link><pubDate>Fri, 18 Apr 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</guid><description>&lt;h2 id="1-preliminary-attention-and-vit">1. Preliminary: Attention and ViT&lt;/h2>
-&lt;p>我们先来回顾一下经典的 Transformer 结构，之后从 Transformer 的角度来理解 ViT，这样大家能更好的理解 VGGT 和 MASt3R、DUSt3R 之类工作的苦恼之处。&lt;/p>
-&lt;p>&lt;img alt="VGGT Attention pipline" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/Images/VGGT%20Attention%20pipline.png">&lt;/p>
-&lt;h3 id="11-encoder-and-decoder">1.1. Encoder and Decoder&lt;/h3>
-&lt;p>深度学习名著 《&lt;a href="https://arxiv.org/pdf/1706.03762">Attention is all you need&lt;/a>》 提出的古典派 Attention（这么说是因为由于 Transformer 的大火，Attention 机制的变种已经太多了，我们只关注最经典的架构就好，其他都大同小异）。最经典的 Transformer 致力于解决翻译问题，是一个十分经典的 nlp 问题，采用了最经典的 Encoder-Decoder 结构。&lt;/p>
-&lt;p>Encoder 由 6 个完全相同的层堆叠而成，每个层由两个子层组成。第一个层负责实现 multi-head self-attention 机制；第二个层是一个简单的全连接前馈网络。为了避免在训练中出现梯度消失的问题，Transformer 在子层间采用了残差链接，之后对子层的输出做归一化（即 Add&amp;amp;Norm）那个块。因此，每个子层的输出可以表示为：&lt;/p>
+$$&lt;p&gt;我们不难发现：&lt;/p&gt;</description></item><item><title>Naive Group Theory</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/naive-group-theory/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/naive-group-theory/</guid><description>&lt;p&gt;我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong&gt;群&lt;/strong&gt; 和 &lt;strong&gt;微分流形&lt;/strong&gt; 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p&gt;
+&lt;p&gt;事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$&lt;/li&gt;
+&lt;li&gt;结合律：$\forall c_1, c_2, c_3 \in C, [[c_1, c_2], c_3 ] = [c_1, [c_2, c_3]]$&lt;/li&gt;
+&lt;li&gt;单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$&lt;/li&gt;
+&lt;li&gt;逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;在研究群的性质时，我们需要清晰的认识到 &lt;strong&gt;集合&lt;/strong&gt; 和 定义在集合上的 &lt;strong&gt;二元运算&lt;/strong&gt; 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “&lt;strong&gt;操作不变形&lt;/strong&gt;”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。&lt;/p&gt;
+&lt;p&gt;另一个很经典的例子是用群来描述等边三角形的旋转不变形。但是这个例子我们后面再补充&lt;/p&gt;
+&lt;h2 id="1-群的结构和基本操作"&gt;1. 群的结构和基本操作&lt;/h2&gt;
+&lt;h3 id="11-子群"&gt;1.1. 子群&lt;/h3&gt;
+&lt;p&gt;对于集合 $G$ 的一个子集 $H \subset G$，在群 $G$ 定义的运算律 $\cdot$ 上满足群的性质，就称 $H$ 为 $G$ 的子群。不难察觉到，单位元 $e$ 一定在 $H$ 上。例如任意通过坐标原点的直线都可以看作定义在加法上的对 $R(2)$ 的子群。&lt;/p&gt;</description></item><item><title>3D Kinematics and Dynamics</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</link><pubDate>Fri, 20 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</guid><description>深入探讨三维空间中的运动学和动力学基础，包括旋转矩阵、四元数和李群理论</description></item><item><title>From Transformer to VGGT</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</link><pubDate>Fri, 18 Apr 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/</guid><description>&lt;h2 id="1-preliminary-attention-and-vit"&gt;1. Preliminary: Attention and ViT&lt;/h2&gt;
+&lt;p&gt;我们先来回顾一下经典的 Transformer 结构，之后从 Transformer 的角度来理解 ViT，这样大家能更好的理解 VGGT 和 MASt3R、DUSt3R 之类工作的苦恼之处。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="VGGT Attention pipline" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2025/04/from-transformer-to-vggt/Images/VGGT%20Attention%20pipline.png"&gt;&lt;/p&gt;
+&lt;h3 id="11-encoder-and-decoder"&gt;1.1. Encoder and Decoder&lt;/h3&gt;
+&lt;p&gt;深度学习名著 《&lt;a href="https://arxiv.org/pdf/1706.03762"&gt;Attention is all you need&lt;/a&gt;》 提出的古典派 Attention（这么说是因为由于 Transformer 的大火，Attention 机制的变种已经太多了，我们只关注最经典的架构就好，其他都大同小异）。最经典的 Transformer 致力于解决翻译问题，是一个十分经典的 nlp 问题，采用了最经典的 Encoder-Decoder 结构。&lt;/p&gt;
+&lt;p&gt;Encoder 由 6 个完全相同的层堆叠而成，每个层由两个子层组成。第一个层负责实现 multi-head self-attention 机制；第二个层是一个简单的全连接前馈网络。为了避免在训练中出现梯度消失的问题，Transformer 在子层间采用了残差链接，之后对子层的输出做归一化（即 Add&amp;amp;Norm）那个块。因此，每个子层的输出可以表示为：&lt;/p&gt;
 $$
 \text{LayerNorm}(x+\text{Sublayer}(x))
-$$&lt;p>其中 $\text{Sublayer}(x)$ 是每个子层具体的实现。为了方便残差链接，每层的输出和输入（包括 embedding layers）都被约定为 $d_{module} = 512$。（至少 Attention is all you need 是这样的）。&lt;/p>
-&lt;p>Decoder 也是由完全相同的层堆叠而成，和 Encoder 不同的是 Decoder 的每个层也有三个子层。Decoder 的第一个子层是 masked multi-head self-attention，负责对输入的 embedding 做自注意力机制，之后将输入的 embedding 和 encoder 编码的结合结合起来。后面的层和 Encoder 一样，都是 multi-head self-attention 和前馈网络的组合。&lt;/p></description></item><item><title>DUSt3R and MUSt3R</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</link><pubDate>Mon, 10 Mar 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</guid><description>&lt;h2 id="1-dust3r">1. DUSt3R&lt;/h2>
-&lt;h3 id="11-introduction">1.1. Introduction&lt;/h3>
-&lt;p>一般而言，现代的 MVS 和 SFM 的流程总是可以总结为以下几个子问题&lt;/p>
-&lt;ul>
-&lt;li>特征点匹配&lt;/li>
-&lt;li>寻找本质矩阵&lt;/li>
-&lt;li>对点进行三角测量&lt;/li>
-&lt;li>对场景进行稀疏重建&lt;/li>
-&lt;li>估计相机参数，&lt;/li>
-&lt;li>密集重建&lt;/li>
-&lt;/ul>
-&lt;p>但是在这个复杂的过程中，每个子问题都对原始问题做了简化，无法完美解决，为后面的步骤引入了噪声，从而导致整个系统显的“精致而脆弱”。在这方面，每个子问题之间缺乏沟通就很能说明问题：如果能将这些缓解紧耦合到一起，将噪声统一的，全局的考虑，可以很大程度上解决应为过度简化和解耦导致的种种问题。此外，这个流程中的关键步骤很脆弱，在很多情况下容易出错。例如，很多 SFM 方法都依赖于相机参数的估计，但是如果遇到观察比较少、非漫反射表面或者相机姿态运动较为单一时，相机参数估计可能失效，导致整个 SFM 过程都会失效。归根结底：&lt;strong>一个多视图立体视觉（MVS）算法的性能仅取决于输入图像和相机参数的质量&lt;/strong>&lt;/p>
-&lt;p>事实上，单张图或者多张图哦通过深度学习的方式提取深度并不罕有。但是在不引入额外的先验信息时，这个问题往往是&lt;strong>不适定的&lt;/strong>，所以这些方法利用神经网络从大量数据中学习巨量的三维先验知识来解决模糊性问题。这些方法可以分为两类。第一类利用类别级别的物体先验知识，事实上 DreamFusion 就属于这类工作，可以从单张照片或者一句自然语言描述生成三纬结构。另一种与 DUSt3R 较为类似，系统的学习一般的场景来实现单目深度估计。但是一般而言，例如 SuperGlue 之类，在训练和推理过程中，都没有显然的引入三维结构的信息，也没有扔掉相机矩阵的桎梏。可以说，DUSt3R 是一种基于深度学习的 ALL in One 的深度估计方法，入了点图（Point Map）表示，使网络能够在规范框架中预测三维形状。&lt;/p>
-&lt;h3 id="12-method-and-forward">1.2. Method and forward&lt;/h3>
-&lt;h4 id="121-ponit-map">1.2.1. Ponit Map&lt;/h4>
-&lt;p>接下来，我们将图片中每个像素对应的三维点构成的集合称为 &lt;strong>点图&lt;/strong>（point map） $X \in R^{W×H×3}$。与分辨率为 $W×H$的对应RGB图像 $I$相关联，&lt;strong>点图 $X$ 在图像像素与三维点之间形成一一映射&lt;/strong>，即对于所有像素坐标 $(i, j) \in \{1...W\}×\{1...H\}$，都有 $I_{i,j} \leftrightarrow X_{i,j}$。此处每个像素点对应于一个三维点实事丧引入了一个简化假设，即假设观测的场景全部是不透明且漫反射的，不存在透过某个物体并观察到另一个物体的情况。&lt;/p>
-&lt;h4 id="122-相机和场景">1.2.2. 相机和场景&lt;/h4>
-&lt;p>相机与场景。给定相机内参 $K \in \mathbb{R}^{3 ×3}$ ，所观测场景的点图 $X$ 可以直接从真实深度图：&lt;/p>
+$$&lt;p&gt;其中 $\text{Sublayer}(x)$ 是每个子层具体的实现。为了方便残差链接，每层的输出和输入（包括 embedding layers）都被约定为 $d_{module} = 512$。（至少 Attention is all you need 是这样的）。&lt;/p&gt;
+&lt;p&gt;Decoder 也是由完全相同的层堆叠而成，和 Encoder 不同的是 Decoder 的每个层也有三个子层。Decoder 的第一个子层是 masked multi-head self-attention，负责对输入的 embedding 做自注意力机制，之后将输入的 embedding 和 encoder 编码的结合结合起来。后面的层和 Encoder 一样，都是 multi-head self-attention 和前馈网络的组合。&lt;/p&gt;</description></item><item><title>DUSt3R and MUSt3R</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</link><pubDate>Mon, 10 Mar 2025 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/03/dust3r-and-must3r/</guid><description>&lt;h2 id="1-dust3r"&gt;1. DUSt3R&lt;/h2&gt;
+&lt;h3 id="11-introduction"&gt;1.1. Introduction&lt;/h3&gt;
+&lt;p&gt;一般而言，现代的 MVS 和 SFM 的流程总是可以总结为以下几个子问题&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;特征点匹配&lt;/li&gt;
+&lt;li&gt;寻找本质矩阵&lt;/li&gt;
+&lt;li&gt;对点进行三角测量&lt;/li&gt;
+&lt;li&gt;对场景进行稀疏重建&lt;/li&gt;
+&lt;li&gt;估计相机参数，&lt;/li&gt;
+&lt;li&gt;密集重建&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;但是在这个复杂的过程中，每个子问题都对原始问题做了简化，无法完美解决，为后面的步骤引入了噪声，从而导致整个系统显的“精致而脆弱”。在这方面，每个子问题之间缺乏沟通就很能说明问题：如果能将这些缓解紧耦合到一起，将噪声统一的，全局的考虑，可以很大程度上解决应为过度简化和解耦导致的种种问题。此外，这个流程中的关键步骤很脆弱，在很多情况下容易出错。例如，很多 SFM 方法都依赖于相机参数的估计，但是如果遇到观察比较少、非漫反射表面或者相机姿态运动较为单一时，相机参数估计可能失效，导致整个 SFM 过程都会失效。归根结底：&lt;strong&gt;一个多视图立体视觉（MVS）算法的性能仅取决于输入图像和相机参数的质量&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;事实上，单张图或者多张图哦通过深度学习的方式提取深度并不罕有。但是在不引入额外的先验信息时，这个问题往往是&lt;strong&gt;不适定的&lt;/strong&gt;，所以这些方法利用神经网络从大量数据中学习巨量的三维先验知识来解决模糊性问题。这些方法可以分为两类。第一类利用类别级别的物体先验知识，事实上 DreamFusion 就属于这类工作，可以从单张照片或者一句自然语言描述生成三纬结构。另一种与 DUSt3R 较为类似，系统的学习一般的场景来实现单目深度估计。但是一般而言，例如 SuperGlue 之类，在训练和推理过程中，都没有显然的引入三维结构的信息，也没有扔掉相机矩阵的桎梏。可以说，DUSt3R 是一种基于深度学习的 ALL in One 的深度估计方法，入了点图（Point Map）表示，使网络能够在规范框架中预测三维形状。&lt;/p&gt;
+&lt;h3 id="12-method-and-forward"&gt;1.2. Method and forward&lt;/h3&gt;
+&lt;h4 id="121-ponit-map"&gt;1.2.1. Ponit Map&lt;/h4&gt;
+&lt;p&gt;接下来，我们将图片中每个像素对应的三维点构成的集合称为 &lt;strong&gt;点图&lt;/strong&gt;（point map） $X \in R^{W×H×3}$。与分辨率为 $W×H$的对应RGB图像 $I$相关联，&lt;strong&gt;点图 $X$ 在图像像素与三维点之间形成一一映射&lt;/strong&gt;，即对于所有像素坐标 $(i, j) \in \{1...W\}×\{1...H\}$，都有 $I_{i,j} \leftrightarrow X_{i,j}$。此处每个像素点对应于一个三维点实事丧引入了一个简化假设，即假设观测的场景全部是不透明且漫反射的，不存在透过某个物体并观察到另一个物体的情况。&lt;/p&gt;
+&lt;h4 id="122-相机和场景"&gt;1.2.2. 相机和场景&lt;/h4&gt;
+&lt;p&gt;相机与场景。给定相机内参 $K \in \mathbb{R}^{3 ×3}$ ，所观测场景的点图 $X$ 可以直接从真实深度图：&lt;/p&gt;
 $$
 D \in \mathbb{R}^{W ×H}
-$$&lt;p>中获取，其公式为&lt;/p>
+$$&lt;p&gt;中获取，其公式为&lt;/p&gt;
 $$
 \begin{aligned}
 X_{i, j}
 &amp;= K^{-1}D_{i,j}[i , j , 1]^{\top}\\
 \end{aligned}
-$$&lt;p>其中， $X$ 是在相机坐标系中表示的。接下来，我们将在相机 $m$ 的坐标系中表示的、来自相机 $\pi$ 的点图 $X^{n}$ 记为 $X^{n, m}$，表示第 $n$ 帧在 第 $m$ 帧的坐标系下的点图为 ：&lt;/p></description></item><item><title>homography</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</link><pubDate>Fri, 14 Feb 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</guid><description>&lt;p>假设我们有两个坐标系 $\mathcal F_a, \ \mathcal F_b$，有一个点 $P$ 在一个平面上。在两个坐标系下，这个点可以描述为 $\rho_a, \rho_b$；对应的平面可以通过法向量和截距来描述：$\{n_a. d_a\}, \{n_b. d_b\}$。&lt;/p>
-&lt;p>此外，该点有在图像坐标系下的描述 $p_a, p_b$ 和对应的相机矩阵 $K_a, K_b$。那么可以写出：&lt;/p>
+$$&lt;p&gt;其中， $X$ 是在相机坐标系中表示的。接下来，我们将在相机 $m$ 的坐标系中表示的、来自相机 $\pi$ 的点图 $X^{n}$ 记为 $X^{n, m}$，表示第 $n$ 帧在 第 $m$ 帧的坐标系下的点图为 ：&lt;/p&gt;</description></item><item><title>homography</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</link><pubDate>Fri, 14 Feb 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/02/homography/</guid><description>&lt;p&gt;假设我们有两个坐标系 $\mathcal F_a, \ \mathcal F_b$，有一个点 $P$ 在一个平面上。在两个坐标系下，这个点可以描述为 $\rho_a, \rho_b$；对应的平面可以通过法向量和截距来描述：$\{n_a. d_a\}, \{n_b. d_b\}$。&lt;/p&gt;
+&lt;p&gt;此外，该点有在图像坐标系下的描述 $p_a, p_b$ 和对应的相机矩阵 $K_a, K_b$。那么可以写出：&lt;/p&gt;
 $$
 \begin{aligned}
 p_a = \frac{1}{z_a} K_a \rho_a \\
 p_b = \frac{1}{z_b} K_b \rho_b
 \end{aligned}
-$$&lt;p>此外， 由于该点在对应的平面上，有平面约束：&lt;/p>
+$$&lt;p&gt;此外， 由于该点在对应的平面上，有平面约束：&lt;/p&gt;
 $$
 \begin{aligned}
 n^T_a \rho_a + d_a = 0 \\
 n^T_b \rho_b + d_b = 0
 \end{aligned}
-$$&lt;p>那么，将平面约束中的 $\rho$ 通过投影矩阵转换为像素坐标，有：&lt;/p>
+$$&lt;p&gt;那么，将平面约束中的 $\rho$ 通过投影矩阵转换为像素坐标，有：&lt;/p&gt;
 $$
 \begin{aligned}
 &amp;z_a n^T_a K_a^{-1} p_a + d_a = 0\\
@@ -125,64 +125,64 @@ $$
 &amp;z_b n^T_b K_b^{-1} p_b + d_b = 0\\
 &amp;z_b = -\frac{d_b}{n^T_b K_b^{-1} p_b}\\
 \end{aligned}
-$$&lt;p>带入到 $\rho_a, \rho_b$ 的表达式中，有：&lt;/p></description></item><item><title>DreamFusion</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</link><pubDate>Wed, 18 Dec 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</guid><description>&lt;h2 id="1-使用神经网路进行数据生成">1. 使用神经网路进行数据生成&lt;/h2>
-&lt;p>使用神经网络生成一个高维度数据是机器学习中非常重要的一个工作。我们假设数据集 $\left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\}$ 为一个大小为$n$的数据集，该数据集统一的服从一个概率分布 $p_{data}(\boldsymbol{x})$ 。我们假设对数据集的抽样都是独立同分布的，即：&lt;/p>
+$$&lt;p&gt;带入到 $\rho_a, \rho_b$ 的表达式中，有：&lt;/p&gt;</description></item><item><title>DreamFusion</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</link><pubDate>Wed, 18 Dec 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/12/dreamfusion/</guid><description>&lt;h2 id="1-使用神经网路进行数据生成"&gt;1. 使用神经网路进行数据生成&lt;/h2&gt;
+&lt;p&gt;使用神经网络生成一个高维度数据是机器学习中非常重要的一个工作。我们假设数据集 $\left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\}$ 为一个大小为$n$的数据集，该数据集统一的服从一个概率分布 $p_{data}(\boldsymbol{x})$ 。我们假设对数据集的抽样都是独立同分布的，即：&lt;/p&gt;
 $$
 \left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\} \sim p_{data}(\boldsymbol{x})
-$$&lt;p>那么丛现有数据生成新的数据的核心就是使用神经网络学习这个概率分布。不妨假设学习的概率分布为 $\hat p_\theta(\boldsymbol x)$。我们会希望 $\hat p_\theta(\boldsymbol x)$ 尽可能的接近 $p_{data}(\boldsymbol(x))$ 。为了衡量真是分布和我们学习的分布之间的差距，我们需要定义一个距离函数 $D(\cdot \mid \cdot)$ 我们可以定义优化目标：&lt;/p>
+$$&lt;p&gt;那么丛现有数据生成新的数据的核心就是使用神经网络学习这个概率分布。不妨假设学习的概率分布为 $\hat p_\theta(\boldsymbol x)$。我们会希望 $\hat p_\theta(\boldsymbol x)$ 尽可能的接近 $p_{data}(\boldsymbol(x))$ 。为了衡量真是分布和我们学习的分布之间的差距，我们需要定义一个距离函数 $D(\cdot \mid \cdot)$ 我们可以定义优化目标：&lt;/p&gt;
 $$
 \hat \theta = \arg \min_{\theta} D\left(p_{data}(\boldsymbol{x}) \mid \hat p_\theta(\boldsymbol x) \right)
-$$&lt;p>关于距离函数，我们可以定义 $D(\cdot \mid \cdot)$ 为 f-divergence 定义为：&lt;/p>
+$$&lt;p&gt;关于距离函数，我们可以定义 $D(\cdot \mid \cdot)$ 为 f-divergence 定义为：&lt;/p&gt;
 $$
 D_f(p_{data}(\boldsymbol(x)) \mid \hat p_\theta(\boldsymbol x)) = \int p_\theta(\boldsymbol x) f \left(\frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)}\right) d\boldsymbol x
-$$&lt;p>不妨取 $f(x) = x\log x$ ，我们可以得到 KL 散度：&lt;/p>
+$$&lt;p&gt;不妨取 $f(x) = x\log x$ ，我们可以得到 KL 散度：&lt;/p&gt;
 $$
 \begin{aligned}
 D_{KL}(p_{data}(\boldsymbol(x)) \mid \hat p_\theta(\boldsymbol x))
 &amp;= \int p_{data}(\boldsymbol x) \log \frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)} d\boldsymbol x\\
 &amp;= \mathbb E_{p_{data}(\boldsymbol x)}\left[ \log \frac{p_{data}(\boldsymbol x)}{p_\theta(\boldsymbol x)} \right]
 \end{aligned}
-$$&lt;p>我们可以用抽样的均值来代替期望，有：&lt;/p></description></item><item><title>Kalman_filter</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</link><pubDate>Mon, 04 Nov 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</guid><description>&lt;p>ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。&lt;/p>
-&lt;h2 id="1-最大后验估计">1. 最大后验估计&lt;/h2>
-&lt;h3 id="11-状态估计问题描述">1.1. 状态估计问题描述&lt;/h3>
-&lt;p>我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：&lt;/p>
+$$&lt;p&gt;我们可以用抽样的均值来代替期望，有：&lt;/p&gt;</description></item><item><title>Kalman_filter</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</link><pubDate>Mon, 04 Nov 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/11/kalman_filter/</guid><description>&lt;p&gt;ps: 为了更快的写出来这个文档，我不会很注意公式的粗细体，请见谅。&lt;/p&gt;
+&lt;h2 id="1-最大后验估计"&gt;1. 最大后验估计&lt;/h2&gt;
+&lt;h3 id="11-状态估计问题描述"&gt;1.1. 状态估计问题描述&lt;/h3&gt;
+&lt;p&gt;我们假设有一个线性系统，其噪声可以用高斯函数来描述。这个线性系统可以如下描述：&lt;/p&gt;
 $$
 \begin{array}{l}
 x_k = A_{k-1}x_{k-1} + v_k + \omega_k\\
 y_k = Cx_k + n_k
 \end{array}
-$$&lt;p>其中，有：&lt;/p>
+$$&lt;p&gt;其中，有：&lt;/p&gt;
 $$
 \begin{array}{ll}
 \text{初始噪声} &amp; x_0 \sim \mathcal G (x \mid 0, P_0) \\
 \text{过程噪声} &amp; x_k \sim \mathcal G (x \mid 0, Q_k) \\
 \text{观测噪声} &amp; \omega_k \sim \mathcal G (x \mid 0, R_k)
 \end{array}
-$$&lt;p>我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p>
-&lt;h3 id="12-最大后验估计">1.2. 最大后验估计&lt;/h3>
-&lt;p>最大后验估计需要完成如下一个优化问题：&lt;/p>
+$$&lt;p&gt;我们认为除了系统的输入 $v_k$ 之外，其余所有变量皆为随机变量。此外我们称 $A_k$ 为状态转移矩阵，$C_k$ 为观测矩阵。对于这个系统而言，系统的初始状态 $x_0$、系统输入 $v_k$ 和 系统输出是已知的。状态估计的目标就是通过这些已知的参数，估计出系统的状态 $x_k$。&lt;/p&gt;
+&lt;h3 id="12-最大后验估计"&gt;1.2. 最大后验估计&lt;/h3&gt;
+&lt;p&gt;最大后验估计需要完成如下一个优化问题：&lt;/p&gt;
 $$
 \hat x = \arg \max_{x} p(x \mid y, v)
-$$&lt;p>对于上面这个问题，通过贝叶斯定理，可以变形得：&lt;/p></description></item><item><title>BARF: Bundle Adjusting Neural Radiance Field</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</link><pubDate>Thu, 17 Oct 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</guid><description>探讨 BARF 方法：如何在未知相机位姿的情况下优化神经辐射场，实现图像对齐和3D重建</description></item><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;h2 id="1-abstract--introduction">1. Abstract &amp;amp; Introduction&lt;/h2>
-&lt;p>3D Gaussian Splatting 面临着一个几乎看起来无法规避的问题，就是我们需要给每个高斯函数分配一定的存储空间，并在训练时对其优化；并且在训练和渲染时需要同时将所有的高斯函数加载到设备的现存中，这导致训练和渲染在计算上是十分昂贵的。这导致我们总是要在渲染、重建质量和速度之间作出权衡，甚至很多时候是没办法训练的。这制约了 Splatting 在大场景的工作（例如城市级）上的应用。&lt;/p>
-&lt;p>那么一个很显然的想法，就是在较远时提供一个较低的分辨率，实现一个分层级的渲染和训练，并且只加载视角可见的部分。那么需要的方法有两点：&lt;/p>
-&lt;ol>
-&lt;li>引入结构层次（Hierarchy），使用一种高效细节级别解决方案（Level of Detial）。&lt;/li>
-&lt;li>引入分置策略（divide-and-conquer），让我们可以在独立的训练和渲染每一个小块。&lt;/li>
-&lt;/ol>
-&lt;p>同时，通过不同层级的结构（Guassian Function）可以用来优化中间层的高斯函数。这篇文章所提出的策略可以实时的渲染非常大的场景，覆盖长达几公里的轨迹，持续长达一小时。&lt;/p>
-&lt;p>&lt;img alt="db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/images/db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434.png">&lt;/p>
-&lt;h2 id="2-概述和背景">2. 概述和背景&lt;/h2>
-&lt;h3 id="21-背景">2.1. 背景&lt;/h3>
-&lt;p>3DGS 提供了一种基于体积基元的空间场景表达方法，每个体积基元含有如下特征：&lt;/p>
-&lt;ol>
-&lt;li>位置（或者说均值$\mu$）&lt;/li>
-&lt;li>协方差矩阵$\Sigma$&lt;/li>
-&lt;li>透明度（$o$）&lt;/li>
-&lt;li>球谐系数（$SH$）用于表达与视角相关的颜色，或者直接使用颜色&lt;/li>
-&lt;/ol>
-&lt;p>三维基元可以投影到二维屏幕空间上，并且通过 $\alpha\text{-blander}$ 来实现光栅化。 $\alpha\text{-blander}$ 的权重为：
-&lt;/p>
+$$&lt;p&gt;对于上面这个问题，通过贝叶斯定理，可以变形得：&lt;/p&gt;</description></item><item><title>BARF: Bundle Adjusting Neural Radiance Field</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</link><pubDate>Thu, 17 Oct 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/10/barf-bundle-adjusting-neural-radiance-field/</guid><description>探讨 BARF 方法：如何在未知相机位姿的情况下优化神经辐射场，实现图像对齐和3D重建</description></item><item><title>Hierarchical Gaussian Splatting</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</link><pubDate>Mon, 08 Jul 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/</guid><description>&lt;h2 id="1-abstract--introduction"&gt;1. Abstract &amp;amp; Introduction&lt;/h2&gt;
+&lt;p&gt;3D Gaussian Splatting 面临着一个几乎看起来无法规避的问题，就是我们需要给每个高斯函数分配一定的存储空间，并在训练时对其优化；并且在训练和渲染时需要同时将所有的高斯函数加载到设备的现存中，这导致训练和渲染在计算上是十分昂贵的。这导致我们总是要在渲染、重建质量和速度之间作出权衡，甚至很多时候是没办法训练的。这制约了 Splatting 在大场景的工作（例如城市级）上的应用。&lt;/p&gt;
+&lt;p&gt;那么一个很显然的想法，就是在较远时提供一个较低的分辨率，实现一个分层级的渲染和训练，并且只加载视角可见的部分。那么需要的方法有两点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;引入结构层次（Hierarchy），使用一种高效细节级别解决方案（Level of Detial）。&lt;/li&gt;
+&lt;li&gt;引入分置策略（divide-and-conquer），让我们可以在独立的训练和渲染每一个小块。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;同时，通过不同层级的结构（Guassian Function）可以用来优化中间层的高斯函数。这篇文章所提出的策略可以实时的渲染非常大的场景，覆盖长达几公里的轨迹，持续长达一小时。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/07/hierarchical-gaussian-splatting/images/db286f9b0b818bd938a3ef6ea35d1c7a_0_Figure_1_-1273433434.png"&gt;&lt;/p&gt;
+&lt;h2 id="2-概述和背景"&gt;2. 概述和背景&lt;/h2&gt;
+&lt;h3 id="21-背景"&gt;2.1. 背景&lt;/h3&gt;
+&lt;p&gt;3DGS 提供了一种基于体积基元的空间场景表达方法，每个体积基元含有如下特征：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;位置（或者说均值$\mu$）&lt;/li&gt;
+&lt;li&gt;协方差矩阵$\Sigma$&lt;/li&gt;
+&lt;li&gt;透明度（$o$）&lt;/li&gt;
+&lt;li&gt;球谐系数（$SH$）用于表达与视角相关的颜色，或者直接使用颜色&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;三维基元可以投影到二维屏幕空间上，并且通过 $\alpha\text{-blander}$ 来实现光栅化。 $\alpha\text{-blander}$ 的权重为：
+&lt;/p&gt;
 $$
 \begin{aligned}
 \alpha &amp;= \text{oG}\\
@@ -191,36 +191,36 @@ G(x,y) &amp;= \exp
 -\frac 12 ([x,y]^T-\mu')^T\Sigma'^{-1}([x,y]^T-\mu')
 \right\}
 \end{aligned}
-$$&lt;p>
-其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p>
-&lt;h2 id="3-3dgaussian-的结构化-hierarchy-的细节层次-lod">3. 3DGaussian 的结构化 (hierarchy) 的细节层次 (LOD)&lt;/h2>
-&lt;p>在处理大型场景以允许有效渲染大量内容时，细节级别 (LOD) 解决方案至关重要；因此，我们的目标是创建一个层次结构，表示原始 3DGS 优化生成的原语。遵循图形中的传统LOD方法，我们需要&lt;/p>
-&lt;ol>
-&lt;li>找到候选3DGS基元，并定义如何将它们合并到中间节点&lt;/li>
-&lt;li>提供一种有效的方法来确定层次结构中的切割，从而在质量和速度之间提供良好的折衷&lt;/li>
-&lt;li>层次结构级别之间的平滑过渡策略&lt;/li>
-&lt;/ol>
-&lt;h3 id="31-生成不同分辨率的高斯球">3.1. 生成不同分辨率的高斯球&lt;/h3>
-&lt;p>我们为每个块创建一个具有内部节点和叶节点的基于树的层次结构。每个节点都与一个 3D 高斯相关联，该高斯要么是来自原始优化的叶节点，要么是合并的内部节点。我们对中间节点的要求是它们应该：&lt;/p>
-&lt;ol>
-&lt;li>保持与叶节点相同的快速光栅化例程&lt;/li>
-&lt;li>尽可能准确地表示子节点的外观。因此，我们需要定义具有 3DGS 原语所有属性的 3D 高斯的中间节点。例如保持它原本所有的特征：均值$\mu$、协方差$\Sigma$、透明度 $o$ 等等。&lt;/li>
-&lt;/ol>
-&lt;p>对于均值和协方差，有很多文献详尽的描述了这个混合过程。可以通过如下公式混合 $N$ 个在第 $l$ 级的均值为 $\mu_i^l$，协方差为 $\Sigma_i^l$ 高斯函数。我们可以通过评估这 $N$ 个高斯函数和待估计的高斯函数之间的 3D Kullback-Leibler divergence。3DKL 散度描述了两个高斯函数之间的相关性。那么显然的，假设$f = \sum_{i=1}^{N}\mathcal \alpha_i N(\mu_i, \Sigma_i)$，g为我们所需要新的高斯函数，应该有：
-&lt;/p></description></item><item><title>Mathematics In 3DGS 2</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</link><pubDate>Fri, 17 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</guid><description>&lt;h2 id="1-矩阵求导的常用方法">1. 矩阵求导的常用方法&lt;/h2>
-&lt;h3 id="11-矩阵求导的一般方法">1.1. 矩阵求导的一般方法&lt;/h3>
-&lt;p>在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：&lt;/p>
-&lt;ol>
-&lt;li>向量对标量求导&lt;/li>
-&lt;li>向量对向量求导&lt;/li>
-&lt;li>向量对矩阵求导&lt;/li>
-&lt;li>矩阵对标量求导&lt;/li>
-&lt;li>矩阵对向量求导&lt;/li>
-&lt;li>矩阵对矩阵求导&lt;/li>
-&lt;/ol>
-&lt;p>事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。&lt;/p>
-&lt;h4 id="111-矩阵对标量求导">1.1.1. 矩阵对标量求导&lt;/h4>
-&lt;p>假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：&lt;/p>
+$$&lt;p&gt;
+其中 $\mu'$ 是三维空间基元投影到二维相机平面上基元的均值，$\Sigma'$ 投影的二维基元的协方差。&lt;/p&gt;
+&lt;h2 id="3-3dgaussian-的结构化-hierarchy-的细节层次-lod"&gt;3. 3DGaussian 的结构化 (hierarchy) 的细节层次 (LOD)&lt;/h2&gt;
+&lt;p&gt;在处理大型场景以允许有效渲染大量内容时，细节级别 (LOD) 解决方案至关重要；因此，我们的目标是创建一个层次结构，表示原始 3DGS 优化生成的原语。遵循图形中的传统LOD方法，我们需要&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;找到候选3DGS基元，并定义如何将它们合并到中间节点&lt;/li&gt;
+&lt;li&gt;提供一种有效的方法来确定层次结构中的切割，从而在质量和速度之间提供良好的折衷&lt;/li&gt;
+&lt;li&gt;层次结构级别之间的平滑过渡策略&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="31-生成不同分辨率的高斯球"&gt;3.1. 生成不同分辨率的高斯球&lt;/h3&gt;
+&lt;p&gt;我们为每个块创建一个具有内部节点和叶节点的基于树的层次结构。每个节点都与一个 3D 高斯相关联，该高斯要么是来自原始优化的叶节点，要么是合并的内部节点。我们对中间节点的要求是它们应该：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;保持与叶节点相同的快速光栅化例程&lt;/li&gt;
+&lt;li&gt;尽可能准确地表示子节点的外观。因此，我们需要定义具有 3DGS 原语所有属性的 3D 高斯的中间节点。例如保持它原本所有的特征：均值$\mu$、协方差$\Sigma$、透明度 $o$ 等等。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;对于均值和协方差，有很多文献详尽的描述了这个混合过程。可以通过如下公式混合 $N$ 个在第 $l$ 级的均值为 $\mu_i^l$，协方差为 $\Sigma_i^l$ 高斯函数。我们可以通过评估这 $N$ 个高斯函数和待估计的高斯函数之间的 3D Kullback-Leibler divergence。3DKL 散度描述了两个高斯函数之间的相关性。那么显然的，假设$f = \sum_{i=1}^{N}\mathcal \alpha_i N(\mu_i, \Sigma_i)$，g为我们所需要新的高斯函数，应该有：
+&lt;/p&gt;</description></item><item><title>Mathematics In 3DGS 2</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</link><pubDate>Fri, 17 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</guid><description>&lt;h2 id="1-矩阵求导的常用方法"&gt;1. 矩阵求导的常用方法&lt;/h2&gt;
+&lt;h3 id="11-矩阵求导的一般方法"&gt;1.1. 矩阵求导的一般方法&lt;/h3&gt;
+&lt;p&gt;在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;向量对标量求导&lt;/li&gt;
+&lt;li&gt;向量对向量求导&lt;/li&gt;
+&lt;li&gt;向量对矩阵求导&lt;/li&gt;
+&lt;li&gt;矩阵对标量求导&lt;/li&gt;
+&lt;li&gt;矩阵对向量求导&lt;/li&gt;
+&lt;li&gt;矩阵对矩阵求导&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。&lt;/p&gt;
+&lt;h4 id="111-矩阵对标量求导"&gt;1.1.1. 矩阵对标量求导&lt;/h4&gt;
+&lt;p&gt;假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：&lt;/p&gt;
 $$
 \mathbf A=
 \left[
@@ -231,7 +231,7 @@ a_{21}&amp; a_{22}&amp; \cdots&amp; \ a_{2n} \\
 a_{n1}&amp; a_{n2}&amp; \cdots&amp; \ a_{nn} \\
 \end{matrix}
 \right]
-$$&lt;p>那么，$\frac{d \mathbf A}{d k}$被定义为：&lt;/p>
+$$&lt;p&gt;那么，$\frac{d \mathbf A}{d k}$被定义为：&lt;/p&gt;
 $$
 \frac{d \mathbf A}{d k} =
 \left[
@@ -242,39 +242,39 @@ $$
 \frac{d a_{n1}}{d k}&amp; \frac{d a_{n2}}{d k}&amp; \cdots&amp; \ \frac{d a_{nn}}{d k}&amp; \\
 \end{matrix}
 \right]
-$$&lt;p>于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \mathbf A}$，其定义为：&lt;/p></description></item><item><title>Mathematics In 3DGS 1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</link><pubDate>Wed, 01 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</guid><description>&lt;h2 id="1-体渲染">1. 体渲染&lt;/h2>
-&lt;p>体渲染的提出时为了解决如云、烟等非刚体的光学行为。可以理解为用于解决对光学&lt;strong>不是完全反射&lt;/strong>，有复杂&lt;strong>透射&lt;/strong>的光学行为。为了对这个光学行为建模，我们将云团（为了叙述方便，我们后面统一将被渲染物体称为云团）视为一团飘忽不定的粒子。光沿直线方向穿过一堆粒子 (粉色部分)，如果能计算出每根光线从最开始发射，到最终打到成像平面上的辐射强度，我们就可以渲染出投影图像。而渲染要做的就是对这个过程进行建模。为了简化计算，我们就假设光子只跟它附近的粒子发生作用，这个范围就是图中圆柱体大小的区间。&lt;/p>
-&lt;p>&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001336326.png">&lt;/p>
-&lt;h3 id="11-渲染行为分析">1.1. 渲染行为分析&lt;/h3>
-&lt;p>光线与粒子发生发生的作用有如下几类：&lt;/p>
-&lt;ol>
-&lt;li>&lt;strong>吸收 (absorption)&lt;/strong>：光子被粒子吸收，会导致入射光的辐射强度减弱&lt;/li>
-&lt;li>&lt;strong>放射 (emission)&lt;/strong>：粒子本身可能发光，这会进一步增大辐射强度。&lt;/li>
-&lt;li>&lt;strong>外散射 (out-scattering)&lt;/strong>：光子在撞击到粒子后，可能会发生弹射，导致方向发生偏移，会减弱入射光强度。&lt;/li>
-&lt;li>&lt;strong>内散射 (in-scattering)&lt;/strong>：其他方向的光子在撞到粒子后，可能和当前方向上的光子重合，从而增强当前光路上的辐射强度。&lt;/li>
-&lt;/ol>
-&lt;p>&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001538229.png">&lt;/p>
-&lt;p>那么对于任意一个云团块而言，出射光与入射光之间的变化量，可以表示为这四个过程的叠加。我们假设入射光线的强度为$I_i$，出射光线为$I_o$，那么有：&lt;/p>
+$$&lt;p&gt;于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \mathbf A}$，其定义为：&lt;/p&gt;</description></item><item><title>Mathematics In 3DGS 1</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</link><pubDate>Wed, 01 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/</guid><description>&lt;h2 id="1-体渲染"&gt;1. 体渲染&lt;/h2&gt;
+&lt;p&gt;体渲染的提出时为了解决如云、烟等非刚体的光学行为。可以理解为用于解决对光学&lt;strong&gt;不是完全反射&lt;/strong&gt;，有复杂&lt;strong&gt;透射&lt;/strong&gt;的光学行为。为了对这个光学行为建模，我们将云团（为了叙述方便，我们后面统一将被渲染物体称为云团）视为一团飘忽不定的粒子。光沿直线方向穿过一堆粒子 (粉色部分)，如果能计算出每根光线从最开始发射，到最终打到成像平面上的辐射强度，我们就可以渲染出投影图像。而渲染要做的就是对这个过程进行建模。为了简化计算，我们就假设光子只跟它附近的粒子发生作用，这个范围就是图中圆柱体大小的区间。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001336326.png"&gt;&lt;/p&gt;
+&lt;h3 id="11-渲染行为分析"&gt;1.1. 渲染行为分析&lt;/h3&gt;
+&lt;p&gt;光线与粒子发生发生的作用有如下几类：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;吸收 (absorption)&lt;/strong&gt;：光子被粒子吸收，会导致入射光的辐射强度减弱&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;放射 (emission)&lt;/strong&gt;：粒子本身可能发光，这会进一步增大辐射强度。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;外散射 (out-scattering)&lt;/strong&gt;：光子在撞击到粒子后，可能会发生弹射，导致方向发生偏移，会减弱入射光强度。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;内散射 (in-scattering)&lt;/strong&gt;：其他方向的光子在撞到粒子后，可能和当前方向上的光子重合，从而增强当前光路上的辐射强度。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125001538229.png"&gt;&lt;/p&gt;
+&lt;p&gt;那么对于任意一个云团块而言，出射光与入射光之间的变化量，可以表示为这四个过程的叠加。我们假设入射光线的强度为$I_i$，出射光线为$I_o$，那么有：&lt;/p&gt;
 $$
 l_o-\mathrm{I}_i= dL(x,\omega) =emission+inscattering-outscatting-absorption
-$$&lt;p>
-下面针对吸收、发射、内散射、外散射四个环节进行分析。&lt;/p>
-&lt;h4 id="111-吸收">1.1.1 吸收&lt;/h4>
-&lt;p>我们假设半透明物体中的每个粒子的半径为$r$， 每个粒子的投影面积为$A=$ $\pi r^2$， 并假设圆柱体中粒子的密度为$\rho$，圆柱体的底面积是$E$，并且圆柱体的厚度足够薄。&lt;/p>
-&lt;p>&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125003153333.png">&lt;/p>
-&lt;p>假定这个厚度是$\Delta s$，那么在这个厚度内，圆柱体体积为$E\Delta s$，粒子总数为$\rho E \Delta s$。这些粒子遮挡的面积为$\rho E \Delta s A$，占整个底面积的比例为$\rho E\Delta sA/E=\rho A\Delta s_{\mathrm{o}}$。也就是说，当一束光通过这个圆柱体的时候，有$\rho A\Delta s$的概率会被遮挡。&lt;/p>
-&lt;p>换句话说，如果我们在圆柱体的一端发射无数光线 (假设都朝相同的方向)，在另一端接收，会发现有些光线安然通过，有些则被粒子遮挡 (吸收)。但可以确定的是，这些接受到的光线总强度，相比入射光线总强度而言，会有$\rho A\Delta s$比例的衰减，即接受到的光的强度均值是入射光的$\rho A\Delta s$倍。其数学形式可以写作：
-&lt;/p>
+$$&lt;p&gt;
+下面针对吸收、发射、内散射、外散射四个环节进行分析。&lt;/p&gt;
+&lt;h4 id="111-吸收"&gt;1.1.1 吸收&lt;/h4&gt;
+&lt;p&gt;我们假设半透明物体中的每个粒子的半径为$r$， 每个粒子的投影面积为$A=$ $\pi r^2$， 并假设圆柱体中粒子的密度为$\rho$，圆柱体的底面积是$E$，并且圆柱体的厚度足够薄。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-1/Images/image-20240125003153333.png"&gt;&lt;/p&gt;
+&lt;p&gt;假定这个厚度是$\Delta s$，那么在这个厚度内，圆柱体体积为$E\Delta s$，粒子总数为$\rho E \Delta s$。这些粒子遮挡的面积为$\rho E \Delta s A$，占整个底面积的比例为$\rho E\Delta sA/E=\rho A\Delta s_{\mathrm{o}}$。也就是说，当一束光通过这个圆柱体的时候，有$\rho A\Delta s$的概率会被遮挡。&lt;/p&gt;
+&lt;p&gt;换句话说，如果我们在圆柱体的一端发射无数光线 (假设都朝相同的方向)，在另一端接收，会发现有些光线安然通过，有些则被粒子遮挡 (吸收)。但可以确定的是，这些接受到的光线总强度，相比入射光线总强度而言，会有$\rho A\Delta s$比例的衰减，即接受到的光的强度均值是入射光的$\rho A\Delta s$倍。其数学形式可以写作：
+&lt;/p&gt;
 $$
 I_0 - I_i = \Delta I = -\rho(s)AI(s)\Delta s
-$$&lt;p>
-这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p>
+$$&lt;p&gt;
+这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p&gt;
 $$
 \frac{dI}{ds}=-\rho(s)AI(s)=-\tau_{a}(s)I(s)
-$$&lt;p>那么有：&lt;/p>
+$$&lt;p&gt;那么有：&lt;/p&gt;
 $$
 I(s)=I_{0}\exp(-\int_{0}^{s}\tau_{a}(t)dt)
-$$&lt;p>其中$I_o$时表示了光线的起始点。那么针对出射光而言有：&lt;/p>
+$$&lt;p&gt;其中$I_o$时表示了光线的起始点。那么针对出射光而言有：&lt;/p&gt;
 $$
 I_{o}=I_{i}\exp(-\int_{i}^{o}\tau_{a}(t)dt)_{0}
-$$&lt;p>此式的物理含义是显而易见的：如果离子云是均匀的，那么射入粒子云的光线会指数衰减，这被称为：比尔-朗伯吸收定律 (Beer-Lambert law)。&lt;/p></description></item></channel></rss>
+$$&lt;p&gt;此式的物理含义是显而易见的：如果离子云是均匀的，那么射入粒子云的光线会指数衰减，这被称为：比尔-朗伯吸收定律 (Beer-Lambert law)。&lt;/p&gt;</description></item></channel></rss>

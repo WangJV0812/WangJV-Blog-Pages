@@ -1,29 +1,29 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>数学 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%95%B0%E5%AD%A6/</link><description>Recent content in 数学 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.148.2</generator><language>en-us</language><lastBuildDate>Wed, 25 Jun 2025 17:13:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%95%B0%E5%AD%A6/index.xml" rel="self" type="application/rss+xml"/><item><title>Lie Group and Lie Algebra</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/lie-group-and-lie-algebra/</guid><description>&lt;p>我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong>群&lt;/strong> 和 &lt;strong>微分流形&lt;/strong> 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p>
-&lt;p>事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：&lt;/p>
-&lt;ol>
-&lt;li>封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$&lt;/li>
-&lt;li>结合律：$\forall c_1, c_2, c_3 \in C, [[c_1, c_2], c_3 ] = [c_1, [c_2, c_3]]$&lt;/li>
-&lt;li>单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$&lt;/li>
-&lt;li>逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$&lt;/li>
-&lt;/ol>
-&lt;p>在研究群的性质时，我们需要清晰的认识到 &lt;strong>集合&lt;/strong> 和 定义在集合上的 &lt;strong>二元运算&lt;/strong> 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “&lt;strong>操作不变形&lt;/strong>”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。&lt;/p>
-&lt;p>另一个很经典的例子是用群来描述等边三角形的旋转不变形。但是这个例子我们后面再补充&lt;/p>
-&lt;h2 id="1-群的结构和基本操作">1. 群的结构和基本操作&lt;/h2>
-&lt;h3 id="11-子群">1.1. 子群&lt;/h3>
-&lt;p>对于集合 $G$ 的一个子集 $H \subset G$，在群 $G$ 定义的运算律 $\cdot$ 上满足群的性质，就称 $H$ 为 $G$ 的子群。不难察觉到，单位元 $e$ 一定在 $H$ 上。例如任意通过坐标原点的直线都可以看作定义在加法上的对 $R(2)$ 的子群。&lt;/p></description></item><item><title>3D Kinematics and Dynamics</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</link><pubDate>Fri, 20 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</guid><description>深入探讨三维空间中的运动学和动力学基础，包括旋转矩阵、四元数和李群理论</description></item><item><title>Mathematics In 3DGS 2</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</link><pubDate>Fri, 17 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</guid><description>&lt;h2 id="1-矩阵求导的常用方法">1. 矩阵求导的常用方法&lt;/h2>
-&lt;h3 id="11-矩阵求导的一般方法">1.1. 矩阵求导的一般方法&lt;/h3>
-&lt;p>在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：&lt;/p>
-&lt;ol>
-&lt;li>向量对标量求导&lt;/li>
-&lt;li>向量对向量求导&lt;/li>
-&lt;li>向量对矩阵求导&lt;/li>
-&lt;li>矩阵对标量求导&lt;/li>
-&lt;li>矩阵对向量求导&lt;/li>
-&lt;li>矩阵对矩阵求导&lt;/li>
-&lt;/ol>
-&lt;p>事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。&lt;/p>
-&lt;h4 id="111-矩阵对标量求导">1.1.1. 矩阵对标量求导&lt;/h4>
-&lt;p>假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>数学 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%95%B0%E5%AD%A6/</link><description>Recent content in 数学 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.149.0</generator><language>en-us</language><lastBuildDate>Wed, 25 Jun 2025 17:13:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%95%B0%E5%AD%A6/index.xml" rel="self" type="application/rss+xml"/><item><title>Naive Group Theory</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/naive-group-theory/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/naive-group-theory/</guid><description>&lt;p&gt;我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong&gt;群&lt;/strong&gt; 和 &lt;strong&gt;微分流形&lt;/strong&gt; 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p&gt;
+&lt;p&gt;事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$&lt;/li&gt;
+&lt;li&gt;结合律：$\forall c_1, c_2, c_3 \in C, [[c_1, c_2], c_3 ] = [c_1, [c_2, c_3]]$&lt;/li&gt;
+&lt;li&gt;单位元：$\forall c \in C, \exists e \in C, \text{ s.t. } ce = ec = c$&lt;/li&gt;
+&lt;li&gt;逆元：$\forall c_1 \in C, \exists c_2 \in C, c_1c_2 = c_2c_1 = e$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;在研究群的性质时，我们需要清晰的认识到 &lt;strong&gt;集合&lt;/strong&gt; 和 定义在集合上的 &lt;strong&gt;二元运算&lt;/strong&gt; 是同样重要的。最初提出群这个概念是诶了解决对称性问题，这种对称性关系实质上是研究一种数学结构上的 “&lt;strong&gt;操作不变形&lt;/strong&gt;”。即在一个元素操作前后的结果是完全相同的，我们就称这两个元素在操作上是 “对称” 的。例如对于一个球，在任意元素在球心上做“旋转” 操作，球本身是完全不变的，我们可以称“球”构成的集合 在 “过圆心旋转” 这样操作下，是对称的。&lt;/p&gt;
+&lt;p&gt;另一个很经典的例子是用群来描述等边三角形的旋转不变形。但是这个例子我们后面再补充&lt;/p&gt;
+&lt;h2 id="1-群的结构和基本操作"&gt;1. 群的结构和基本操作&lt;/h2&gt;
+&lt;h3 id="11-子群"&gt;1.1. 子群&lt;/h3&gt;
+&lt;p&gt;对于集合 $G$ 的一个子集 $H \subset G$，在群 $G$ 定义的运算律 $\cdot$ 上满足群的性质，就称 $H$ 为 $G$ 的子群。不难察觉到，单位元 $e$ 一定在 $H$ 上。例如任意通过坐标原点的直线都可以看作定义在加法上的对 $R(2)$ 的子群。&lt;/p&gt;</description></item><item><title>3D Kinematics and Dynamics</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</link><pubDate>Fri, 20 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/06/3d-kinematics-and-dynamics/</guid><description>深入探讨三维空间中的运动学和动力学基础，包括旋转矩阵、四元数和李群理论</description></item><item><title>Mathematics In 3DGS 2</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</link><pubDate>Fri, 17 May 2024 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2024/05/mathematics-in-3dgs-2/</guid><description>&lt;h2 id="1-矩阵求导的常用方法"&gt;1. 矩阵求导的常用方法&lt;/h2&gt;
+&lt;h3 id="11-矩阵求导的一般方法"&gt;1.1. 矩阵求导的一般方法&lt;/h3&gt;
+&lt;p&gt;在矩阵论的课程中，我们学习过如下几种分析相关的知识，分别是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;向量对标量求导&lt;/li&gt;
+&lt;li&gt;向量对向量求导&lt;/li&gt;
+&lt;li&gt;向量对矩阵求导&lt;/li&gt;
+&lt;li&gt;矩阵对标量求导&lt;/li&gt;
+&lt;li&gt;矩阵对向量求导&lt;/li&gt;
+&lt;li&gt;矩阵对矩阵求导&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;事实上不难发现，我们只需要搞明白了矩阵对标量求导和矩阵对矩阵求导的方法，其他问题均可从这个两个原则推理开去。因此我们叙述的重点放在这两个问题上。&lt;/p&gt;
+&lt;h4 id="111-矩阵对标量求导"&gt;1.1.1. 矩阵对标量求导&lt;/h4&gt;
+&lt;p&gt;假设我们有矩阵 $\mathbf A$ 和标量 $k$，其中矩阵 $\mathbf A$ 的展开形式为：&lt;/p&gt;
 $$
 \mathbf A=
 \left[
@@ -34,7 +34,7 @@ a_{21}&amp; a_{22}&amp; \cdots&amp; \ a_{2n} \\
 a_{n1}&amp; a_{n2}&amp; \cdots&amp; \ a_{nn} \\
 \end{matrix}
 \right]
-$$&lt;p>那么，$\frac{d \mathbf A}{d k}$被定义为：&lt;/p>
+$$&lt;p&gt;那么，$\frac{d \mathbf A}{d k}$被定义为：&lt;/p&gt;
 $$
 \frac{d \mathbf A}{d k} =
 \left[
@@ -45,4 +45,4 @@ $$
 \frac{d a_{n1}}{d k}&amp; \frac{d a_{n2}}{d k}&amp; \cdots&amp; \ \frac{d a_{nn}}{d k}&amp; \\
 \end{matrix}
 \right]
-$$&lt;p>于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \mathbf A}$，其定义为：&lt;/p></description></item></channel></rss>
+$$&lt;p&gt;于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{d \mathbf A}$，其定义为：&lt;/p&gt;</description></item></channel></rss>
