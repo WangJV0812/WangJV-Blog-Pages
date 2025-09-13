@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>概率 on WangJV Blog</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%A6%82%E7%8E%87/</link><description>Recent content in 概率 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.github.io/WangJV-Blog-Pages/</url><link>https://wangjv0812.github.io/WangJV-Blog-Pages/</link></image><generator>Hugo -- 0.150.0</generator><language>en-us</language><lastBuildDate>Sat, 13 Sep 2025 17:13:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.github.io/WangJV-Blog-Pages/tags/%E6%A6%82%E7%8E%87/index.xml" rel="self" type="application/rss+xml"/><item><title>Fisher Information and Fisher Divergence</title><link>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/09/fisher-information-and-fisher-divergence/</link><pubDate>Sat, 13 Sep 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.github.io/WangJV-Blog-Pages/2025/09/fisher-information-and-fisher-divergence/</guid><description>&lt;p&gt;在开始长篇大论之前，不妨先对费雪信息 (Fisher Information) 和 费雪散度 (Fisher Divergence) 有一个先验的、直观的理解。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Fisher Information 衡量的是对于一个概率分布模型，它的参数有多么敏感或者说确定。信息量越大，我们用数据来估计这个参数时就越有信心。&lt;/li&gt;
+&lt;li&gt;Fisher Divergence 衡量的是两个不同的概率分布，它们的“形状”有多么相似。散度越小，两个分布越接近。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下面则给出一些不那么直观的，数学形式上的解释。&lt;/p&gt;
+&lt;h2 id="1-score-function"&gt;1. Score Function&lt;/h2&gt;
+&lt;p&gt;对于一个受到参数 $\theta$ 控制，关于随机变量 $x$ 的分布 $q(x; \theta)$，我们可以定义其 Score Function：&lt;/p&gt;
+$$
+\begin{gather}
+s_\theta(x, \theta) = \nabla_\theta \log q(x; \theta)\\
+s_x(x, \theta) = \nabla_x \log q(x; \theta)\\
+\end{gather}
+$$&lt;p&gt;对于 score function，我们可以从两个 level 理解它。&lt;/p&gt;
+&lt;p&gt;首先，直观的、几何的讲，对于 score function $s_x(x, \theta)$ 可以理解为定义在数据空间上的切向量场。不妨想象一下，概率密度 $q(x, \theta)$ 在数据空间中形成了一座 “高山”，向量 $s_x(x, \theta)$ 方向指向的是概率密度对数增长最快的方向。$s_x(x, \theta)$ 告诉我们数据点向哪个方向 ”移动“，概率变大的最快。类似的，$s_\theta(x, \theta)$ 则是在参数空间中的切向量场，指向的是关于参数 $\theta$ 的概率密度对数增长最快的方向。&lt;/p&gt;
+&lt;p&gt;但是这个直观的几何理解并没有解释为什么其中包含一个 $\log$ 的形式，为什么一定是 $\nabla \log$ 而非 $\nabla$。如果你的数学直觉比较强的化可能已经意识到了，这关联到了对于一个概率分布 &lt;strong&gt;信息&lt;/strong&gt; 的衡量。但是如果想要深刻的理解这个问题，涉及到 信息几何 和 微分几何方面的知识。我会尽量在工科数学的范围内给出一些直观的解释。我们不妨先思考一下，直接使用 $\nabla_xq(x)$ 为什么不够好？不妨思考一个简单的 高斯分布。我们分别在高概率位置 $x_1$ 和 低概率位置 $x_2$ 采样，计算 $\nabla_\theta q(x_1)$ 和 $\nabla_\theta q(x_2)$。那么自然的：&lt;/p&gt;</description></item></channel></rss>
