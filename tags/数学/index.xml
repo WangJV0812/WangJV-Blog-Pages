@@ -4,7 +4,10 @@
 &lt;li&gt;Fisher Divergence 衡量的是两个不同的概率分布，它们的“形状”有多么相似。散度越小，两个分布越接近。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;下面则给出一些不那么直观的，数学形式上的解释。&lt;/p&gt;
-&lt;h2 id="1-score-function"&gt;1. Score Function&lt;/h2&gt;
+&lt;h2 id="1-statistical-manifold"&gt;1. Statistical Manifold&lt;/h2&gt;
+&lt;p&gt;和之前我们讨论的数据分布流形一样，我们可以认为，一种类别的概率分布（例如高斯分布），控制分布的参数同样可以构成一个流形。我们不妨就拿高斯分布举例子，对于一个标准的一维高斯分布，其受到参数 $\sigma^2, \mu$ 控制。那么所有的高斯分布的参数 $\sigma^2, \mu$ 所构成的空间便形成一个 “统计流形”。&lt;/p&gt;
+&lt;p&gt;那么如果对于一族分布（或者任意分布），我们希望测量两个分布的差异（这在 Learning 中是十分常用的，可以度量两个分布的差异，就可以驱动优化）。定义分布的差异事实上就是希望可以在统计流形上定义一个有效的度量。&lt;/p&gt;
+&lt;h2 id="2-score-function"&gt;2. Score Function&lt;/h2&gt;
 &lt;p&gt;对于一个受到参数 $\theta$ 控制，关于随机变量 $x$ 的分布 $q(x; \theta)$，我们可以定义其 Score Function：&lt;/p&gt;
 $$
 \begin{gather}
@@ -12,8 +15,7 @@ s_\theta(x, \theta) = \nabla_\theta \log q(x; \theta)\\
 s_x(x, \theta) = \nabla_x \log q(x; \theta)\\
 \end{gather}
 $$&lt;p&gt;对于 score function，我们可以从两个 level 理解它。&lt;/p&gt;
-&lt;p&gt;首先，直观的、几何的讲，对于 score function $s_x(x, \theta)$ 可以理解为定义在数据空间上的切向量场。不妨想象一下，概率密度 $q(x, \theta)$ 在数据空间中形成了一座 “高山”，向量 $s_x(x, \theta)$ 方向指向的是概率密度对数增长最快的方向。$s_x(x, \theta)$ 告诉我们数据点向哪个方向 ”移动“，概率变大的最快。类似的，$s_\theta(x, \theta)$ 则是在参数空间中的切向量场，指向的是关于参数 $\theta$ 的概率密度对数增长最快的方向。&lt;/p&gt;
-&lt;p&gt;但是这个直观的几何理解并没有解释为什么其中包含一个 $\log$ 的形式，为什么一定是 $\nabla \log$ 而非 $\nabla$。如果你的数学直觉比较强的化可能已经意识到了，这关联到了对于一个概率分布 &lt;strong&gt;信息&lt;/strong&gt; 的衡量。但是如果想要深刻的理解这个问题，涉及到 信息几何 和 微分几何方面的知识。我会尽量在工科数学的范围内给出一些直观的解释。我们不妨先思考一下，直接使用 $\nabla_xq(x)$ 为什么不够好？不妨思考一个简单的 高斯分布。我们分别在高概率位置 $x_1$ 和 低概率位置 $x_2$ 采样，计算 $\nabla_\theta q(x_1)$ 和 $\nabla_\theta q(x_2)$。那么自然的：&lt;/p&gt;</description></item><item><title>Naive Group Theory</title><link>https://wangjv0812.cn/2025/06/naive-group-theory/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.cn/2025/06/naive-group-theory/</guid><description>&lt;p&gt;我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong&gt;群&lt;/strong&gt; 和 &lt;strong&gt;微分流形&lt;/strong&gt; 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p&gt;
+&lt;p&gt;首先，直观的、几何的讲，对于 score function $s_x(x, \theta)$ 可以理解为定义在数据空间上的切向量场。不妨想象一下，概率密度 $q(x, \theta)$ 在数据空间中形成了一座 “高山”，向量 $s_x(x, \theta)$ 方向指向的是概率密度对数增长最快的方向。$s_x(x, \theta)$ 告诉我们数据点向哪个方向 ”移动“，概率变大的最快。类似的，$s_\theta(x, \theta)$ 则是在参数空间中的切向量场，指向的是关于参数 $\theta$ 的概率密度对数增长最快的方向。&lt;/p&gt;</description></item><item><title>Naive Group Theory</title><link>https://wangjv0812.cn/2025/06/naive-group-theory/</link><pubDate>Wed, 25 Jun 2025 17:13:56 +0800</pubDate><guid>https://wangjv0812.cn/2025/06/naive-group-theory/</guid><description>&lt;p&gt;我们知道，李群实质上是在一个微分流形性质的群。可以看到，李群实质上是 &lt;strong&gt;群&lt;/strong&gt; 和 &lt;strong&gt;微分流形&lt;/strong&gt; 的交集。想要搞明白微分流形是什么并不容易，这需要学习关于微分几何的知识。但是幸运的是，李群研究研究并没有那么依赖于微分流形的知识（事实上这样说并不准确，但是我们尽量不涉及）。和微分几何相比，群的知识就简单的多了。只要捋清概念，即便是中学生也可以明白。&lt;/p&gt;
 &lt;p&gt;事实上群被描述为一个带有一个运算（或者说二元关系）的集合，这个集合和其上定义的二元运算需要满足四个基本性质。我们将集合标记为 $C$，二元运算为 $[\cdot\ ,\ \cdot]$。需要满足的性质为：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;封闭性：$\forall c_1, c_2 \in C, [c_1, c_2] \in C$&lt;/li&gt;
