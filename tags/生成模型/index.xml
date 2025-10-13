@@ -1,4 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>生成模型 on WangJV Blog</title><link>https://wangjv0812.cn/tags/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B/</link><description>Recent content in 生成模型 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.cn/</url><link>https://wangjv0812.cn/</link></image><generator>Hugo -- 0.150.0</generator><language>en-us</language><lastBuildDate>Wed, 18 Dec 2024 16:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.cn/tags/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B/index.xml" rel="self" type="application/rss+xml"/><item><title>DreamFusion</title><link>https://wangjv0812.cn/2024/12/dreamfusion/</link><pubDate>Wed, 18 Dec 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.cn/2024/12/dreamfusion/</guid><description>&lt;h2 id="1-使用神经网路进行数据生成"&gt;1. 使用神经网路进行数据生成&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>生成模型 on WangJV Blog</title><link>https://wangjv0812.cn/tags/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B/</link><description>Recent content in 生成模型 on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.cn/</url><link>https://wangjv0812.cn/</link></image><generator>Hugo -- 0.151.0</generator><language>en-us</language><lastBuildDate>Mon, 13 Oct 2025 20:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.cn/tags/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B/index.xml" rel="self" type="application/rss+xml"/><item><title>Denoising Score Matching</title><link>https://wangjv0812.cn/2025/10/denoising-score-matching/</link><pubDate>Mon, 13 Oct 2025 20:40:25 +0800</pubDate><guid>https://wangjv0812.cn/2025/10/denoising-score-matching/</guid><description>&lt;h2 id="1-动机"&gt;1. 动机&lt;/h2&gt;
+&lt;p&gt;以数据生成为代表的自监督学习往往希望设计出一种独特且有效的机制，通过网络结构和训练方法的设计，迫使模型找到代表一个数据最核心和关键的信息或者说特征，或者希望让模型自己总结出数据的内在结构。或者用一个更概率的表达，就像是之前我们在 &lt;a href="https://wangjv0812.cn/2025/08/noise-contrastive-estimation/"&gt;NCE 中对于数据流形&lt;/a&gt; 讨论过的。数据是一个隐藏在高维空间中的低维流形，而概率分布恰好为我们提供了一个方便的描述流形的数学工具。&lt;/p&gt;
+&lt;p&gt;我们假设真实数据有概率分布 $p(x)$，而我们希望寻找一个收到参数 $\theta$ 控制的概率分布 $q(x\mid \theta)$，尽可能的接近真实分布。生成模型学习事实上希望解决两个实质性的问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;我们不知道真实分布 $p(x)$，只有对于 $p(x)$ 的一系列采样 $\{x_1, x_2, \cdots x_n\}$（就是我们的数据集），如何利用这些采样尽可能好的找到一组参数 $\theta$，使得 $q(x\mid \theta)$ 尽可能接近 $p(x)$。&lt;/li&gt;
+&lt;li&gt;对于一个完成学习的分布 $p(x\mid \theta)$，如何对其采样，获得一组新的数据。进一步将，如何让采样满足一定的条件。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这两个问题看说来容易，但做起来却何其难。从次引出了巨量的问题，例如如何规避分布的归一化系数、如何避免学习一个恒等映射（例如 AutoEncoder）、如何避免只学到一个很窄的分布（SM）等等。归一化系数我们之前在 &lt;a href="https://wangjv0812.cn/2025/08/scorematching/"&gt;Score Matching&lt;/a&gt; 中讨论过。为了 DSM 叙述的连贯性，我们不妨先从 Autoencoder 的缺陷和改进聊起。&lt;/p&gt;
+&lt;h3 id="11-denoising-autoencoder"&gt;1.1. Denoising AutoEncoder&lt;/h3&gt;
+&lt;p&gt;AutoEncoder 是一个非常直觉的无监督学习方法。它基于一个很直觉的认识：无监督学习希望学习一条分布在高维空间中的低维流形。那么如果我们使用一个维度恰好为低维流形独立维度的瓶颈层来强迫模型学习一个有效的数据压缩和恢复，是否恰好可以提取出数据最根本的内在结构。但是这个方法依然有很多缺陷，例如模型学习到的 latent space 不具有连续性，无法直接插值（这个问题被 VAE 解决了），模型很容易学到一个恒等映射等等。&lt;/p&gt;
+&lt;p&gt;为了解决恒等映射这个问题，DAE 的思路是：如果简单的要求模型自己通过 编码-解码 的方式破坏重建数据无法保证模型学到可靠的特征，那么何不我来破坏呢？我们直接给数据添加噪声，将带有噪声的数据输入编码器，让模型恢复出没有噪声的，源初的数据。&lt;/p&gt;
+&lt;p&gt;形式化的讲，对于数据 $x$，我们添加服从高斯分布的噪声 $\epsilon \sim \mathcal N(x\mid 0, \sigma^2I)$，有被污染的数据：&lt;/p&gt;
+$$
+\tilde{x} = x + \epsilon
+$$&lt;p&gt;那么，损失可以写作：&lt;/p&gt;
+$$
+J_{DATA}(\theta) = \mathbb{E}\left(\left\|
+\text{Decoder}(\text{Encoder} (x + \epsilon)) - x
+\right\|^2\right)
+$$&lt;h3 id="12-score-matching"&gt;1.2. Score Matching&lt;/h3&gt;
+&lt;p&gt;我们之前在 &lt;a href="https://wangjv0812.cn/2025/08/scorematching/"&gt;Score Matching&lt;/a&gt; 中讨论过 Score Matching 的基本原理。这里简单回顾一下。Score Matching 最核心的创新是学习分布的 Score Function，而不是直接学习分布本身。学习 Score Function 最核心的优势是，我们对 Score Function 的形式没有任何要求，可以用任意一个神经网络拟合，从本质上解决了归一化系数的问题。希望学习到分布的 Score Function 最直接的方式，即使直接使用 &lt;a href="https://wangjv0812.cn/2025/09/fisher-information-and-fisher-divergence/"&gt;Fisher Divergence&lt;/a&gt;。&lt;/p&gt;</description></item><item><title>DreamFusion</title><link>https://wangjv0812.cn/2024/12/dreamfusion/</link><pubDate>Wed, 18 Dec 2024 16:40:25 +0800</pubDate><guid>https://wangjv0812.cn/2024/12/dreamfusion/</guid><description>&lt;h2 id="1-使用神经网路进行数据生成"&gt;1. 使用神经网路进行数据生成&lt;/h2&gt;
 &lt;p&gt;使用神经网络生成一个高维度数据是机器学习中非常重要的一个工作。我们假设数据集 $\left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\}$ 为一个大小为$n$的数据集，该数据集统一的服从一个概率分布 $p_{data}(\boldsymbol{x})$ 。我们假设对数据集的抽样都是独立同分布的，即：&lt;/p&gt;
 $$
 \left\{\boldsymbol{x_1}, \boldsymbol{x_2}, \dots, \boldsymbol{x_n}\right\} \sim p_{data}(\boldsymbol{x})
