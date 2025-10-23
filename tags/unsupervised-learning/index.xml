@@ -1,4 +1,22 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Unsupervised Learning on WangJV Blog</title><link>https://wangjv0812.cn/tags/unsupervised-learning/</link><description>Recent content in Unsupervised Learning on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.cn/</url><link>https://wangjv0812.cn/</link></image><generator>Hugo -- 0.151.0</generator><language>en-us</language><lastBuildDate>Mon, 18 Aug 2025 18:08:56 +0800</lastBuildDate><atom:link href="https://wangjv0812.cn/tags/unsupervised-learning/index.xml" rel="self" type="application/rss+xml"/><item><title>Noise Contrastive Estimation</title><link>https://wangjv0812.cn/2025/08/noise-contrastive-estimation/</link><pubDate>Mon, 18 Aug 2025 18:08:56 +0800</pubDate><guid>https://wangjv0812.cn/2025/08/noise-contrastive-estimation/</guid><description>&lt;h2 id="1-动机"&gt;1. 动机&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Unsupervised Learning on WangJV Blog</title><link>https://wangjv0812.cn/tags/unsupervised-learning/</link><description>Recent content in Unsupervised Learning on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.cn/</url><link>https://wangjv0812.cn/</link></image><generator>Hugo -- 0.152.1</generator><language>en-us</language><lastBuildDate>Thu, 23 Oct 2025 21:24:00 +0800</lastBuildDate><atom:link href="https://wangjv0812.cn/tags/unsupervised-learning/index.xml" rel="self" type="application/rss+xml"/><item><title>Variational Auto Encoder</title><link>https://wangjv0812.cn/2025/10/variational-auto-encoder/</link><pubDate>Thu, 23 Oct 2025 21:24:00 +0800</pubDate><guid>https://wangjv0812.cn/2025/10/variational-auto-encoder/</guid><description>&lt;h2 id="1-动机和推导"&gt;1. 动机和推导&lt;/h2&gt;
+&lt;p&gt;对于无监督的样本生成问题，我们之前已经提到过很多次，对于一系列同类型的数据 $\{x_1, x_2, \cdots, x_n\}$，我们假设存在一个理想的分布 $p(x)$，这些数据都是从这个分布中采样得到的。但是想直接学习这个分布非常难。那么是否有可能通过一个足够复杂的神经网络来近似这个理想分布？此外，有一定神经经验的朋友往往有一个信念：“&lt;em&gt;压缩即智能&lt;/em&gt;”。那么是否可以先学习一个编码器 $p(z\mid x)$ 将原有的随机向量 $x$ 变换到一个低维的潜空间 $z$，然后再通过一个解码器 $p(x\mid z)$ 将潜空间的向量 $z$ 重新映射回原始空间，从而实现对数据的生成和重构？&lt;/p&gt;
+&lt;p&gt;变分自编码器（Variational AutoEncoder）就是这个思路的具体实现。显然，通过解码器重建分布 $p(x)$ 可以描述为：&lt;/p&gt;
+$$
+p_\theta(x) = \int p_\theta(x\mid z) p(z) \, dz
+$$&lt;p&gt;那么训练 $p_\theta(x)$ 的一个显然的方法是优化其与真实分布 $p(x)$ 之间的 KL 散度：&lt;/p&gt;
+$$
+\theta^* = \arg \min_\theta D_{KL}\bigg(p(x) \| p_\theta(x)\bigg)
+$$&lt;p&gt;不妨展开 KL 散度，容易发现：&lt;/p&gt;
+$$
+\begin{aligned}
+\theta^*
+&amp;= \arg \min_\theta D_{KL}\left(p(x) \| p_\theta(x)\right)\\
+&amp;= \arg \min_\theta \bigg\{\mathbb{E}_{x\sim p(x)}\left[\log p(x) \right]- \mathbb{E}_{x\sim p(x)}\left[\log p_\theta(x)\right]\bigg\}
+\end{aligned}
+$$&lt;p&gt;其中 $\mathbb{E}_{x\sim p(x)}\left[\log p(x) \right]$ 实际上是真实分布 $p(x)$ 的熵，不包含可以优化的参数。可以直接扔掉。那么优化目标可以写作：&lt;/p&gt;
+$$
+\theta^* = \arg \max_\theta \mathbb{E}_{x\sim p(x)}\left[\log p_\theta(x)\right]
+$$&lt;p&gt;离散的，对于一批数据 $\{x_1, x_2, \cdots, x_n\}$，我们可以将优化目标改写为：&lt;/p&gt;</description></item><item><title>Noise Contrastive Estimation</title><link>https://wangjv0812.cn/2025/08/noise-contrastive-estimation/</link><pubDate>Mon, 18 Aug 2025 18:08:56 +0800</pubDate><guid>https://wangjv0812.cn/2025/08/noise-contrastive-estimation/</guid><description>&lt;h2 id="1-动机"&gt;1. 动机&lt;/h2&gt;
 &lt;p&gt;在无监督学习时，我们往往都需要处理维度非常大的数据。例如无监督学习的一个经典案例：图像生成。对于一个尺寸为 $1920 \times 1080$ 的图片，其像素总量为 $2073600$，生成一张这样的照片时，我们需要对一个维度为 $2073600$ 的随机分布建模和采样。这些维度之间不可能是完全独立的，这个原因很显然，如果所有的维度完全独立，生成的数据就是完全随机的，不会包含任何信息。相邻像素的颜色、纹理高度相关，真正需要被建模的自由度远小于像素个数&lt;/p&gt;
 &lt;p&gt;可以说，我们希望通过无监督学习学习到的数据之间的规律，就建模在数据维度之间的约束中，或者换一个更常用的说法，数据之间的规律。由于数据维度之间约束的存在，数据的维度一定是小于（甚至可以说远远小于）其随机向量的维度。我们希望建模的数据事实上存在于一个高维空间上的流形上，而无监督学习实质上是通过神经网络，建模这个高位空间中数据分布的流形。&lt;/p&gt;
 &lt;p&gt;有了上面的理解，原本的如何从数据中挖掘关系这个问题就被转换为如何对数据所在的流形建模。这个问题并不容易，流形的复杂性和高维数据的稀疏性都给建模带来了挑战。目前一个主流的思路是通过概率分布对流形建模。显然，概率分布可以很方便的表达流形上的几何结构；对于一个维度为 $d$ 的概率分布，可以理解为一个从 $R^d \to R$ 的映射，当然这个映射需要满足非负和归一化。那么对于不属于流形上的点，映射到 $0$ 就好了。当然，概率分布带给我们的好处远不止于此：&lt;/p&gt;

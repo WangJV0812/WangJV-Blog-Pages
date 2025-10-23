@@ -1,4 +1,22 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.cn/posts/</link><description>Recent content in Posts on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.cn/</url><link>https://wangjv0812.cn/</link></image><generator>Hugo -- 0.151.0</generator><language>en-us</language><lastBuildDate>Mon, 13 Oct 2025 20:40:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.cn/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Denoising Score Matching</title><link>https://wangjv0812.cn/2025/10/denoising-score-matching/</link><pubDate>Mon, 13 Oct 2025 20:40:25 +0800</pubDate><guid>https://wangjv0812.cn/2025/10/denoising-score-matching/</guid><description>&lt;h2 id="1-动机"&gt;1. 动机&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on WangJV Blog</title><link>https://wangjv0812.cn/posts/</link><description>Recent content in Posts on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.cn/</url><link>https://wangjv0812.cn/</link></image><generator>Hugo -- 0.152.1</generator><language>en-us</language><lastBuildDate>Thu, 23 Oct 2025 21:24:00 +0800</lastBuildDate><atom:link href="https://wangjv0812.cn/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Variational Auto Encoder</title><link>https://wangjv0812.cn/2025/10/variational-auto-encoder/</link><pubDate>Thu, 23 Oct 2025 21:24:00 +0800</pubDate><guid>https://wangjv0812.cn/2025/10/variational-auto-encoder/</guid><description>&lt;h2 id="1-动机和推导"&gt;1. 动机和推导&lt;/h2&gt;
+&lt;p&gt;对于无监督的样本生成问题，我们之前已经提到过很多次，对于一系列同类型的数据 $\{x_1, x_2, \cdots, x_n\}$，我们假设存在一个理想的分布 $p(x)$，这些数据都是从这个分布中采样得到的。但是想直接学习这个分布非常难。那么是否有可能通过一个足够复杂的神经网络来近似这个理想分布？此外，有一定神经经验的朋友往往有一个信念：“&lt;em&gt;压缩即智能&lt;/em&gt;”。那么是否可以先学习一个编码器 $p(z\mid x)$ 将原有的随机向量 $x$ 变换到一个低维的潜空间 $z$，然后再通过一个解码器 $p(x\mid z)$ 将潜空间的向量 $z$ 重新映射回原始空间，从而实现对数据的生成和重构？&lt;/p&gt;
+&lt;p&gt;变分自编码器（Variational AutoEncoder）就是这个思路的具体实现。显然，通过解码器重建分布 $p(x)$ 可以描述为：&lt;/p&gt;
+$$
+p_\theta(x) = \int p_\theta(x\mid z) p(z) \, dz
+$$&lt;p&gt;那么训练 $p_\theta(x)$ 的一个显然的方法是优化其与真实分布 $p(x)$ 之间的 KL 散度：&lt;/p&gt;
+$$
+\theta^* = \arg \min_\theta D_{KL}\bigg(p(x) \| p_\theta(x)\bigg)
+$$&lt;p&gt;不妨展开 KL 散度，容易发现：&lt;/p&gt;
+$$
+\begin{aligned}
+\theta^*
+&amp;= \arg \min_\theta D_{KL}\left(p(x) \| p_\theta(x)\right)\\
+&amp;= \arg \min_\theta \bigg\{\mathbb{E}_{x\sim p(x)}\left[\log p(x) \right]- \mathbb{E}_{x\sim p(x)}\left[\log p_\theta(x)\right]\bigg\}
+\end{aligned}
+$$&lt;p&gt;其中 $\mathbb{E}_{x\sim p(x)}\left[\log p(x) \right]$ 实际上是真实分布 $p(x)$ 的熵，不包含可以优化的参数。可以直接扔掉。那么优化目标可以写作：&lt;/p&gt;
+$$
+\theta^* = \arg \max_\theta \mathbb{E}_{x\sim p(x)}\left[\log p_\theta(x)\right]
+$$&lt;p&gt;离散的，对于一批数据 $\{x_1, x_2, \cdots, x_n\}$，我们可以将优化目标改写为：&lt;/p&gt;</description></item><item><title>Denoising Score Matching</title><link>https://wangjv0812.cn/2025/10/denoising-score-matching/</link><pubDate>Mon, 13 Oct 2025 20:40:25 +0800</pubDate><guid>https://wangjv0812.cn/2025/10/denoising-score-matching/</guid><description>&lt;h2 id="1-动机"&gt;1. 动机&lt;/h2&gt;
 &lt;p&gt;以数据生成为代表的自监督学习往往希望设计出一种独特且有效的机制，通过网络结构和训练方法的设计，迫使模型找到代表一个数据最核心和关键的信息或者说特征，或者希望让模型自己总结出数据的内在结构。或者用一个更概率的表达，就像是之前我们在 &lt;a href="https://wangjv0812.cn/2025/08/noise-contrastive-estimation/"&gt;NCE 中对于数据流形&lt;/a&gt; 讨论过的。数据是一个隐藏在高维空间中的低维流形，而概率分布恰好为我们提供了一个方便的描述流形的数学工具。&lt;/p&gt;
 &lt;p&gt;我们假设真实数据有概率分布 $p(x)$，而我们希望寻找一个收到参数 $\theta$ 控制的概率分布 $q(x\mid \theta)$，尽可能的接近真实分布。生成模型学习事实上希望解决两个实质性的问题：&lt;/p&gt;
 &lt;ol&gt;
