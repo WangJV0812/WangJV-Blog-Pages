@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Variational Inference on WangJV Blog</title><link>https://wangjv0812.cn/tags/variational-inference/</link><description>Recent content in Variational Inference on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.cn/</url><link>https://wangjv0812.cn/</link></image><generator>Hugo -- 0.152.2</generator><language>en-us</language><lastBuildDate>Tue, 28 Oct 2025 23:35:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.cn/tags/variational-inference/index.xml" rel="self" type="application/rss+xml"/><item><title>变分贝叶斯推断 (Variational Bayesian Inference)</title><link>https://wangjv0812.cn/2025/10/%E5%8F%98%E5%88%86%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E6%96%AD-variational-bayesian-inference/</link><pubDate>Tue, 28 Oct 2025 23:35:25 +0800</pubDate><guid>https://wangjv0812.cn/2025/10/%E5%8F%98%E5%88%86%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E6%96%AD-variational-bayesian-inference/</guid><description>&lt;h2 id="1-动机"&gt;1. 动机&lt;/h2&gt;
+&lt;p&gt;对于一个状态 $x$，在通过传感器进行一次观测 $y$ 后，我们希望可以计算出后验分布 $p(x\mid y)$，即在观测到 $y$ 的情况下，状态 $x$ 的分布。为了计算后验分布的形式，我们可以使用贝叶斯公式：&lt;/p&gt;
+$$
+\begin{aligned}
+p(x\mid y)
+&amp;= \frac{p(y\mid x) p(x)}{p(y)}\\
+&amp;= \frac{p(y\mid x) p(x)}{\int p(y\mid x) p(x) \mathrm{d}x}
+\end{aligned}
+$$&lt;p&gt;对于状态估计问题，我们只需要找到使得 $p(x\mid y)$ 最大的状态 $x$。 由于 $p(y)$ 是一个常数，我们可以将其忽略，只需要最大化分子部分。但是一些应用场景中，还需要我们计算出具体的后验分布的形式。但是这往往非常的难，边缘似然 $p(y)$ 的计算往往是几乎不可能的。因此一个或许可行的办法是，使用一个相对简单的分布 $q(x)$ 代替后验分布。那么原本的贝叶斯问题变成一个变分优化问题，不妨用 KL 散度衡量差异。&lt;/p&gt;
+&lt;h2 id="2-kl-散度的不对称性"&gt;2. KL 散度的不对称性&lt;/h2&gt;
+&lt;p&gt;但是一个很核心的问题是，KL 散度不具有对称性，$D_{KL}(p\| q) \neq D_{KL}(q\| p)$，在实际操作中，我们应该如何选择？不妨先观察这两个对称的 KL 散度的具体形式：&lt;/p&gt;
+$$
+\begin{aligned}
+D_{KL}(p \| q)
+&amp;= -\int p(x\mid y) \log \frac{q(x)}{p(x\mid y)} \mathrm{d}x\\
+&amp;= -\int p(x\mid y) \log q(x) \mathrm{d}x + \int p(x\mid y) \log p(x\mid y) \mathrm{d}x
+\end{aligned}
+$$&lt;p&gt;其中，$\int p(x\mid y) \log q(x) \mathrm{d}x$ 实质上是 $p$ 与 $q$ 之间的交叉熵，不妨定义 $H(p, q) = \int p(x\mid y) \log q(x) \mathrm{d}x$。而 $\int p(x\mid y) \log p(x\mid y) \mathrm{d}x$ 则是关于 $p$ 的熵。$p$ 的熵实质上是一个常数，因此实质上：&lt;/p&gt;</description></item></channel></rss>
