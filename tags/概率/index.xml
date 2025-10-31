@@ -8,11 +8,11 @@
 &lt;p&gt;和之前我们讨论的数据分布流形一样，我们可以认为，一种类别的概率分布（例如高斯分布），控制分布的参数同样可以构成一个流形。我们不妨就拿高斯分布举例子，对于一个标准的一维高斯分布，其受到参数 $\sigma^2, \mu$ 控制。那么所有的高斯分布的参数 $\sigma^2, \mu$ 所构成的空间便形成一个 “统计流形”。&lt;/p&gt;
 &lt;p&gt;那么如果对于一族分布（或者任意分布），我们希望测量两个分布的差异（这在 Learning 中是十分常用的，可以度量两个分布的差异，就可以驱动优化）。定义分布的差异事实上就是希望可以在统计流形上定义一个有效的度量。&lt;/p&gt;
 &lt;h2 id="2-score-function"&gt;2. Score Function&lt;/h2&gt;
-&lt;p&gt;对于一个受到参数 $\theta$ 控制，关于随机变量 $x$ 的分布 $q(x; \theta)$，我们可以定义其 Score Function：&lt;/p&gt;
+&lt;p&gt;对于一个数据集 $\{x_1, x_2, \cdots, x_n\}$，我们假设其服从于一个理想的概率分布 $p(x)$，我们不知道 $p(x)$ 的具体形式，只知道它的一系列采样（就是数据集）。我们希望可以通过一个受到参数 $q(x, \theta)$ 控制的分布族来近似它。那么一个很容易想到办法是，通过 KL 散度来衡量 $p(x)$ 和 $q(x, \theta)$ 之间的差异：&lt;/p&gt;
 $$
-\begin{gather}
-s_\theta(x, \theta) = \nabla_\theta \log q(x; \theta)\\
-s_x(x, \theta) = \nabla_x \log q(x; \theta)\\
-\end{gather}
-$$&lt;p&gt;对于 score function，我们可以从两个 level 理解它。&lt;/p&gt;
-&lt;p&gt;首先，直观的、几何的讲，对于 score function $s_x(x, \theta)$ 可以理解为定义在数据空间上的切向量场。不妨想象一下，概率密度 $q(x, \theta)$ 在数据空间中形成了一座 “高山”，向量 $s_x(x, \theta)$ 方向指向的是概率密度对数增长最快的方向。$s_x(x, \theta)$ 告诉我们数据点向哪个方向 ”移动“，概率变大的最快。类似的，$s_\theta(x, \theta)$ 则是在参数空间中的切向量场，指向的是关于参数 $\theta$ 的概率密度对数增长最快的方向。&lt;/p&gt;</description></item></channel></rss>
+\begin{aligned}
+D_{KL}(p(x) \| q(x, \theta))
+&amp;= \mathbb{E}_{x\sim p(x)} \bigg[\log p(x) -\log q(x, \theta)\bigg]\\
+&amp;= \mathbb{E}_{x\sim p(x)} \bigg[\log p(x)\bigg] - \mathbb{E}_{x\sim p(x)} \bigg[\log q(x, \theta)\bigg]\\
+\end{aligned}
+$$&lt;p&gt;其中 $\mathbb{E}_{x\sim p(x)} \bigg[\log p(x)\bigg]$ 是 $p(x)$ 的熵，与待优化参数 $\theta$ 无关，因此：&lt;/p&gt;</description></item></channel></rss>
