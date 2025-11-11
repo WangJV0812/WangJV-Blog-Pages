@@ -92,18 +92,15 @@ $$&lt;p&gt;于上述定义类似，如果标量对矩阵求导，即$\frac{d k}{
 &lt;p&gt;那么对于任意一个云团块而言，出射光与入射光之间的变化量，可以表示为这四个过程的叠加。我们假设入射光线的强度为$I_i$，出射光线为$I_o$，那么有：&lt;/p&gt;
 $$
 l_o-\mathrm{I}_i= dL(x,\omega) =emission+inscattering-outscatting-absorption
-$$&lt;p&gt;
-下面针对吸收、发射、内散射、外散射四个环节进行分析。&lt;/p&gt;
+$$&lt;p&gt;下面针对吸收、发射、内散射、外散射四个环节进行分析。&lt;/p&gt;
 &lt;h4 id="111-吸收"&gt;1.1.1 吸收&lt;/h4&gt;
 &lt;p&gt;我们假设半透明物体中的每个粒子的半径为$r$， 每个粒子的投影面积为$A=$ $\pi r^2$， 并假设圆柱体中粒子的密度为$\rho$，圆柱体的底面积是$E$，并且圆柱体的厚度足够薄。&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.cn/2024/05/mathematics-in-3dgs-1/Images/image-20240125003153333.png"&gt;&lt;/p&gt;
 &lt;p&gt;假定这个厚度是$\Delta s$，那么在这个厚度内，圆柱体体积为$E\Delta s$，粒子总数为$\rho E \Delta s$。这些粒子遮挡的面积为$\rho E \Delta s A$，占整个底面积的比例为$\rho E\Delta sA/E=\rho A\Delta s_{\mathrm{o}}$。也就是说，当一束光通过这个圆柱体的时候，有$\rho A\Delta s$的概率会被遮挡。&lt;/p&gt;
-&lt;p&gt;换句话说，如果我们在圆柱体的一端发射无数光线 (假设都朝相同的方向)，在另一端接收，会发现有些光线安然通过，有些则被粒子遮挡 (吸收)。但可以确定的是，这些接受到的光线总强度，相比入射光线总强度而言，会有$\rho A\Delta s$比例的衰减，即接受到的光的强度均值是入射光的$\rho A\Delta s$倍。其数学形式可以写作：
-&lt;/p&gt;
+&lt;p&gt;换句话说，如果我们在圆柱体的一端发射无数光线 (假设都朝相同的方向)，在另一端接收，会发现有些光线安然通过，有些则被粒子遮挡 (吸收)。但可以确定的是，这些接受到的光线总强度，相比入射光线总强度而言，会有$\rho A\Delta s$比例的衰减，即接受到的光的强度均值是入射光的$\rho A\Delta s$倍。其数学形式可以写作：&lt;/p&gt;
 $$
 I_0 - I_i = \Delta I = -\rho(s)AI(s)\Delta s
-$$&lt;p&gt;
-这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p&gt;
+$$&lt;p&gt;这是一个关于粒子密法$\rho$和$s$的函数，在空间中每个位置的密度是不同的。我们将上面的薄的圆柱体仍为时一个微元，那么可以将其转化为微分方程：&lt;/p&gt;
 $$
 \frac{dI}{ds}=-\rho(s)AI(s)=-\tau_{a}(s)I(s)
 $$&lt;p&gt;那么有：&lt;/p&gt;
@@ -112,4 +109,5 @@ I(s)=I_{0}\exp(-\int_{0}^{s}\tau_{a}(t)dt)
 $$&lt;p&gt;其中$I_o$时表示了光线的起始点。那么针对出射光而言有：&lt;/p&gt;
 $$
 I_{o}=I_{i}\exp(-\int_{i}^{o}\tau_{a}(t)dt)_{0}
-$$&lt;p&gt;此式的物理含义是显而易见的：如果离子云是均匀的，那么射入粒子云的光线会指数衰减，这被称为：比尔-朗伯吸收定律 (Beer-Lambert law)。&lt;/p&gt;</description></item></channel></rss>
+$$&lt;p&gt;此式的物理含义是显而易见的：如果离子云是均匀的，那么射入粒子云的光线会指数衰减，这被称为：比尔-朗伯吸收定律 (Beer-Lambert law)。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Volumn Rendering" loading="lazy" src="https://wangjv0812.cn/2024/05/mathematics-in-3dgs-1/Images/image-20240125003622660.png"&gt;&lt;/p&gt;</description></item></channel></rss>
