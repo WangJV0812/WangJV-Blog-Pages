@@ -1,0 +1,232 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Neural ODE-2: Theoretical Derivation | WangJV Blog</title><meta name=keywords content="Neural ODE,Optimal Control"><meta name=description content="
+  
+      
+          符号
+          含义
+      
+  
+  
+      
+          $z(t)$
+          $t$ 时刻隐藏状态
+      
+      
+          $z(t_0)$
+          初始状态
+      
+      
+          $z(t_1)$
+          终止状态
+      
+      
+          $f(z(t), t, \theta)$
+          Neural ODE Network
+      
+      
+          $\mathcal L[z(t)]$
+          损失泛函
+      
+      
+          $a(t)$
+          拉格朗日乘子
+      
+      
+          $\mathcal J$
+          造增广性能指标
+      
+  
+
+对于深度残差网络和归一化流，对于任意一层 $z_t$，其与下一层 $z_{t+1}$ 的关系可以描述为：
+$$
+z_{t+1} = z_t + f(z_t, \theta)
+$$一个 insightful 的观点是，这个形式可以看作一个连续变换的 欧拉离散化。那么一个显然的思路是，如果网络的深度持续增加、每一步持续变小。在极线上，是否可以将残差神经网络理解为，我们用参数 $\theta$ 描述了一个连续常微分方程：
+$$
+\frac{d z(t)}{dt} = f(z(t), \theta, t)
+$$我们的神经网络建模的，实际上是参数 $z(t)$ 的速度场，（或者说参数的 Flow）。推理时，我们可以通过 ODE Solver 来解得任意时刻 $T$ 的状态。对于使用 ODE 描述的神经网络 $\frac{d z(t)}{dt} = f(z(t), \theta, t)$，和用来评估结果的泛函 $\mathcal L(z(t))$。
+神经网络的本质目标是，通过 $\mathcal L$ 对参数 $\theta$ 的梯度，进行梯度下降：
+$$
+\frac{\partial \mathcal L}{\partial \theta} = \frac{d\mathcal L}{dz(t_1)}\frac{\partial z(t_1)}{\partial \theta}
+$$而对于 $z(t)$，有约束："><meta name=author content="WangJV"><link rel=canonical href=https://wangjv0812.cn/2025/12/neural-ode-2-theoretical-derivation/><link crossorigin=anonymous href=https://wangjv0812.cn/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css integrity="sha256-IhHKMWS+eDACT2qtKzouUghDpk+PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as=style><link rel=icon href=https://wangjv0812.cn/icon/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://wangjv0812.cn/icon/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://wangjv0812.cn/icon/favicon-32x32.png><link rel=apple-touch-icon href=https://wangjv0812.cn/icon/apple-touch-icon.png><link rel=mask-icon href=https://wangjv0812.cn/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://wangjv0812.cn/2025/12/neural-ode-2-theoretical-derivation/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=icon type=image/png sizes=32x32 href=https://wangjv0812.cn/icon/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://wangjv0812.cn/icon/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=https://wangjv0812.cn/icon/apple-touch-icon.png><link rel=manifest href=https://wangjv0812.cn/icon/site.webmanifest><script>MathJax={tex:{displayMath:[["\\[","\\]"],["$$","$$"]],inlineMath:[["\\(","\\)"],["$","$"]],processEscapes:!0,processEnvironments:!0,tags:"ams"},chtml:{scale:1,minScale:.5,matchFontHeight:!1,displayAlign:"center",displayIndent:"0",mtextInheritFont:!1,merrorInheritFont:!0,mathmlSpacing:!1,skipHtmlTags:["script","noscript","style","textarea","pre","code","a"],ignoreHtmlClass:"tex2jax_ignore",processHtmlClass:"tex2jax_process"},svg:{scale:1,minScale:.5,mtextInheritFont:!1,merrorInheritFont:!0,mathmlSpacing:!1,skipHtmlTags:["script","noscript","style","textarea","pre","code","a"],ignoreHtmlClass:"tex2jax_ignore",processHtmlClass:"tex2jax_process"},options:{enableMenu:!0,menuOptions:{settings:{zoom:"Click"}}},loader:{load:["ui/safe","a11y/assistive-mml"]},startup:{ready(){MathJax.startup.defaultReady();const e=new ResizeObserver(e=>{MathJax.typesetPromise()});e.observe(document.body)}}},window.innerWidth<=768&&(MathJax.chtml=MathJax.chtml||{},MathJax.chtml.scale=.9)</script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js></script><style>.MathJax{outline:0}@media(max-width:768px){.MathJax{font-size:90%!important}.MathJax_Display{overflow-x:auto;overflow-y:hidden;padding:0!important;margin:1em 0!important}.MathJax_CHTML{line-height:1.2!important}}mjx-container[jax=CHTML][display=true]{overflow-x:auto;overflow-y:hidden;padding:1px 0}</style><meta property="og:url" content="https://wangjv0812.cn/2025/12/neural-ode-2-theoretical-derivation/"><meta property="og:site_name" content="WangJV Blog"><meta property="og:title" content="Neural ODE-2: Theoretical Derivation"><meta property="og:description" content=" 符号 含义 $z(t)$ $t$ 时刻隐藏状态 $z(t_0)$ 初始状态 $z(t_1)$ 终止状态 $f(z(t), t, \theta)$ Neural ODE Network $\mathcal L[z(t)]$ 损失泛函 $a(t)$ 拉格朗日乘子 $\mathcal J$ 造增广性能指标 对于深度残差网络和归一化流，对于任意一层 $z_t$，其与下一层 $z_{t+1}$ 的关系可以描述为：
+$$ z_{t+1} = z_t + f(z_t, \theta) $$一个 insightful 的观点是，这个形式可以看作一个连续变换的 欧拉离散化。那么一个显然的思路是，如果网络的深度持续增加、每一步持续变小。在极线上，是否可以将残差神经网络理解为，我们用参数 $\theta$ 描述了一个连续常微分方程：
+$$ \frac{d z(t)}{dt} = f(z(t), \theta, t) $$我们的神经网络建模的，实际上是参数 $z(t)$ 的速度场，（或者说参数的 Flow）。推理时，我们可以通过 ODE Solver 来解得任意时刻 $T$ 的状态。对于使用 ODE 描述的神经网络 $\frac{d z(t)}{dt} = f(z(t), \theta, t)$，和用来评估结果的泛函 $\mathcal L(z(t))$。
+神经网络的本质目标是，通过 $\mathcal L$ 对参数 $\theta$ 的梯度，进行梯度下降：
+$$ \frac{\partial \mathcal L}{\partial \theta} = \frac{d\mathcal L}{dz(t_1)}\frac{\partial z(t_1)}{\partial \theta} $$而对于 $z(t)$，有约束："><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-12-28T22:30:25+08:00"><meta property="article:modified_time" content="2025-12-28T22:30:25+08:00"><meta property="article:tag" content="Neural ODE"><meta property="article:tag" content="Optimal Control"><meta property="og:image" content="https://wangjv0812.cn/"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://wangjv0812.cn/"><meta name=twitter:title content="Neural ODE-2: Theoretical Derivation"><meta name=twitter:description content="
+  
+      
+          符号
+          含义
+      
+  
+  
+      
+          $z(t)$
+          $t$ 时刻隐藏状态
+      
+      
+          $z(t_0)$
+          初始状态
+      
+      
+          $z(t_1)$
+          终止状态
+      
+      
+          $f(z(t), t, \theta)$
+          Neural ODE Network
+      
+      
+          $\mathcal L[z(t)]$
+          损失泛函
+      
+      
+          $a(t)$
+          拉格朗日乘子
+      
+      
+          $\mathcal J$
+          造增广性能指标
+      
+  
+
+对于深度残差网络和归一化流，对于任意一层 $z_t$，其与下一层 $z_{t+1}$ 的关系可以描述为：
+$$
+z_{t+1} = z_t + f(z_t, \theta)
+$$一个 insightful 的观点是，这个形式可以看作一个连续变换的 欧拉离散化。那么一个显然的思路是，如果网络的深度持续增加、每一步持续变小。在极线上，是否可以将残差神经网络理解为，我们用参数 $\theta$ 描述了一个连续常微分方程：
+$$
+\frac{d z(t)}{dt} = f(z(t), \theta, t)
+$$我们的神经网络建模的，实际上是参数 $z(t)$ 的速度场，（或者说参数的 Flow）。推理时，我们可以通过 ODE Solver 来解得任意时刻 $T$ 的状态。对于使用 ODE 描述的神经网络 $\frac{d z(t)}{dt} = f(z(t), \theta, t)$，和用来评估结果的泛函 $\mathcal L(z(t))$。
+神经网络的本质目标是，通过 $\mathcal L$ 对参数 $\theta$ 的梯度，进行梯度下降：
+$$
+\frac{\partial \mathcal L}{\partial \theta} = \frac{d\mathcal L}{dz(t_1)}\frac{\partial z(t_1)}{\partial \theta}
+$$而对于 $z(t)$，有约束："><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://wangjv0812.cn/posts/"},{"@type":"ListItem","position":2,"name":"Neural ODE-2: Theoretical Derivation","item":"https://wangjv0812.cn/2025/12/neural-ode-2-theoretical-derivation/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Neural ODE-2: Theoretical Derivation","name":"Neural ODE-2: Theoretical Derivation","description":" 符号 含义 $z(t)$ $t$ 时刻隐藏状态 $z(t_0)$ 初始状态 $z(t_1)$ 终止状态 $f(z(t), t, \\theta)$ Neural ODE Network $\\mathcal L[z(t)]$ 损失泛函 $a(t)$ 拉格朗日乘子 $\\mathcal J$ 造增广性能指标 对于深度残差网络和归一化流，对于任意一层 $z_t$，其与下一层 $z_{t+1}$ 的关系可以描述为：\n$$ z_{t+1} = z_t + f(z_t, \\theta) $$一个 insightful 的观点是，这个形式可以看作一个连续变换的 欧拉离散化。那么一个显然的思路是，如果网络的深度持续增加、每一步持续变小。在极线上，是否可以将残差神经网络理解为，我们用参数 $\\theta$ 描述了一个连续常微分方程：\n$$ \\frac{d z(t)}{dt} = f(z(t), \\theta, t) $$我们的神经网络建模的，实际上是参数 $z(t)$ 的速度场，（或者说参数的 Flow）。推理时，我们可以通过 ODE Solver 来解得任意时刻 $T$ 的状态。对于使用 ODE 描述的神经网络 $\\frac{d z(t)}{dt} = f(z(t), \\theta, t)$，和用来评估结果的泛函 $\\mathcal L(z(t))$。\n神经网络的本质目标是，通过 $\\mathcal L$ 对参数 $\\theta$ 的梯度，进行梯度下降：\n$$ \\frac{\\partial \\mathcal L}{\\partial \\theta} = \\frac{d\\mathcal L}{dz(t_1)}\\frac{\\partial z(t_1)}{\\partial \\theta} $$而对于 $z(t)$，有约束：\n","keywords":["Neural ODE","Optimal Control"],"articleBody":" 符号 含义 $z(t)$ $t$ 时刻隐藏状态 $z(t_0)$ 初始状态 $z(t_1)$ 终止状态 $f(z(t), t, \\theta)$ Neural ODE Network $\\mathcal L[z(t)]$ 损失泛函 $a(t)$ 拉格朗日乘子 $\\mathcal J$ 造增广性能指标 对于深度残差网络和归一化流，对于任意一层 $z_t$，其与下一层 $z_{t+1}$ 的关系可以描述为：\n$$ z_{t+1} = z_t + f(z_t, \\theta) $$一个 insightful 的观点是，这个形式可以看作一个连续变换的 欧拉离散化。那么一个显然的思路是，如果网络的深度持续增加、每一步持续变小。在极线上，是否可以将残差神经网络理解为，我们用参数 $\\theta$ 描述了一个连续常微分方程：\n$$ \\frac{d z(t)}{dt} = f(z(t), \\theta, t) $$我们的神经网络建模的，实际上是参数 $z(t)$ 的速度场，（或者说参数的 Flow）。推理时，我们可以通过 ODE Solver 来解得任意时刻 $T$ 的状态。对于使用 ODE 描述的神经网络 $\\frac{d z(t)}{dt} = f(z(t), \\theta, t)$，和用来评估结果的泛函 $\\mathcal L(z(t))$。\n神经网络的本质目标是，通过 $\\mathcal L$ 对参数 $\\theta$ 的梯度，进行梯度下降：\n$$ \\frac{\\partial \\mathcal L}{\\partial \\theta} = \\frac{d\\mathcal L}{dz(t_1)}\\frac{\\partial z(t_1)}{\\partial \\theta} $$而对于 $z(t)$，有约束：\n$$ \\frac{dz}{dt} = f(z(t), t, \\theta) $$那么，应有：\n$$ \\begin{aligned} \\frac{\\partial }{\\partial \\theta}\\frac{dz}{dt} \u0026= \\frac{\\partial f}{\\partial z}\\frac{\\partial z}{\\partial \\theta} + \\frac{\\partial f}{\\partial \\theta} \\end{aligned} $$这个形式有两个问题：\n$\\frac{\\partial }{\\partial \\theta}\\frac{dz}{dt}$ 是一个 $\\text{dim}(z) \\times \\text{dim}(\\theta)$ 的系统，几乎是不可接受的。 这甚至还是一个微分方程，意味着我们想获得一次梯度 $\\frac{\\partial \\mathcal L}{\\partial \\theta}$ 还需要解微分方程，这也是不可接受的。 1. NeuralODE 的最优化描述 训练 Neural ODE 可以用一个有约束最优化问题来描述：\n$$ \\begin{aligned} \u0026\\min_\\theta \\mathcal L(z(t_1))\\\\ \\text{s.t.}\u0026 \\quad \\begin{aligned} \u0026\\frac{d z(t)}{dt} = f(z(t), t, \\theta), \\\\ \u0026z(t_0) = z_0 \\end{aligned} \\end{aligned} $$那么不妨构造增广性能指标 $\\mathcal J$，引入拉格朗日乘子法 $a(t)$：\n$$ \\begin{aligned} \\mathcal J\\ \u0026= \\mathcal L[z(t_1)] + \\int_{t_0}^{t_1} a^\\top(t)\\left( \\frac{dz}{dt} - f(z, t, \\theta) \\right)dt\\\\ \u0026= \\mathcal L[z(t_1)] + \\int_{t_0}^{t_1} \\left(a^\\top(t) \\frac{dz}{dt} - a^\\top(t)f(z, t, \\theta) \\right)dt \\end{aligned} $$此时，我们将一个优化问题转化为一个对泛函 $\\mathcal J$ 的变分最优问题。根据 Calculus of Variations 中的叙述，不妨对 $z(t)$ 做一个扰动：\n$$ z(t) \\to z(t) + \\epsilon \\eta(t) $$这是一个固定初端问题，有 $\\eta(x_0) = 0$。\n1.1. 对于损失 $\\mathcal L(z(t_1))$ 根据 Calculus of Variations#1. 变分 中的结论，有：\n$$ \\begin{aligned} \\delta \\mathcal L \u0026= \\left.\\frac{d }{d \\epsilon} \\mathcal L[z(t_1) + \\epsilon \\eta(t_1)]\\right|_{\\epsilon=0}\\epsilon\\\\ \\end{aligned} $$不妨令 $Z(t_1) = z(t_1) + \\epsilon \\eta(t_1)$，有：\n$$ \\begin{aligned} \\delta \\mathcal L \u0026= \\left. \\frac{\\partial \\mathcal L}{\\partial Z(t_1)}^\\top \\frac{d Z(t_1)}{d\\epsilon}\\right|_{\\epsilon=0}\\epsilon \\\\ \u0026= \\frac{\\partial \\mathcal L}{\\partial z(t_1}^\\top \\eta(t)\\epsilon\\\\ \u0026= \\frac{\\partial \\mathcal L}{\\partial z(t_1)}^\\top \\delta z(t_1) \\end{aligned} $$1.2. 对于积分第一项 $\\int_{t_0}^{t_1}a^\\top(t)\\frac{dz}{dt}dt$ 不妨令：\n$$ \\mathcal J_1 = \\int_{t_0}^{t_1}a^\\top(t)\\frac{dz}{dt}dt $$对 $z(t)$ 扰动，$z(t) \\to z(t) + \\epsilon \\eta(t)$。有：\n$$ \\begin{aligned} \\mathcal J_1 \u0026= \\int_{t_0}^{t_1}a^\\top(t)\\frac{d}{dt}\\left(z(t) + \\epsilon \\eta(t)\\right)dt\\\\ \u0026= \\int_{t_0}^{t_1}a^\\top(t)\\left(\\frac{dz}{dt} + \\epsilon \\frac{d\\eta}{dt}\\right)dt \\end{aligned}\\\\ $$有变分：\n$$ \\begin{aligned} \\delta \\mathcal J_1 \u0026= \\left. \\frac{d}{d\\epsilon}\\int_{t_0}^{t_1}a^\\top(t)\\left(\\frac{dz}{dt} + \\epsilon \\frac{d\\eta}{dt}\\right)dt \\right|_{\\epsilon=0}\\epsilon\\\\ \u0026= \\int_{t_0}^{t_1}a^\\top(t)\\left.\\frac{\\epsilon d\\eta}{dt}\\right|_{\\epsilon=0} dt\\\\ \u0026= \\int_{t_0}^{t_1}a^\\top(t)\\frac{d(\\delta z)}{dt} dt \\end{aligned} $$1.3. 对于积分第二项 $\\int_{t_0}^{t_1} a^\\top(t)f(z, t, \\theta)dt$ 不妨令：\n$$ \\mathcal J_2 = \\int_{t_0}^{t_1} a^\\top(t)f(z, t, \\theta)dt $$类似的，进行扰动：\n$$ \\mathcal J_2 = \\int_{t_0}^{t_1} a^\\top(t)f(z + \\epsilon \\eta, t, \\theta)dt $$有变分：\n$$ \\begin{aligned} \\delta \\mathcal J_2 \u0026= \\left.\\frac{d}{d\\epsilon} \\int_{t_0}^{t_1} a^\\top(t)f(z + \\epsilon \\eta, t, \\theta)dt\\right|_{\\epsilon=0} \\epsilon\\\\ \u0026= \\int_{t_0}^{t_1} a^\\top(t)\\left.\\frac{d}{d\\epsilon} f(z + \\epsilon \\eta, t, \\theta)\\right|_{\\epsilon=0}dt\\epsilon\\\\ \u0026= \\int_{t_0}^{t_1} a^\\top(t)\\frac{\\partial f}{\\partial z}\\epsilon \\eta dt\\\\ \u0026= \\int_{t_0}^{t_1} a^\\top(t)\\frac{\\partial f}{\\partial z}\\delta z dt \\end{aligned} $$1.4. 完整变分 那么，有完整变分：\n$$ \\delta \\mathcal J = \\frac{\\partial \\mathcal L}{\\partial z(t_1)}^\\top \\delta z(t_1) + \\int_{t_0}^{t_1}a^\\top(t)\\frac{d(\\delta z)}{dt} dt - \\int_{t_0}^{t_1} a^\\top(t)\\frac{\\partial f}{\\partial z}\\delta z dt $$不妨对 $\\delta \\mathcal J_1$ 使用分部积分，有：\n$$ \\int_{t_0}^{t_1} a^\\top \\frac{d(\\delta z)}{dt} dt = \\left[ a^\\top \\delta z \\right]_{t_0}^{t_1} - \\int_{t_0}^{t_1} \\frac{da^\\top}{dt} \\delta z \\, dt $$由于这是一个固定初端问题，有 $\\eta(t_0) = 0$，有：\n$$ \\left[ a^\\top \\delta z \\right]_{t_0}^{t_1} = a^\\top(t_1) \\delta z(t_1) $$那么有：\n$$ \\begin{aligned} \\delta \\mathcal J \u0026= \\frac{\\partial \\mathcal L}{\\partial z(t_1)}^\\top \\delta z(t_1) + a^\\top(t_1) \\delta z(t_1) - \\int_{t_0}^{t_1} \\frac{da^\\top}{dt} \\delta z \\, dt - \\int_{t_0}^{t_1} a^\\top(t)\\frac{\\partial f}{\\partial z}\\delta z dt\\\\ \u0026= \\underbrace{\\left(\\frac{\\partial \\mathcal L}{\\partial z(t_1)}^\\top + a^\\top(t_1)\\right)\\delta z(t_1)}_{\\text{边界项 (A)}} - \\int_{t_0}^{t_1} \\underbrace{\\left(\\frac{da^\\top}{dt} + a^\\top(t)\\frac{\\partial f}{\\partial z}\\right)}_{\\text{路径项 (B)}} \\delta z(t) dt \\end{aligned} $$取最优，则有:\n$$ \\begin{aligned} \\delta \\mathcal J \u0026= \\left(\\frac{\\partial \\mathcal L}{\\partial z(t_1)}^\\top + a^\\top(t_1)\\right)\\delta z(t_1) - \\int_{t_0}^{t_1} \\left(\\frac{da^\\top}{dt} + a^\\top(t)\\frac{\\partial f}{\\partial z}\\right)\\delta z dt\\\\ \u0026= 0 \\end{aligned} $$根据 [[变分法基本引理 (du Bois-Reymond 引理)]]，$\\delta z(t_1) = \\epsilon \\eta(t_1)$，$\\eta(t_1)$ 任取，分别扰动对边界项和路径项，有：\n$$ \\begin{aligned} a(t_1) \u0026= -\\frac{\\partial \\mathcal L}{\\partial z(t_1)}\\\\ \\frac{da}{dt}^\\top \u0026= -a(t)^\\top \\frac{\\partial f(z, t, \\theta)}{\\partial z} \\end{aligned} $$1.5. 对 $\\theta$ 变分 类似的，我们对 $\\theta$ 扰动：\n$$ \\theta \\to \\theta + \\epsilon \\eta $$根据变分法，有：\n$$ \\delta \\mathcal J = \\frac{\\partial \\mathcal J}{\\partial z(t_1)}\\delta z(t_1)+\\int_{t_0}^{t_1}a^\\top\\left( \\delta z' - \\frac{\\partial f}{\\partial z}\\delta z - \\frac{\\partial f}{\\partial \\theta}\\delta \\theta \\right)dt $$类似的，使用分部积分，有：\n$$ \\delta \\mathcal J = \\left(\\frac{\\partial \\mathcal J}{\\partial z(t_1)} + a(t_1)\\right)^\\top\\delta z(t_1)- \\int_{t_0}^{t_1} \\left( \\frac{da}{dt}^\\top + a^\\top \\frac{\\partial f}{\\partial z} \\right)\\delta zdt- \\int_{t_0}^{t_1} a^\\top \\frac{\\partial f}{\\partial \\theta} dt \\delta \\theta $$将我们之前的对 $z$ 扰动的结果带入，则有：\n$$ \\begin{aligned} \\delta \\mathcal J \u0026= - \\int_{t_0}^{t_1} a^\\top \\frac{\\partial f}{\\partial \\theta} dt \\delta \\theta\\\\ \u0026= \\frac{\\partial \\mathcal L}{\\partial \\theta}\\delta \\theta \\end{aligned} $$那么，有：\n$$ \\frac{\\partial \\mathcal L}{\\partial \\theta} = -\\int_{t_0}^{t_1} \\mathbf{a}(t)^\\top \\frac{\\partial f}{\\partial \\theta} (z(t), t, \\theta)dt $$2. 数值优化 好了，我们现在有：\n类型 形式 状态 $(t)$ 动力学 $\\frac{\\partial z(t)}{\\partial t} = f(z(t), t, \\theta)$ 伴随因子 $a(t)$ 动力学 $\\begin{aligned}a(t_1) \u0026= -\\frac{\\partial \\mathcal L}{\\partial z(t_1)}\\\\\\frac{da}{dt}^\\top \u0026= -a(t)^\\top \\frac{\\partial f(z, t, \\theta)}{\\partial z}\\end{aligned}$ 梯度 $\\frac{\\partial \\mathcal L}{\\partial \\theta} = -\\int_{t_0}^{t_1} \\mathbf{a}(t)^\\top \\frac{\\partial f}{\\partial \\theta} dt$ 梯度下降优化的核心是求 $\\frac{\\partial \\mathcal L}{\\partial \\theta}$。其中，$\\frac{\\partial f}{\\partial \\theta}$ 可以通过自动求导机制计算，这很容易求的。相对比较麻烦的是，需要计算 $t\\in [t_0, t_1]$ 下所有时刻的 $z(t)$ 和 $a(t)$。\n对于 $z(t)$ 和 $a(t)$，我们有微分方程描述其动态。因此，NeuralODE 的训练过程可以描述为：\n使用 odeSolver，计算 $z(t_1)$ 计算 $a(t_1) = -\\frac{\\partial \\mathcal L}{\\partial z(t_1)}$ 从 $a(t_1)$ 和 $z_(t_1)$ 开始，使用 odeSolver 计算 $t_1 \\to t_0$ 的 $z(t)$ 和 $a(t)$。 计算累加 $a^\\top \\frac{\\partial f}{\\partial \\theta}$ 为了计算方便。不妨直接令：\n$$ a_\\theta = \\frac{d}{dt} \\frac{\\partial \\mathcal L}{\\partial \\theta} = \\mathbf{a}(t)^\\top \\frac{\\partial f}{\\partial \\theta} $$可以构建一个增广状态：\n$$ \\begin{bmatrix} a(t)\\\\z(t)\\\\a_\\theta(t) \\end{bmatrix} $$那么有：\n$$ \\frac{d}{dt} \\begin{bmatrix} a(t)\\\\z(t)\\\\a_\\theta(t) \\end{bmatrix} = \\begin{bmatrix} a(t)^\\top \\frac{\\partial f(z, t, \\theta)}{\\partial z}\\\\ -\\frac{\\partial z(t)}{\\partial t} = f(z(t), t, \\theta)\\\\ \\mathbf{a}(t)^\\top \\frac{\\partial f}{\\partial \\theta} \\end{bmatrix} $$这个形式可以直接的通过 odeSolver 求解。\n","wordCount":"801","inLanguage":"en","image":"https://wangjv0812.cn/","datePublished":"2025-12-28T22:30:25+08:00","dateModified":"2025-12-28T22:30:25+08:00","author":{"@type":"Person","name":"WangJV"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://wangjv0812.cn/2025/12/neural-ode-2-theoretical-derivation/"},"publisher":{"@type":"Organization","name":"WangJV Blog","logo":{"@type":"ImageObject","url":"https://wangjv0812.cn/icon/favicon-32x32.png"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://wangjv0812.cn/ accesskey=h title="WangJV Blog (Alt + H)"><img src=https://wangjv0812.cn/icon/translucent-icon.png alt aria-label=logo height=35>WangJV Blog</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://wangjv0812.cn/ title=Home><span>Home</span></a></li><li><a href=https://wangjv0812.cn/archives/ title=Archive><span>Archive</span></a></li><li><a href=https://wangjv0812.cn/resources/ title=Resources><span>Resources</span></a></li><li><a href=https://wangjv0812.cn/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://wangjv0812.cn/search/ title="🔍 Search (Alt + /)" accesskey=/><span>🔍 Search</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://wangjv0812.cn/>Home</a>&nbsp;»&nbsp;<a href=https://wangjv0812.cn/posts/>Posts</a></div><h1 class="post-title entry-hint-parent">Neural ODE-2: Theoretical Derivation</h1><div class=post-meta><span title='2025-12-28 22:30:25 +0800 +0800'>December 28, 2025</span>&nbsp;·&nbsp;WangJV&nbsp;|&nbsp;<a href=https://github.com/WangJV0812/WangJV-Blog-Source/tree/master/content/posts/NeuralODE-2%20Theoretical%20Derivation/index.md rel="noopener noreferrer edit" target=_blank>Suggest Changes</a></div></header><div class=toc><details><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><nav id=TableOfContents><ul><li><a href=#1-neuralode-的最优化描述>1. NeuralODE 的最优化描述</a><ul><li><a href=#11-对于损失>1.1. 对于损失</a></li><li><a href=#12-对于积分第一项>1.2. 对于积分第一项</a></li><li><a href=#13-对于积分第二项>1.3. 对于积分第二项</a></li><li><a href=#14-完整变分>1.4. 完整变分</a></li><li><a href=#15-对--变分>1.5. 对 变分</a></li></ul></li><li><a href=#2-数值优化>2. 数值优化</a></li></ul></nav></div></details></div><div class=post-content><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody><tr><td>$z(t)$</td><td>$t$ 时刻隐藏状态</td></tr><tr><td>$z(t_0)$</td><td>初始状态</td></tr><tr><td>$z(t_1)$</td><td>终止状态</td></tr><tr><td>$f(z(t), t, \theta)$</td><td>Neural ODE Network</td></tr><tr><td>$\mathcal L[z(t)]$</td><td>损失泛函</td></tr><tr><td>$a(t)$</td><td>拉格朗日乘子</td></tr><tr><td>$\mathcal J$</td><td>造增广性能指标</td></tr></tbody></table><p>对于深度残差网络和归一化流，对于任意一层 $z_t$，其与下一层 $z_{t+1}$ 的关系可以描述为：</p>$$
+z_{t+1} = z_t + f(z_t, \theta)
+$$<p>一个 insightful 的观点是，这个形式可以看作一个连续变换的 <strong>欧拉离散化</strong>。那么一个显然的思路是，如果网络的深度持续增加、每一步持续变小。在极线上，是否可以将残差神经网络理解为，我们用参数 $\theta$ 描述了一个连续常微分方程：</p>$$
+\frac{d z(t)}{dt} = f(z(t), \theta, t)
+$$<p>我们的神经网络建模的，实际上是参数 $z(t)$ 的速度场，（或者说参数的 Flow）。推理时，我们可以通过 ODE Solver 来解得任意时刻 $T$ 的状态。对于使用 ODE 描述的神经网络 $\frac{d z(t)}{dt} = f(z(t), \theta, t)$，和用来评估结果的泛函 $\mathcal L(z(t))$。</p><p>神经网络的本质目标是，通过 $\mathcal L$ 对参数 $\theta$ 的梯度，进行梯度下降：</p>$$
+\frac{\partial \mathcal L}{\partial \theta} = \frac{d\mathcal L}{dz(t_1)}\frac{\partial z(t_1)}{\partial \theta}
+$$<p>而对于 $z(t)$，有约束：</p>$$
+\frac{dz}{dt} = f(z(t), t, \theta)
+$$<p>那么，应有：</p>$$
+\begin{aligned}
+\frac{\partial }{\partial \theta}\frac{dz}{dt}
+&= \frac{\partial f}{\partial z}\frac{\partial z}{\partial \theta} + \frac{\partial f}{\partial \theta}
+\end{aligned}
+$$<p>这个形式有两个问题：</p><ol><li>$\frac{\partial }{\partial \theta}\frac{dz}{dt}$ 是一个 $\text{dim}(z) \times \text{dim}(\theta)$ 的系统，几乎是不可接受的。</li><li>这甚至还是一个微分方程，意味着我们想获得一次梯度 $\frac{\partial \mathcal L}{\partial \theta}$ 还需要解微分方程，这也是不可接受的。</li></ol><h2 id=1-neuralode-的最优化描述>1. NeuralODE 的最优化描述<a hidden class=anchor aria-hidden=true href=#1-neuralode-的最优化描述>#</a></h2><p>训练 Neural ODE 可以用一个有约束最优化问题来描述：</p>$$
+\begin{aligned}
+&\min_\theta \mathcal L(z(t_1))\\
+\text{s.t.}& \quad \begin{aligned}
+&\frac{d z(t)}{dt} = f(z(t), t, \theta), \\
+&z(t_0) = z_0
+\end{aligned}
+\end{aligned}
+$$<p>那么不妨构造增广性能指标 $\mathcal J$，引入拉格朗日乘子法 $a(t)$：</p>$$
+\begin{aligned}
+\mathcal J\
+&= \mathcal L[z(t_1)] + \int_{t_0}^{t_1} a^\top(t)\left(
+\frac{dz}{dt} - f(z, t, \theta)
+\right)dt\\
+&= \mathcal L[z(t_1)] + \int_{t_0}^{t_1} \left(a^\top(t)
+\frac{dz}{dt} - a^\top(t)f(z, t, \theta)
+\right)dt
+\end{aligned}
+$$<p>此时，我们将一个优化问题转化为一个对泛函 $\mathcal J$ 的变分最优问题。根据 <a href=../NeuralODE-1%20Calculus%20of%20Variations/index.md>Calculus of Variations</a> 中的叙述，不妨对 $z(t)$ 做一个扰动：</p>$$
+z(t) \to z(t) + \epsilon \eta(t)
+$$<p>这是一个固定初端问题，有 $\eta(x_0) = 0$。</p><h3 id=11-对于损失>1.1. 对于损失 $\mathcal L(z(t_1))$<a hidden class=anchor aria-hidden=true href=#11-对于损失>#</a></h3><p>根据 <a href=../NeuralODE-1%20Calculus%20of%20Variations/index.md#3-%E5%8F%98%E5%88%86>Calculus of Variations#1. 变分</a> 中的结论，有：</p>$$
+\begin{aligned}
+\delta \mathcal L
+&= \left.\frac{d }{d \epsilon} \mathcal L[z(t_1) + \epsilon \eta(t_1)]\right|_{\epsilon=0}\epsilon\\
+\end{aligned}
+$$<p>不妨令 $Z(t_1) = z(t_1) + \epsilon \eta(t_1)$，有：</p>$$
+\begin{aligned}
+\delta \mathcal L
+&= \left. \frac{\partial \mathcal L}{\partial Z(t_1)}^\top \frac{d Z(t_1)}{d\epsilon}\right|_{\epsilon=0}\epsilon \\
+&= \frac{\partial \mathcal L}{\partial z(t_1}^\top \eta(t)\epsilon\\
+&= \frac{\partial \mathcal L}{\partial z(t_1)}^\top \delta z(t_1)
+\end{aligned}
+$$<h3 id=12-对于积分第一项>1.2. 对于积分第一项 $\int_{t_0}^{t_1}a^\top(t)\frac{dz}{dt}dt$<a hidden class=anchor aria-hidden=true href=#12-对于积分第一项>#</a></h3><p>不妨令：</p>$$
+\mathcal J_1 = \int_{t_0}^{t_1}a^\top(t)\frac{dz}{dt}dt
+$$<p>对 $z(t)$ 扰动，$z(t) \to z(t) + \epsilon \eta(t)$。有：</p>$$
+\begin{aligned}
+\mathcal J_1
+&= \int_{t_0}^{t_1}a^\top(t)\frac{d}{dt}\left(z(t) + \epsilon \eta(t)\right)dt\\
+&= \int_{t_0}^{t_1}a^\top(t)\left(\frac{dz}{dt} + \epsilon \frac{d\eta}{dt}\right)dt
+\end{aligned}\\
+$$<p>有变分：</p>$$
+\begin{aligned}
+\delta \mathcal J_1
+&= \left. \frac{d}{d\epsilon}\int_{t_0}^{t_1}a^\top(t)\left(\frac{dz}{dt} + \epsilon \frac{d\eta}{dt}\right)dt \right|_{\epsilon=0}\epsilon\\
+&= \int_{t_0}^{t_1}a^\top(t)\left.\frac{\epsilon d\eta}{dt}\right|_{\epsilon=0} dt\\
+&= \int_{t_0}^{t_1}a^\top(t)\frac{d(\delta z)}{dt} dt
+\end{aligned}
+$$<h3 id=13-对于积分第二项>1.3. 对于积分第二项 $\int_{t_0}^{t_1} a^\top(t)f(z, t, \theta)dt$<a hidden class=anchor aria-hidden=true href=#13-对于积分第二项>#</a></h3><p>不妨令：</p>$$
+\mathcal J_2 = \int_{t_0}^{t_1} a^\top(t)f(z, t, \theta)dt
+$$<p>类似的，进行扰动：</p>$$
+\mathcal J_2 = \int_{t_0}^{t_1} a^\top(t)f(z + \epsilon \eta, t, \theta)dt
+$$<p>有变分：</p>$$
+\begin{aligned}
+\delta \mathcal J_2
+&= \left.\frac{d}{d\epsilon} \int_{t_0}^{t_1} a^\top(t)f(z + \epsilon \eta, t, \theta)dt\right|_{\epsilon=0} \epsilon\\
+&= \int_{t_0}^{t_1} a^\top(t)\left.\frac{d}{d\epsilon} f(z + \epsilon \eta, t, \theta)\right|_{\epsilon=0}dt\epsilon\\
+&= \int_{t_0}^{t_1} a^\top(t)\frac{\partial f}{\partial z}\epsilon \eta dt\\
+&= \int_{t_0}^{t_1} a^\top(t)\frac{\partial f}{\partial z}\delta z dt
+\end{aligned}
+$$<h3 id=14-完整变分>1.4. 完整变分<a hidden class=anchor aria-hidden=true href=#14-完整变分>#</a></h3><p>那么，有完整变分：</p>$$
+\delta \mathcal J = \frac{\partial \mathcal L}{\partial z(t_1)}^\top \delta z(t_1) + \int_{t_0}^{t_1}a^\top(t)\frac{d(\delta z)}{dt} dt - \int_{t_0}^{t_1} a^\top(t)\frac{\partial f}{\partial z}\delta z dt
+$$<p>不妨对 $\delta \mathcal J_1$ 使用分部积分，有：</p>$$
+\int_{t_0}^{t_1} a^\top \frac{d(\delta z)}{dt} dt = \left[ a^\top \delta z \right]_{t_0}^{t_1} - \int_{t_0}^{t_1} \frac{da^\top}{dt} \delta z \, dt
+$$<p>由于这是一个固定初端问题，有 $\eta(t_0) = 0$，有：</p>$$
+\left[ a^\top \delta z \right]_{t_0}^{t_1} = a^\top(t_1) \delta z(t_1)
+$$<p>那么有：</p>$$
+\begin{aligned}
+\delta \mathcal J
+&= \frac{\partial \mathcal L}{\partial z(t_1)}^\top \delta z(t_1) + a^\top(t_1) \delta z(t_1) - \int_{t_0}^{t_1} \frac{da^\top}{dt} \delta z \, dt - \int_{t_0}^{t_1} a^\top(t)\frac{\partial f}{\partial z}\delta z dt\\
+&= \underbrace{\left(\frac{\partial \mathcal L}{\partial z(t_1)}^\top + a^\top(t_1)\right)\delta z(t_1)}_{\text{边界项 (A)}} - \int_{t_0}^{t_1} \underbrace{\left(\frac{da^\top}{dt} + a^\top(t)\frac{\partial f}{\partial z}\right)}_{\text{路径项 (B)}} \delta z(t) dt
+\end{aligned}
+$$<p>取最优，则有:</p>$$
+\begin{aligned}
+\delta \mathcal J
+&= \left(\frac{\partial \mathcal L}{\partial z(t_1)}^\top + a^\top(t_1)\right)\delta z(t_1) - \int_{t_0}^{t_1} \left(\frac{da^\top}{dt} + a^\top(t)\frac{\partial f}{\partial z}\right)\delta z dt\\
+&= 0
+\end{aligned}
+$$<p>根据 [[变分法基本引理 (du Bois-Reymond 引理)]]，$\delta z(t_1) = \epsilon \eta(t_1)$，$\eta(t_1)$ 任取，分别扰动对边界项和路径项，有：</p>$$
+\begin{aligned}
+a(t_1) &= -\frac{\partial \mathcal L}{\partial z(t_1)}\\
+\frac{da}{dt}^\top &= -a(t)^\top \frac{\partial f(z, t, \theta)}{\partial z}
+\end{aligned}
+$$<h3 id=15-对--变分>1.5. 对 $\theta$ 变分<a hidden class=anchor aria-hidden=true href=#15-对--变分>#</a></h3><p>类似的，我们对 $\theta$ 扰动：</p>$$
+\theta \to \theta + \epsilon \eta
+$$<p>根据变分法，有：</p>$$
+\delta \mathcal J = \frac{\partial \mathcal J}{\partial z(t_1)}\delta z(t_1)+\int_{t_0}^{t_1}a^\top\left(
+\delta z' - \frac{\partial f}{\partial z}\delta z - \frac{\partial f}{\partial \theta}\delta \theta
+\right)dt
+$$<p>类似的，使用分部积分，有：</p>$$
+\delta \mathcal J = \left(\frac{\partial \mathcal J}{\partial z(t_1)} + a(t_1)\right)^\top\delta z(t_1)- \int_{t_0}^{t_1} \left( \frac{da}{dt}^\top + a^\top \frac{\partial f}{\partial z} \right)\delta zdt- \int_{t_0}^{t_1} a^\top \frac{\partial f}{\partial \theta} dt \delta \theta
+$$<p>将我们之前的对 $z$ 扰动的结果带入，则有：</p>$$
+\begin{aligned}
+\delta \mathcal J
+&= - \int_{t_0}^{t_1} a^\top \frac{\partial f}{\partial \theta} dt \delta \theta\\
+&= \frac{\partial \mathcal L}{\partial \theta}\delta \theta
+\end{aligned}
+$$<p>那么，有：</p>$$
+\frac{\partial \mathcal L}{\partial \theta} = -\int_{t_0}^{t_1} \mathbf{a}(t)^\top \frac{\partial f}{\partial \theta} (z(t), t, \theta)dt
+$$<h2 id=2-数值优化>2. 数值优化<a hidden class=anchor aria-hidden=true href=#2-数值优化>#</a></h2><p>好了，我们现在有：</p><table><thead><tr><th>类型</th><th>形式</th></tr></thead><tbody><tr><td>状态 $(t)$ 动力学</td><td>$\frac{\partial z(t)}{\partial t} = f(z(t), t, \theta)$</td></tr><tr><td>伴随因子 $a(t)$ 动力学</td><td>$\begin{aligned}a(t_1) &= -\frac{\partial \mathcal L}{\partial z(t_1)}\\\frac{da}{dt}^\top &= -a(t)^\top \frac{\partial f(z, t, \theta)}{\partial z}\end{aligned}$</td></tr><tr><td>梯度</td><td>$\frac{\partial \mathcal L}{\partial \theta} = -\int_{t_0}^{t_1} \mathbf{a}(t)^\top \frac{\partial f}{\partial \theta} dt$</td></tr></tbody></table><p>梯度下降优化的核心是求 $\frac{\partial \mathcal L}{\partial \theta}$。其中，$\frac{\partial f}{\partial \theta}$ 可以通过自动求导机制计算，这很容易求的。相对比较麻烦的是，需要计算 $t\in [t_0, t_1]$ 下所有时刻的 $z(t)$ 和 $a(t)$。</p><p>对于 $z(t)$ 和 $a(t)$，我们有微分方程描述其动态。因此，NeuralODE 的训练过程可以描述为：</p><ol><li>使用 odeSolver，计算 $z(t_1)$</li><li>计算 $a(t_1) = -\frac{\partial \mathcal L}{\partial z(t_1)}$</li><li>从 $a(t_1)$ 和 $z_(t_1)$ 开始，使用 odeSolver 计算 $t_1 \to t_0$ 的 $z(t)$ 和 $a(t)$。</li><li>计算累加 $a^\top \frac{\partial f}{\partial \theta}$</li></ol><p>为了计算方便。不妨直接令：</p>$$
+a_\theta = \frac{d}{dt} \frac{\partial \mathcal L}{\partial \theta} = \mathbf{a}(t)^\top \frac{\partial f}{\partial \theta}
+$$<p>可以构建一个增广状态：</p>$$
+\begin{bmatrix}
+a(t)\\z(t)\\a_\theta(t)
+\end{bmatrix}
+$$<p>那么有：</p>$$
+\frac{d}{dt} \begin{bmatrix}
+a(t)\\z(t)\\a_\theta(t)
+\end{bmatrix} = \begin{bmatrix}
+a(t)^\top \frac{\partial f(z, t, \theta)}{\partial z}\\
+-\frac{\partial z(t)}{\partial t} = f(z(t), t, \theta)\\
+\mathbf{a}(t)^\top \frac{\partial f}{\partial \theta}
+\end{bmatrix}
+$$<p>这个形式可以直接的通过 odeSolver 求解。</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://wangjv0812.cn/tags/neural-ode/>Neural ODE</a></li><li><a href=https://wangjv0812.cn/tags/optimal-control/>Optimal Control</a></li></ul><nav class=paginav><a class=next href=https://wangjv0812.cn/2025/12/neural-ode-1-calculus-of-variations/><span class=title>Next »</span><br><span>Neural ODE-1: Calculus of Variations</span></a></nav></footer><script src=https://giscus.app/client.js data-repo=WangJV0812/WangJV-Blog-Pages data-repo-id=R_kgDOPZMmQw data-category=comments data-category-id=DIC_kwDOPZMmQ84Czj63 data-mapping=url data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN crossorigin=anonymous async></script></article></main><footer class=footer><span>&copy; 2025 <a href=https://wangjv0812.cn/>WangJV Blog</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

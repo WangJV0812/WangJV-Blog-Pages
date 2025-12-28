@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Optimal Control on WangJV Blog</title><link>https://wangjv0812.cn/tags/optimal-control/</link><description>Recent content in Optimal Control on WangJV Blog</description><image><title>WangJV Blog</title><url>https://wangjv0812.cn/</url><link>https://wangjv0812.cn/</link></image><generator>Hugo -- 0.153.3</generator><language>en-us</language><lastBuildDate>Sun, 28 Dec 2025 22:30:25 +0800</lastBuildDate><atom:link href="https://wangjv0812.cn/tags/optimal-control/index.xml" rel="self" type="application/rss+xml"/><item><title>Neural ODE-2: Theoretical Derivation</title><link>https://wangjv0812.cn/2025/12/neural-ode-2-theoretical-derivation/</link><pubDate>Sun, 28 Dec 2025 22:30:25 +0800</pubDate><guid>https://wangjv0812.cn/2025/12/neural-ode-2-theoretical-derivation/</guid><description>&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;符号&lt;/th&gt;
+&lt;th&gt;含义&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;$z(t)$&lt;/td&gt;
+&lt;td&gt;$t$ 时刻隐藏状态&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$z(t_0)$&lt;/td&gt;
+&lt;td&gt;初始状态&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$z(t_1)$&lt;/td&gt;
+&lt;td&gt;终止状态&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$f(z(t), t, \theta)$&lt;/td&gt;
+&lt;td&gt;Neural ODE Network&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$\mathcal L[z(t)]$&lt;/td&gt;
+&lt;td&gt;损失泛函&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$a(t)$&lt;/td&gt;
+&lt;td&gt;拉格朗日乘子&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$\mathcal J$&lt;/td&gt;
+&lt;td&gt;造增广性能指标&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;对于深度残差网络和归一化流，对于任意一层 $z_t$，其与下一层 $z_{t+1}$ 的关系可以描述为：&lt;/p&gt;
+$$
+z_{t+1} = z_t + f(z_t, \theta)
+$$&lt;p&gt;一个 insightful 的观点是，这个形式可以看作一个连续变换的 &lt;strong&gt;欧拉离散化&lt;/strong&gt;。那么一个显然的思路是，如果网络的深度持续增加、每一步持续变小。在极线上，是否可以将残差神经网络理解为，我们用参数 $\theta$ 描述了一个连续常微分方程：&lt;/p&gt;
+$$
+\frac{d z(t)}{dt} = f(z(t), \theta, t)
+$$&lt;p&gt;我们的神经网络建模的，实际上是参数 $z(t)$ 的速度场，（或者说参数的 Flow）。推理时，我们可以通过 ODE Solver 来解得任意时刻 $T$ 的状态。对于使用 ODE 描述的神经网络 $\frac{d z(t)}{dt} = f(z(t), \theta, t)$，和用来评估结果的泛函 $\mathcal L(z(t))$。&lt;/p&gt;
+&lt;p&gt;神经网络的本质目标是，通过 $\mathcal L$ 对参数 $\theta$ 的梯度，进行梯度下降：&lt;/p&gt;
+$$
+\frac{\partial \mathcal L}{\partial \theta} = \frac{d\mathcal L}{dz(t_1)}\frac{\partial z(t_1)}{\partial \theta}
+$$&lt;p&gt;而对于 $z(t)$，有约束：&lt;/p&gt;</description></item></channel></rss>
